@@ -100,6 +100,9 @@ Este documento descreve os requisitos para um Sistema de Controle de Produção 
 
 ### 6. Diagrama de Fluxo de Dados
 
+
+![alt text](img/diagrama-de-fluxo.png)
+
 ```mermaid
 graph LR
     A[Usuário] -->|Interage com| B(Interface Web);
