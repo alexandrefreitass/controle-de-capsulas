@@ -113,12 +113,11 @@ graph LR
     D -->|Retorna Dados| C;
     C -->|Respostas| B;
     B -->|Exibe| A;
-    F[Módulo RH] -- A;
-    G[Módulo Produção] -- A;
-    H[Módulo Gerencial] -- A;
-    I[Módulo Controle Ocorrências] -- A;
-    J[Módulo BI] -- A;
-
+    F[Módulo RH] --> A;
+    G[Módulo Produção] --> A;
+    H[Módulo Gerencial] --> A;
+    I[Módulo Controle Ocorrências] --> A;
+    J[Módulo BI] --> A;
 ```
 
 ### Diagrama de classes
