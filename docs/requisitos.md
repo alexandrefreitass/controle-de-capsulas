@@ -232,23 +232,23 @@ graph LR
 
 
 
-```bash
+```mermaid
 graph LR
     A[Usuário] -->|Interage com| B(Interface Web);
-    B -->|Requisições<br>autenticação, ações, dados| C(Backend PHP<br>Framework Laravel/Symfony);
-    C -->|Consultas SQL| D(Banco de Dados<br>MySQL/PostgreSQL);
-    C -->|Processa Requisições| E{Lógica de Negócios<br>Controladores,<br>Serviços, Modelos};
+    B -->|Requisições, autenticação, ações, dados| C(Backend PHP Framework Laravel/Symfony);
+    C -->|Consultas SQL| D(Banco de Dados MySQL/PostgreSQL);
+    C -->|Processa Requisições| E{Lógica de Negócios: Controladores, Serviços, Modelos};
     E -->|Atualiza Dados| D;
     D -->|Retorna Dados| C;
-    C -->|Respostas<br>HTML, JSON| B;
-    B -->|Exibe Interface<br>e Dados| A;
-    F[Módulo RH] -->| | A;
-    G[Módulo Produção] -->| | A;
-    H[Módulo Gerencial] -->| | A;
-    I[Módulo Controle Ocorrências] -->| | A;
-    J[Módulo BI] -->| | A;
-    K{WebSockets<br>Ratchet} -.->|Atualizações<br>em Tempo Real| H;
-    L{Cache<br>Redis/Memcached}-.->|Otimização<br>de Acesso| C;
+    C -->|Respostas HTML, JSON| B;
+    B -->|Exibe Interface e Dados| A;
+    F[Módulo RH] --> A;
+    G[Módulo Produção] --> A;
+    H[Módulo Gerencial] --> A;
+    I[Módulo Controle Ocorrências] --> A;
+    J[Módulo BI] --> A;
+    K{WebSockets Ratchet} -.->|Atualizações em Tempo Real| H;
+    L{Cache Redis/Memcached} -.->|Otimização de Acesso| C;
 ```
 
 ### Tecnologias
