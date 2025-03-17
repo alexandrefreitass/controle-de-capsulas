@@ -200,7 +200,7 @@ class LoteProducao:
             raise ValueError("A quantidade consumida deve ser maior que zero.")
         if quant_consumida_mg > lote_materia_prima.quant_disponivel_mg:
             raise ValueError(
-                f"Quantidade consumida ({quant_consumida_mg}mg) maior que a quantidade disponível no lote ({lote_materia_prima.quant_disponivel_mg}mg)."
+                f"Quantidade consumida ({quant_consumida_mg}mg) no lote: {lote_materia_prima.lote} maior que a quantidade disponível no lote ({lote_materia_prima.quant_disponivel_mg}mg)."
             )
 
         lote_materia_prima.quant_disponivel_mg -= quant_consumida_mg
@@ -249,5 +249,3 @@ class LoteMateriaPrimaConsumida:
             f"Lote Matéria Prima: {self.lote_materia_prima.lote}\n"
             f"Quantidade Consumida: {self.quant_consumida_mg}mg"
         )
-
-
