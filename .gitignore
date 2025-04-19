@@ -1,3 +1,8 @@
+# Virtal envs
+*.env
+backend/.env
+frontend/.env
+
 # Django-specific ignores
 *.pyc
 __pycache__/
@@ -62,3 +67,4 @@ lerna-debug.log*
 # OS or System files
 .DS_Store
 Thumbs.db
+backend/temp_file.txt
