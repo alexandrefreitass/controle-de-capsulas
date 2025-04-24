@@ -15,7 +15,7 @@ Este documento descreve os requisitos para um Sistema de Controle de Produção 
 
 ### 3. Partes Interessadas
 
-*   **RH:** Responsável pelo agendamento e gerenciamento de pessoal.
+*   **RH:** Responsável pelo agendamento e gerenciamento de pessoal e cadastro de receitas.
 *   **Produção:** Operadores e supervisores que executam o processo de produção.
 *   **Gerencial:** Gerentes que supervisionam a produção e precisam de relatórios em tempo real (dashboards).
 *   **Controle de Ocorrências:** Equipe responsável por lidar com problemas e ocorrências de produção.
