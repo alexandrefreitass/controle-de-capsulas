@@ -50,3 +50,10 @@ python manage.py createsuperuser
 ## testes de usuário
 
 user_test
+
+### Criação dos apps
+
+- [ ] `python manage.py startapp produtos`
+- [ ] `python manage.py startapp fornecedores`
+- [ ] `python manage.py startapp producao`
+- [ ] `python manage.py startapp materias_primas`
