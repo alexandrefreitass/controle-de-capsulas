@@ -57,3 +57,9 @@ user_test
 - [ ] `python manage.py startapp fornecedores`
 - [ ] `python manage.py startapp producao`
 - [ ] `python manage.py startapp materias_primas`
+
+
+### dicas 
+
+ - Sempre coloque a barra / no final da URL ao fazer requisições POST, PUT, PATCH ou DELETE no Django REST Framework.
+
