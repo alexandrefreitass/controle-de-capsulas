@@ -1,5 +1,6 @@
 
 
+
 ## Estrutura de diretórios
 
 ```bash
@@ -35,6 +36,17 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ``` 
 
 
-```
+```bash
 django-admin startproject sistema_capsulas . 
+python manage.py startapp core
+
+python manage.py makemigrations
+python manage.py migrate
+
+python manage.py createsuperuser
 ```
+
+
+## testes de usuário
+
+user_test
