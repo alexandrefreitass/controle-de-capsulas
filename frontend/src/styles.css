@@ -284,3 +284,30 @@ button:hover {
 .view-btn:hover {
   background-color: #e3f2fd;
 }
+
+/* Estilos específicos para o módulo de Produtos */
+
+.form-section {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.form-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.form-full-width {
+  grid-column: 1 / -1;
+}
+
+/* Estilos para tabelas dentro do formulário */
+.form-section .data-table {
+  margin-top: 15px;
+}

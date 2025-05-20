@@ -21,6 +21,11 @@ import Producao from './components/Producao';
 import ProducaoForm from './components/ProducaoForm';
 import ProducaoDetalhe from './components/ProducaoDetalhe';
 
+// Componentes dos Produtos
+import Produtos from './components/Produtos';
+import ProdutoForm from './components/ProdutoForm';
+import ProdutoDetalhe from './components/ProdutoDetalhe';
+
 function App() {
   return (
     <Router>
@@ -49,6 +54,12 @@ function App() {
           <Route path="/producao" element={<Producao />} />
           <Route path="/producao/novo" element={<ProducaoForm />} />
           <Route path="/producao/detalhar/:id" element={<ProducaoDetalhe />} />
+          
+          {/* Rotas de Produtos */}
+          <Route path="/produtos" element={<Produtos />} />
+          <Route path="/produtos/novo" element={<ProdutoForm />} />
+          <Route path="/produtos/editar/:id" element={<ProdutoForm />} />
+          <Route path="/produtos/detalhar/:id" element={<ProdutoDetalhe />} />
           
           {/* Rota para página não encontrada */}
           <Route path="*" element={<Navigate to="/login" />} />
