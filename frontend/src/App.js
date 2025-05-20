@@ -10,12 +10,16 @@ import Success from './components/Success';
 import Fornecedores from './components/Fornecedores';
 import FornecedorForm from './components/FornecedorForm';
 
-
 // Componentes de Matérias Primas
 import MateriasPrimas from './components/MateriasPrimas';
 import MateriaPrimaForm from './components/MateriaPrimaForm';
 import Lotes from './components/Lotes';
 import LoteForm from './components/LoteForm';
+
+// Componentes da Produção
+import Producao from './components/Producao';
+import ProducaoForm from './components/ProducaoForm';
+import ProducaoDetalhe from './components/ProducaoDetalhe';
 
 function App() {
   return (
@@ -41,6 +45,10 @@ function App() {
           <Route path="/materias-primas/:materiaPrimaId/lotes/novo" element={<LoteForm />} />
           <Route path="/materias-primas/:materiaPrimaId/lotes/editar/:id" element={<LoteForm />} />
           
+          {/* Rotas de Produção */}
+          <Route path="/producao" element={<Producao />} />
+          <Route path="/producao/novo" element={<ProducaoForm />} />
+          <Route path="/producao/detalhar/:id" element={<ProducaoDetalhe />} />
           
           {/* Rota para página não encontrada */}
           <Route path="*" element={<Navigate to="/login" />} />

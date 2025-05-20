@@ -59,11 +59,6 @@ function Success() {
           <p>Catálogo de produtos</p>
         </div>
 
-        <div className="app-card" onClick={() => navigate('/materias-primas')}>
-          <h3>Matérias Primas</h3>
-          <p>Controle de estoque e materiais</p>
-        </div>
-
       </div>
     </div>
   );
