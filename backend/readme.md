@@ -2,6 +2,23 @@
 
 Backend desenvolvido em Django para o sistema de autenticação do projeto CNC (KONNEKIT).
 
+- [CNC - Sistema de Autenticação (Backend)](#cnc---sistema-de-autenticação-backend)
+  - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [Estrutura do Projeto](#estrutura-do-projeto)
+  - [Funcionalidades](#funcionalidades)
+  - [Endpoints da API](#endpoints-da-api)
+    - [Exemplo de Requisição (Login)](#exemplo-de-requisição-login)
+    - [Exemplo de Resposta (Login bem-sucedido)](#exemplo-de-resposta-login-bem-sucedido)
+  - [Instalação](#instalação)
+  - [Configuração CORS](#configuração-cors)
+  - [Desenvolvimento](#desenvolvimento)
+    - [Criação de Usuários no Admin](#criação-de-usuários-no-admin)
+    - [Testes com Postman](#testes-com-postman)
+  - [Autores](#autores)
+  - [Licença](#licença)
+  - [Scrips de automação (dev\_utils)](#scrips-de-automação-dev_utils)
+
+
 ## Tecnologias Utilizadas
 
 - Django
@@ -112,26 +129,53 @@ Este projeto está licenciado sob [inserir tipo de licença].
 
 ----------
 
-python manage.py createsuperuser
-python manage.py runserver
+## Scrips de automação (dev_utils)
+
+ Opção 1: Usando comando de gerenciamento Django (recomendado)
+
+```bash
+python manage.py setup_dev_users
+```
+
+Este comando criará automaticamente os seguintes usuários para teste:
+
+**Usuários comuns:**
+- Username: user1, Senha: 123@mudar
+- Username: operador, Senha: 123@mudar
+- Username: farmaceutico, Senha: 123@mudar
+
+**Administradores:**
+- Username: admin, Senha: 123@mudar
+- Username: admin2, Senha: 123@mudar
+
+Opção 2: No terminal Unix/Linux ou CMD (não PowerShell)
+
+`python manage.py shell < create_dev_users.py`
+
+Opção 3: No PowerShell, use o comando direto
+
+`cmd /c "python manage.py shell < create_dev_users.py"`
+
+Opção 4: *Mete o loco* e faz via django shell
 
 ```shell
-# criar usuários (náo admin) via shell
+# criar usuários via shell
 # No shell do Django (python manage.py shell)
 from django.contrib.auth.models import User
 
 # Criar usuário comum
 user = User.objects.create_user(
-    username='nomedousuario',
-    email='email@exemplo.com',
-    password='senhasegura'
+    username='user1',
+    email='user1@email.com',
+    password='123@mudar'
 )
 
 # Criar superusuário
 admin = User.objects.create_superuser(
     username='admin2',
-    email='admin@exemplo.com',
-    password='senhaseguraadmin'
+    email='admin2@exemplo.com',
+    password='123@mudar'
 )
 
 ```
+
