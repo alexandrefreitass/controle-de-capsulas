@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+// Exemplo de modificação para usar variável de ambiente
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -15,7 +18,7 @@ function Login() {
     console.log('Tentando login com:', { username, password });
     
     try {
-      const response = await axios.post('http://localhost:8000/accounts/login/', {
+      const response = await axios.post(`${apiUrl}/accounts/login/`, {
         username,
         password
       });

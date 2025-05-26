@@ -62,6 +62,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # URL do seu frontend React
 ]
 
+
+# No ambiente de produção, isso será substituído pelo valor da variável de ambiente
+import os
+
+if os.environ.get("CORS_ALLOWED_ORIGINS"):
+    CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
+
 ROOT_URLCONF = "sistema_capsulas.urls"
 
 TEMPLATES = [

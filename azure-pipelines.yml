@@ -1,112 +1,46 @@
-# azure-pipelines.yml
 trigger:
-- main
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 stages:
-- stage: Backend_Tests
-  displayName: 'Backend Tests'
+- stage: Build
   jobs:
-  - job: DjangoTests
-    pool:
-      vmImage: 'ubuntu-latest'
+  - job: BuildAndPush
     steps:
-    - task: UsePythonVersion@0
+    - task: Docker@2
+      displayName: Build and push backend image
       inputs:
-        versionSpec: '3.9'
-        addToPath: true
+        containerRegistry: 'cncregistry'
+        repository: 'cnc-backend'
+        command: 'buildAndPush'
+        Dockerfile: 'backend/Dockerfile'
+        tags: 'latest'
     
-    - script: |
-        python -m pip install --upgrade pip
-        pip install -r backend/requirements.txt
-      displayName: 'Install dependencies'
-    
-    - script: |
-        cd backend
-        python manage.py check
-        python manage.py test
-      displayName: 'Run Django tests'
+    - task: Docker@2
+      displayName: Build and push frontend image
+      inputs:
+        containerRegistry: 'cncregistry'
+        repository: 'cnc-frontend'
+        command: 'buildAndPush'
+        Dockerfile: 'frontend/Dockerfile'
+        tags: 'latest'
 
-- stage: Frontend_Tests
-  displayName: 'Frontend Tests'
+- stage: Deploy
   jobs:
-  - job: ReactTests
-    pool:
-      vmImage: 'ubuntu-latest'
+  - job: DeployToAzure
     steps:
-    - task: NodeTool@0
+    - task: AzureWebAppContainer@1
+      displayName: 'Deploy Backend'
       inputs:
-        versionSpec: '16.x'
-      displayName: 'Install Node.js'
-      
-    - script: |
-        cd frontend
-        npm install
-        npm test -- --watchAll=false
-      displayName: 'Run React tests'
-
-- stage: Build_Deploy
-  displayName: 'Build and Deploy'
-  dependsOn:
-  - Backend_Tests
-  - Frontend_Tests
-  condition: succeeded()
-  jobs:
-  - job: BuildFrontend
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '16.x'
-      displayName: 'Install Node.js'
-      
-    - script: |
-        cd frontend
-        npm install
-        npm run build
-      displayName: 'Build React app'
+        azureSubscription: 'YourAzureSubscription'
+        appName: 'cnc-backend'
+        containers: 'cncregistry.azurecr.io/cnc-backend:latest'
     
-    - task: ArchiveFiles@2
+    - task: AzureWebAppContainer@1
+      displayName: 'Deploy Frontend'
       inputs:
-        rootFolderOrFile: 'frontend/build'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-        replaceExistingArchive: true
-      displayName: 'Archive frontend build files'
-    
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-        artifactName: 'frontend'
-      displayName: 'Publish frontend artifact'
-  
-  - job: BuildBackend
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.9'
-        addToPath: true
-    
-    - script: |
-        cd backend
-        pip install -r requirements.txt
-        python manage.py collectstatic --noinput
-      displayName: 'Prepare Django app'
-      
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: 'backend'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/backend.zip'
-        replaceExistingArchive: true
-      displayName: 'Archive backend files'
-      
-    - task: PublishBuildArtifacts@1
-      inputs:
-        pathToPublish: '$(Build.ArtifactStagingDirectory)/backend.zip'
-        artifactName: 'backend'
-      displayName: 'Publish backend artifact'
+        azureSubscription: 'YourAzureSubscription'
+        appName: 'cnc-frontend'
+        containers: 'cncregistry.azurecr.io/cnc-frontend:latest'
