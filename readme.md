@@ -63,3 +63,12 @@ user_test
 
  - Sempre coloque a barra / no final da URL ao fazer requisições POST, PUT, PATCH ou DELETE no Django REST Framework.
 
+```bash
+
+# json de saida para inserir nas secrets do repositório
+
+az ad sp create-for-rbac --name "CNC-GitHub-Actions" --role contributor \
+  --scopes /subscriptions/6d27da98-23c1-421e-b96c-25e1112b7875/resourceGroups/CNC \
+  --sdk-auth
+
+```

@@ -1,0 +1,29 @@
+name: Azure CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: Build and deploy to Azure
+      run: |
+        chmod +x ./azure-deploy.sh
+        ./azure-deploy.sh
+      env:
+        RESOURCE_GROUP: "CNCResourceGroup"
+        ACR_NAME: "cnckonnekit"  # Nome ACR alterado para evitar conflitos
+        BACKEND_APP_NAME: "cnc-backend"
+        FRONTEND_APP_NAME: "cnc-frontend"
