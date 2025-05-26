@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # azure-pipelines.yml
 trigger:
 - main
@@ -110,3 +111,45 @@ stages:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/backend.zip'
         artifactName: 'backend'
       displayName: 'Publish backend artifact'
+=======
+# Python Django
+# Test a Django project on multiple versions of Python.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+strategy:
+  matrix:
+    Python38:
+      PYTHON_VERSION: '3.8'
+    Python39:
+      PYTHON_VERSION: '3.9'
+    Python310:
+      PYTHON_VERSION: '3.10'
+  maxParallel: 3
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    architecture: 'x64'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install prerequisites'
+
+- script: |
+    python manage.py test
+  displayName: 'Run tests'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: '**/TEST-*.xml'
+    testRunTitle: 'Python $(PYTHON_VERSION)'
+  condition: succeededOrFailed()
+>>>>>>> bd4a5052952290022b8adea53812b314c43b3ba1
