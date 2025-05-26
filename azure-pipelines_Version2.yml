@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: Backend
+  displayName: "Backend - Django"
+  steps:
+    - checkout: self
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.10'
+    - script: |
+        cd backend
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        python manage.py test
+      displayName: 'Install and Test Django'
+
+- job: Frontend
+  displayName: "Frontend - React"
+  steps:
+    - checkout: self
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '18.x'
+    - script: |
+        cd frontend
+        npm install
+        npm run build
+      displayName: 'Install and Build React'
