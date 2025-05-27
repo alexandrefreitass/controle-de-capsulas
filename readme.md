@@ -71,4 +71,38 @@ az ad sp create-for-rbac --name "CNC-GitHub-Actions" --role contributor \
   --scopes /subscriptions/6d27da98-23c1-421e-b96c-25e1112b7875/resourceGroups/CNC \
   --sdk-auth
 
+
+
+az webapp config appsettings set --resource-group CNC --name $BACKEND_APP_NAME --settings \
+  DJANGO_SECRET_KEY="django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9"\
+  DEBUG="False" \
+  DJANGO_ALLOWED_HOSTS="$BACKEND_APP_NAME.azurewebsites.net" \
+  DATABASE_URL="sqlite:////tmp/db.sqlite3" \
+  DJANGO_SETTINGS_MODULE="sistema_capsulas.settings"
+
+
+az webapp cors add --resource-group CNC --name $BACKEND_APP_NAME --allowed-origins "https://$FRONTEND_APP_NAME.azurewebsites.net"
+
+az webapp config appsettings set --resource-group CNC --name $FRONTEND_APP_NAME --settings \
+  REACT_APP_API_URL="https://$BACKEND_APP_NAME.azurewebsites.net"
+
+
+
+# Criar servidor PostgreSQL
+az postgres server create --resource-group CNC \
+  --name cnc-postgres \
+  --location brazilsouth \
+  --admin-user cncadmin \
+  --admin-password "SenhaSegura123!" \
+  --sku-name B_Gen5_1
+
+# Criar banco de dados
+az postgres db create --resource-group CNC \
+  --server-name cnc-postgres \
+  --name cncdb
+
+
+az webapp config appsettings set --resource-group CNC --name $BACKEND_APP_NAME --settings \
+  DATABASE_URL="postgres://cncadmin:SenhaSegura123!@cnc-postgres.postgres.database.azure.com:5432/cncdb"
+
 ```

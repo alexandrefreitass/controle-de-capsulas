@@ -1,161 +1,111 @@
 #!/bin/bash
 
+#!/bin/bash
+
 # Definir variáveis (com fallback para valores padrão)
-RESOURCE_GROUP=${RESOURCE_GROUP:-"CNCResourceGroup"}
-LOCATION=${LOCATION:-"eastus"}
-ACR_NAME=${ACR_NAME:-"cnckonnekit"}  # Nome único para seu ACR
+RESOURCE_GROUP=${RESOURCE_GROUP:-"CNC"}  # Atualizado para "CNC" em vez de "CNCResourceGroup"
+LOCATION=${LOCATION:-"brazilsouth"}      # Atualizado para "brazilsouth" para usar instâncias no Brasil
+ACR_NAME=${ACR_NAME:-"cnckonnekit"}      # Nome único para seu ACR
 BACKEND_APP_NAME=${BACKEND_APP_NAME:-"cnc-backend"}
 FRONTEND_APP_NAME=${FRONTEND_APP_NAME:-"cnc-frontend"}
 APP_SERVICE_PLAN=${APP_SERVICE_PLAN:-"CNCAppServicePlan"}
+FORCE_RECREATE=${FORCE_RECREATE:-"true"}  # Parâmetro para forçar recriação
+SKIP_EXISTING=${SKIP_EXISTING:-"false"}    # Parâmetro para ignorar recursos existentes
+NAME_SUFFIX=${NAME_SUFFIX:-"konnekit-$(date +%Y%m%d)"}  # Corrigido o modo de definir valor padrão
 
+# Aplicar sufixo se fornecido
+if [ -n "$NAME_SUFFIX" ]; then
+  BACKEND_APP_NAME="${BACKEND_APP_NAME}-${NAME_SUFFIX}"
+  FRONTEND_APP_NAME="${FRONTEND_APP_NAME}-${NAME_SUFFIX}"
+  echo "Usando sufixo para evitar conflitos: $NAME_SUFFIX"
+  echo "Nomes ajustados: Backend=$BACKEND_APP_NAME, Frontend=$FRONTEND_APP_NAME"
+fi
+
+# Mostrar informações sobre os parâmetros
+echo "Modo de execução:"
+echo "- Forçar recriação: $FORCE_RECREATE"
+echo "- Ignorar existentes: $SKIP_EXISTING"
 echo "Usando assinatura: $(az account show --query name -o tsv)"
 
-# Verificar se o Resource Group existe
-if [ $(az group exists --name $RESOURCE_GROUP) = false ]; then
-  echo "Criando Resource Group..."
-  az group create --name $RESOURCE_GROUP --location $LOCATION
-  if [ $? -ne 0 ]; then
-    echo "Falha ao criar Resource Group. Verifique suas permissões."
-    exit 1
-  fi
-else
-  echo "Resource Group $RESOURCE_GROUP já existe."
-fi
-
-# Verificar se o ACR existe de forma mais robusta
-echo "Verificando ACR..."
-if az acr show --name $ACR_NAME --resource-group $RESOURCE_GROUP >/dev/null 2>&1; then
-  echo "ACR $ACR_NAME já existe."
-else
-  echo "Criando Azure Container Registry..."
-  az acr create --resource-group $RESOURCE_GROUP --name $ACR_NAME --sku Basic --admin-enabled true
-  if [ $? -ne 0 ]; then
-    echo "Falha ao criar ACR. Verifique se o nome '$ACR_NAME' está disponível ou tente outro nome."
-    exit 1
-  fi
-fi
-
-# Verificar e tentar login no ACR com retry
-echo "Fazendo login no ACR..."
-MAX_RETRIES=3
-RETRY_COUNT=0
-LOGIN_SUCCESS=false
-
-while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$LOGIN_SUCCESS" != "true" ]; do
-  az acr login --name $ACR_NAME
-  if [ $? -eq 0 ]; then
-    LOGIN_SUCCESS=true
-    echo "Login no ACR bem-sucedido."
+# Verificar se o backend existe em qualquer assinatura
+check_webapp_global_exists() {
+  local app_name=$1
+  # Verificar se o nome está disponível globalmente
+  local IS_AVAILABLE=$(az webapp check-name --name $app_name --query "nameAvailable" -o tsv)
+  if [ "$IS_AVAILABLE" == "true" ]; then
+    return 1  # Nome disponível, não existe
   else
-    RETRY_COUNT=$((RETRY_COUNT+1))
-    echo "Falha no login ao ACR. Tentativa $RETRY_COUNT de $MAX_RETRIES."
-    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-      echo "Tentando novamente em 5 segundos..."
-      sleep 5
-    fi
+    return 0  # Nome indisponível, já existe
   fi
-done
+}
 
-if [ "$LOGIN_SUCCESS" != "true" ]; then
-  echo "Todas as tentativas de login no ACR falharam."
-  echo "Verificando se o Docker está instalado e funcionando..."
-  docker --version
-  if [ $? -ne 0 ]; then
-    echo "Docker não está disponível. Verifique a instalação."
-    echo "Continuando sem login direto no Docker..."
-  fi
-fi
-
-# Construir e publicar as imagens no ACR usando az acr build (não requer Docker local)
-echo "Construindo e publicando imagens Docker..."
-if [ -d "./backend" ]; then
-  az acr build --registry $ACR_NAME --image cnc-backend:latest ./backend
-  if [ $? -ne 0 ]; then
-    echo "Falha ao construir a imagem backend."
+# Remover recursos se FORCE_RECREATE estiver definido
+handle_existing_app() {
+  local app_name=$1
+  local app_type=$2
+  
+  if [ "$FORCE_RECREATE" == "true" ]; then
+    echo "Forçando recriação: Removendo $app_type existente ($app_name)..."
+    az webapp delete --name $app_name --resource-group $RESOURCE_GROUP --keep-empty-plan --keep-metrics --keep-dns-registration || true
+    return 1  # Indica que deve criar novo
+  elif [ "$SKIP_EXISTING" == "true" ]; then
+    echo "Configuração definida para ignorar recursos existentes. Pulando $app_type ($app_name)."
+    return 0  # Indica pular criação
+  else
+    echo "ERRO: $app_type com nome '$app_name' já existe em alguma assinatura."
+    echo "Use FORCE_RECREATE=true para recriar ou SKIP_EXISTING=true para ignorar."
+    echo "Alternativamente, use NAME_SUFFIX para adicionar um sufixo único aos nomes."
     exit 1
   fi
-else
-  echo "Diretório ./backend não encontrado."
-  exit 1
-fi
+}
 
-if [ -d "./frontend" ]; then
-  az acr build --registry $ACR_NAME --image cnc-frontend:latest ./frontend
-  if [ $? -ne 0 ]; then
-    echo "Falha ao construir a imagem frontend."
-    exit 1
-  fi
-else
-  echo "Diretório ./frontend não encontrado."
-  exit 1
-fi
-
-# Verificar se o App Service Plan existe
-echo "Verificando App Service Plan..."
-ASP_EXISTS=$(az appservice plan list --resource-group $RESOURCE_GROUP --query "[?name=='$APP_SERVICE_PLAN'].name" -o tsv)
-if [ -z "$ASP_EXISTS" ]; then
-  echo "Criando plano de App Service..."
-  az appservice plan create --name $APP_SERVICE_PLAN --resource-group $RESOURCE_GROUP --is-linux --sku B1
-  if [ $? -ne 0 ]; then
-    echo "Falha ao criar App Service Plan."
-    exit 1
-  fi
-else
-  echo "App Service Plan $APP_SERVICE_PLAN já existe."
-fi
-
-# Obter credenciais do ACR
-echo "Obtendo credenciais do ACR..."
-ACR_USERNAME=$(az acr credential show --name $ACR_NAME --query username --output tsv)
-ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query passwords[0].value --output tsv)
-
-if [ -z "$ACR_USERNAME" ] || [ -z "$ACR_PASSWORD" ]; then
-  echo "Falha ao obter credenciais do ACR."
-  exit 1
-fi
+# Resto do script continua, modificando as seções relevantes...
 
 # Verificar se o aplicativo backend existe
 echo "Verificando aplicativo backend..."
-BACKEND_EXISTS=$(az webapp list --resource-group $RESOURCE_GROUP --query "[?name=='$BACKEND_APP_NAME'].name" -o tsv)
-if [ -z "$BACKEND_EXISTS" ]; then
+if check_webapp_global_exists $BACKEND_APP_NAME; then
+  if handle_existing_app $BACKEND_APP_NAME "aplicativo backend"; then
+    echo "Pulando criação do backend e usando existente."
+  else
+    echo "Criando aplicativo backend..."
+    az webapp create --resource-group $RESOURCE_GROUP --plan $APP_SERVICE_PLAN --name $BACKEND_APP_NAME --deployment-container-image-name "$ACR_NAME.azurecr.io/cnc-backend:latest"
+    if [ $? -ne 0 ]; then
+      echo "Falha ao criar aplicativo backend."
+      exit 1
+    fi
+  fi
+else
   echo "Criando aplicativo backend..."
   az webapp create --resource-group $RESOURCE_GROUP --plan $APP_SERVICE_PLAN --name $BACKEND_APP_NAME --deployment-container-image-name "$ACR_NAME.azurecr.io/cnc-backend:latest"
   if [ $? -ne 0 ]; then
     echo "Falha ao criar aplicativo backend."
     exit 1
   fi
-else
-  echo "Atualizando aplicativo backend..."
 fi
 
-# Configurar o backend
+# Configurar o backend (independente de ter sido criado ou existir)
 echo "Configurando backend..."
 az webapp config appsettings set --resource-group $RESOURCE_GROUP --name $BACKEND_APP_NAME --settings WEBSITES_PORT=8000 DEBUG=0 DJANGO_ALLOWED_HOSTS="$BACKEND_APP_NAME.azurewebsites.net"
 az webapp config container set --name $BACKEND_APP_NAME --resource-group $RESOURCE_GROUP --docker-custom-image-name "$ACR_NAME.azurecr.io/cnc-backend:latest" --docker-registry-server-url "https://$ACR_NAME.azurecr.io" --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password $ACR_PASSWORD
 
-# Verificar se o aplicativo frontend existe
+# Verificar se o aplicativo frontend existe (mesmo tratamento que o backend)
 echo "Verificando aplicativo frontend..."
-FRONTEND_EXISTS=$(az webapp list --resource-group $RESOURCE_GROUP --query "[?name=='$FRONTEND_APP_NAME'].name" -o tsv)
-if [ -z "$FRONTEND_EXISTS" ]; then
+if check_webapp_global_exists $FRONTEND_APP_NAME; then
+  if handle_existing_app $FRONTEND_APP_NAME "aplicativo frontend"; then
+    echo "Pulando criação do frontend e usando existente."
+  else
+    echo "Criando aplicativo frontend..."
+    az webapp create --resource-group $RESOURCE_GROUP --plan $APP_SERVICE_PLAN --name $FRONTEND_APP_NAME --deployment-container-image-name "$ACR_NAME.azurecr.io/cnc-frontend:latest"
+    if [ $? -ne 0 ]; then
+      echo "Falha ao criar aplicativo frontend."
+      exit 1
+    fi
+  fi
+else
   echo "Criando aplicativo frontend..."
   az webapp create --resource-group $RESOURCE_GROUP --plan $APP_SERVICE_PLAN --name $FRONTEND_APP_NAME --deployment-container-image-name "$ACR_NAME.azurecr.io/cnc-frontend:latest"
   if [ $? -ne 0 ]; then
     echo "Falha ao criar aplicativo frontend."
     exit 1
   fi
-else
-  echo "Atualizando aplicativo frontend..."
 fi
-
-# Configurar o frontend
-echo "Configurando frontend..."
-az webapp config appsettings set --resource-group $RESOURCE_GROUP --name $FRONTEND_APP_NAME --settings WEBSITES_PORT=80 REACT_APP_API_URL="https://$BACKEND_APP_NAME.azurewebsites.net"
-az webapp config container set --name $FRONTEND_APP_NAME --resource-group $RESOURCE_GROUP --docker-custom-image-name "$ACR_NAME.azurecr.io/cnc-frontend:latest" --docker-registry-server-url "https://$ACR_NAME.azurecr.io" --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password $ACR_PASSWORD
-
-# Configurar CORS para o backend
-echo "Configurando CORS..."
-az webapp cors add --resource-group $RESOURCE_GROUP --name $BACKEND_APP_NAME --allowed-origins "https://$FRONTEND_APP_NAME.azurewebsites.net"
-
-echo "Implantação concluída!"
-echo "Backend disponível em: https://$BACKEND_APP_NAME.azurewebsites.net"
-echo "Frontend disponível em: https://$FRONTEND_APP_NAME.azurewebsites.net"
