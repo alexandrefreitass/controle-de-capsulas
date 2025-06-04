@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 // Exemplo de modificação para usar variável de ambiente
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const apiUrl = 'replit.dev'; // SUBSTITUA PELA URL CORRETA DO SEU BACKEND NO REPLIT
 
 function Login() {
   const [username, setUsername] = useState('');
