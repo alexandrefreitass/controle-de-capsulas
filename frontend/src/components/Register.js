@@ -28,7 +28,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8000/accounts/register/', {
+      const response = await axios.post('http://localhost:8080/accounts/register/', {
         username,
         password
       });
