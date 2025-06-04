@@ -1,5 +1,6 @@
 modules = ["bash", "nodejs-20", "python-3.11", "python-3.12", "web"]
-run = "cd backend && python manage.py migrate && python manage.py runserver 0.0.0.0:8080"
+
+run = "echo 'Use o botão Run acima para iniciar o projeto com frontend e backend juntos.'"
 
 [nix]
 channel = "stable-24_05"
@@ -16,13 +17,28 @@ localPort = 8080
 externalPort = 80
 
 [workflows]
-runButton = "Frontend Development"
+runButton = "Start Full Stack App"
 
 [[workflows.workflow]]
-name = "Frontend Development"
-author = 39906757
-mode = "sequential"
+name = "Start Full Stack App"
+mode = "parallel"
 
+# === BACKEND TASK ===
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm start"
+args = """
+cd backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py setup_dev_users
+python manage.py runserver 0.0.0.0:8080
+"""
+
+# === FRONTEND TASK ===
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = """
+cd frontend
+npm install
+npm start
+"""
