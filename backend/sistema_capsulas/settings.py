@@ -14,7 +14,7 @@ SECRET_KEY = "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.replit.dev', 'localhost']
+ALLOWED_HOSTS = ['.replit.dev', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -45,17 +45,30 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True  # Permitir todas as origens para desenvolvimento
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # URL do seu frontend React
+    "http://localhost:3000",  # URL do seu frontend React local
+    "https://*.replit.dev",   # URLs do Replit
 ]
 
+# Headers adicionais para CORS
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # No ambiente de produção, isso será substituído pelo valor da variável de ambiente
-
 if os.environ.get("CORS_ALLOWED_ORIGINS"):
     CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
+    CORS_ORIGIN_ALLOW_ALL = False
 
 ROOT_URLCONF = "sistema_capsulas.urls"
 
