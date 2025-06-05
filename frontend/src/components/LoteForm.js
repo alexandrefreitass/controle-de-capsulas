@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function LoteForm() {
   const { materiaPrimaId, id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     materia_prima_id: materiaPrimaId,
     lote: '',
@@ -15,7 +15,7 @@ function LoteForm() {
     nota_fiscal: '',
     fornecedor_id: ''
   });
-  
+
   const [fornecedores, setFornecedores] = useState([]);
   const [materiaPrima, setMateriaPrima] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -31,10 +31,10 @@ function LoteForm() {
 
     // Carregar a matéria prima
     fetchMateriaPrima();
-    
+
     // Carregar fornecedores para o dropdown
     fetchFornecedores();
-    
+
     // Se estiver editando, carregar os dados do lote
     if (isEditing) {
       fetchLote();
@@ -43,7 +43,7 @@ function LoteForm() {
 
   const fetchMateriaPrima = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/materias-primas/${materiaPrimaId}/`);
+      const response = await apiClient.get(apiEndpoints.materiaPrima(materiaPrimaId));
       setMateriaPrima(response.data);
     } catch (error) {
       console.error('Erro ao carregar matéria prima:', error);
@@ -53,7 +53,7 @@ function LoteForm() {
 
   const fetchFornecedores = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/fornecedores/');
+      const response = await apiClient.get(apiEndpoints.fornecedores);
       setFornecedores(response.data);
     } catch (error) {
       console.error('Erro ao carregar fornecedores:', error);
@@ -64,7 +64,7 @@ function LoteForm() {
   const fetchLote = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/lotes/${id}/`);
+      const response = await apiClient.get(apiEndpoints.lote(id));
       setFormData({
         materia_prima_id: response.data.materia_prima.id,
         lote: response.data.lote,
@@ -90,54 +90,54 @@ function LoteForm() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-    
-  try {
-    setLoading(true);
-    
-    // Preparar os dados para envio, garantindo que estão no formato correto
-    const dataToSend = {
-      ...formData,
-      materia_prima_id: parseInt(formData.materia_prima_id),
-      fornecedor_id: parseInt(formData.fornecedor_id),
-      quant_total_mg: parseFloat(formData.quant_total_mg),
-      quant_disponivel_mg: parseFloat(formData.quant_disponivel_mg)
-    };
-    
-    console.log('Enviando dados:', dataToSend);
-    
-    if (isEditing) {
-      const response = await axios.put(`http://localhost:8000/api/lotes/${id}/`, dataToSend);
-      console.log('Resposta da edição:', response.data);
-    } else {
-      const response = await axios.post('http://localhost:8000/api/lotes/', dataToSend);
-      console.log('Resposta da criação:', response.data);
-    }
-    
-    navigate(`/materias-primas/${materiaPrimaId}/lotes`);
-  } catch (error) {
-    console.error('Erro completo:', error);
-    
-    if (error.response) {
-      console.error('Resposta de erro do servidor:', error.response.data);
-      
-      // Exibir mensagem de erro detalhada se disponível
-      if (error.response.data && error.response.data.error) {
-        setError(`Erro ao salvar lote: ${error.response.data.error}`);
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+
+      // Preparar os dados para envio, garantindo que estão no formato correto
+      const dataToSend = {
+        ...formData,
+        materia_prima_id: parseInt(formData.materia_prima_id),
+        fornecedor_id: parseInt(formData.fornecedor_id),
+        quant_total_mg: parseFloat(formData.quant_total_mg),
+        quant_disponivel_mg: parseFloat(formData.quant_disponivel_mg)
+      };
+
+      console.log('Enviando dados:', dataToSend);
+
+      if (isEditing) {
+        const response = await apiClient.put(apiEndpoints.lote(id), dataToSend);
+        console.log('Resposta da edição:', response.data);
       } else {
-        setError(`Erro ao salvar lote. Código: ${error.response.status}`);
+        const response = await apiClient.post(apiEndpoints.lotes, dataToSend);
+        console.log('Resposta da criação:', response.data);
       }
-    } else if (error.request) {
-      console.error('Sem resposta do servidor');
-      setError('Servidor não respondeu. Verifique sua conexão.');
-    } else {
-      console.error('Erro na configuração da requisição:', error.message);
-      setError('Erro na requisição: ' + error.message);
+
+      navigate(`/materias-primas/${materiaPrimaId}/lotes`);
+    } catch (error) {
+      console.error('Erro completo:', error);
+
+      if (error.response) {
+        console.error('Resposta de erro do servidor:', error.response.data);
+
+        // Exibir mensagem de erro detalhada se disponível
+        if (error.response.data && error.response.data.error) {
+          setError(`Erro ao salvar lote: ${error.response.data.error}`);
+        } else {
+          setError(`Erro ao salvar lote. Código: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        console.error('Sem resposta do servidor');
+        setError('Servidor não respondeu. Verifique sua conexão.');
+      } else {
+        console.error('Erro na configuração da requisição:', error.message);
+        setError('Erro na requisição: ' + error.message);
+      }
+
+      setLoading(false);
     }
-    
-    setLoading(false);
-  }
-};
+  };
 
   const handleVoltar = () => {
     navigate(`/materias-primas/${materiaPrimaId}/lotes`);
@@ -146,12 +146,6 @@ function LoteForm() {
   if (loading && isEditing) {
     return <p>Carregando dados do lote...</p>;
   }
-
-  // DEBUG
-  console.log('Dados do formulário antes do envio:', formData);
-  console.log('Tipo de materia_prima_id:', typeof formData.materia_prima_id);
-  console.log('Tipo de fornecedor_id:', typeof formData.fornecedor_id);
-  console.log('Tipo de quant_total_mg:', typeof formData.quant_total_mg);
 
   return (
     <div className="module-container">

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function MateriaPrimaForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     nome: '',
     desc: ''
@@ -31,7 +31,7 @@ function MateriaPrimaForm() {
   const fetchMateriaPrima = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/materias-primas/${id}/`);
+      const response = await apiClient.get(apiEndpoints.materiaPrima(id));
       setFormData(response.data);
       setLoading(false);
     } catch (error) {
@@ -51,16 +51,16 @@ function MateriaPrimaForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      
+
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/materias-primas/${id}/`, formData);
+        await apiClient.put(apiEndpoints.materiaPrima(id), formData);
       } else {
-        await axios.post('http://localhost:8000/api/materias-primas/', formData);
+        await apiClient.post(apiEndpoints.materiasPrimas, formData);
       }
-      
+
       navigate('/materias-primas');
     } catch (error) {
       console.error('Erro ao salvar matéria prima:', error);
