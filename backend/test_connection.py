@@ -38,16 +38,16 @@ def test_environment():
 
     # Verificar portas
     try:
-        # Testar se a porta 8000 está disponível
+        # Testar se a porta 8080 está disponível
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        result = sock.connect_ex(('localhost', 8000))
+        result = sock.connect_ex(('localhost', 8080))
         if result == 0:
-            print_status("Porta 8000: Ocupada (Backend pode estar rodando)")
+            print_status("Porta 8080: Ocupada (Backend pode estar rodando)")
         else:
-            print_status("Porta 8000: Disponível", False)
+            print_status("Porta 8080: Disponível", False)
         sock.close()
     except Exception as e:
-        print_status(f"Erro ao testar porta 8000: {e}", False)
+        print_status(f"Erro ao testar porta 8080: {e}", False)
 
 def test_django_setup():
     print_header("TESTE DO DJANGO")
@@ -92,8 +92,8 @@ def test_api_endpoints():
     print_header("TESTE DOS ENDPOINTS DA API")
 
     base_urls = [
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
     ]
 
     # Adicionar URL do Replit se aplicável
@@ -135,7 +135,7 @@ def test_cors_headers():
     if 'replit' in hostname.lower():
         api_url = f"https://{hostname}/accounts/login/"
     else:
-        api_url = "http://localhost:8000/accounts/login/"
+        api_url = "http://localhost:8080/accounts/login/"
 
     try:
         # Simular requisição OPTIONS (preflight)
@@ -179,7 +179,7 @@ def run_diagnostics():
     print("Se você viu muitos ❌, há problemas de configuração.")
     print("Se você viu mais ✅, o sistema está funcionando corretamente.")
     print("\nPara resolver problemas:")
-    print("1. Certifique-se de que o Django está rodando: python manage.py runserver 0.0.0.0:8000")
+    print("1. Certifique-se de que o Django está rodando: python manage.py runserver 0.0.0.0:8080")
     print("2. Verifique as configurações de CORS no settings.py")
     print("3. Teste as URLs no navegador")
 

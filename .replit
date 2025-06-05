@@ -1,21 +1,17 @@
 modules = ["bash", "nodejs-20", "python-3.11", "python-3.12", "web"]
 
 # ✅ Comando principal - inicia o backend Django
-run = "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"
+run = "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8080"
 
 [nix]
 channel = "stable-24_05"
 
 [deployment]
-run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"]
+run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8080"]
 
 [[ports]]
 localPort = 3000
 externalPort = 3000
-
-[[ports]]
-localPort = 8000
-externalPort = 8000
 
 [[ports]]
 localPort = 8080
@@ -32,7 +28,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd backend && python manage.py runserver 0.0.0.0:8000"
+args = "cd backend && python manage.py runserver 0.0.0.0:8080"
 
 # ✅ Workflow para desenvolver o frontend
 [[workflows.workflow]]
@@ -52,7 +48,7 @@ mode = "parallel"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd backend && python manage.py runserver 0.0.0.0:8000"
+args = "cd backend && python manage.py runserver 0.0.0.0:8080"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
