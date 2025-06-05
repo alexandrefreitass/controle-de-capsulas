@@ -15,7 +15,8 @@ export const getApiBaseUrl = () => {
 
   // Desenvolvimento local
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:8080';
+    // Mudar para 8000, que é o padrão do Django
+    return 'http://localhost:8000'; 
   }
 
   // Produção Azure ou outros
@@ -24,7 +25,7 @@ export const getApiBaseUrl = () => {
   }
 
   // Fallback
-  return 'http://localhost:8080';
+  return 'http://localhost:8000';
 };
 
 /**

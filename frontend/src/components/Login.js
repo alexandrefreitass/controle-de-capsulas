@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// Importando o apiClient e os endpoints centralizados
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -9,46 +10,24 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ URL dinâmica baseada no ambiente
-  const getApiUrl = () => {
-    // Se estiver no Replit
-    if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('repl.co')) {
-      return `${window.location.protocol}//${window.location.hostname}`;
-    }
-    // Se estiver em desenvolvimento local
-    if (window.location.hostname === 'localhost') {
-      return 'http://localhost:8080';
-    }
-    // Para outros ambientes (produção, etc)
-    return process.env.REACT_APP_API_URL || 'http://localhost:8080';
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const apiUrl = getApiUrl();
-      console.log('Tentando conectar em:', `${apiUrl}/accounts/login/`);
-
-      const response = await axios.post(`${apiUrl}/accounts/login/`, {
+      // Usando a instância do apiClient que já tem a baseURL e o timeout
+      const response = await apiClient.post(apiEndpoints.login, {
         username,
         password
-      }, {
-        // ✅ Headers adicionais para compatibilidade
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // ✅ Timeout para evitar travamento
-        timeout: 10000,
       });
 
       if (response.data.success) {
         localStorage.setItem('username', username);
         navigate('/success');
       } else {
-        setError('Credenciais inválidas. Tente novamente.');
+        // A lógica de erro pode ser mais genérica se o backend padronizar as respostas
+        setError(response.data.error || 'Credenciais inválidas. Tente novamente.');
       }
     } catch (error) {
       console.error('Erro de conexão:', error);
@@ -56,10 +35,8 @@ function Login() {
       if (error.code === 'ECONNABORTED') {
         setError('Timeout: Servidor demorou para responder. Tente novamente.');
       } else if (error.response) {
-        // Servidor respondeu com erro
         setError(`Erro do servidor: ${error.response.status}. ${error.response.data?.error || 'Tente novamente.'}`);
       } else if (error.request) {
-        // Requisição foi feita mas não houve resposta
         setError('Erro ao conectar com o servidor. Verifique se o backend está rodando.');
       } else {
         setError('Erro inesperado. Tente novamente.');
@@ -69,6 +46,7 @@ function Login() {
     }
   };
 
+  // O restante do seu componente JSX continua aqui...
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -76,7 +54,6 @@ function Login() {
           <div className="auth-logo">CNC System</div>
           <div className="auth-subtitle">KONNEKIT - Sistema de Gestão</div>
         </div>
-
         <div className="auth-body">
           <form onSubmit={handleSubmit}>
             {error && (
@@ -85,7 +62,6 @@ function Login() {
                 {error}
               </div>
             )}
-
             <div className="form-group">
               <label className="form-label">Usuário</label>
               <input
@@ -98,7 +74,6 @@ function Login() {
                 disabled={loading}
               />
             </div>
-
             <div className="form-group">
               <label className="form-label">Senha</label>
               <input
@@ -111,9 +86,8 @@ function Login() {
                 disabled={loading}
               />
             </div>
-
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary btn-lg"
               style={{ width: '100%' }}
               disabled={loading}
@@ -131,11 +105,10 @@ function Login() {
             </button>
           </form>
         </div>
-
         <div className="auth-footer">
           Não tem uma conta?{' '}
-          <button 
-            onClick={() => navigate('/register')} 
+          <button
+            onClick={() => navigate('/register')}
             className="auth-link"
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
