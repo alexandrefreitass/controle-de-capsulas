@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import socket
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +18,7 @@ ALLOWED_HOSTS = [
     'localhost', 
     '127.0.0.1',
     '0.0.0.0',
-    '*'  # ⚠️ Apenas para desenvolvimento - remover em produção
+    '*'
 ]
 
 # Application definition
@@ -48,18 +49,16 @@ MIDDLEWARE = [
 ]
 
 # ✅ Configuração CORS robusta para Replit
-CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ Apenas para desenvolvimento
+CORS_ALLOW_ALL_ORIGINS = True 
 
 # URLs específicas que devem ser permitidas
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://127.0.0.1:3000",
 ]
 
 # ✅ Adicionar domínios Replit dinamicamente
-import socket
+
 try:
     hostname = socket.gethostname()
     if 'replit' in hostname or 'repl' in hostname:
