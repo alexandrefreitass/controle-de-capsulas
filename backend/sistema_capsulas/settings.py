@@ -11,15 +11,48 @@ SECRET_KEY = "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ✅ ALLOWED_HOSTS corrigido para Replit
+# ✅ Função para detectar ambiente Replit
+def is_replit():
+    return 'REPL_ID' in os.environ or 'REPLIT_DB_URL' in os.environ or 'replit' in socket.gethostname().lower()
+
+# ✅ Função para obter URL do Replit
+def get_replit_url():
+    try:
+        repl_slug = os.environ.get('REPL_SLUG', '')
+        repl_owner = os.environ.get('REPL_OWNER', '')
+        if repl_slug and repl_owner:
+            return f"{repl_slug}.{repl_owner}.repl.co"
+    except:
+        pass
+    return None
+
+# ✅ ALLOWED_HOSTS configurado dinamicamente
 ALLOWED_HOSTS = [
-    '.replit.dev', 
-    '.repl.co',
     'localhost', 
     '127.0.0.1',
     '0.0.0.0',
-    '*'
 ]
+
+# Adicionar hosts específicos do Replit
+if is_replit():
+    replit_url = get_replit_url()
+    if replit_url:
+        ALLOWED_HOSTS.extend([
+            replit_url,
+            f"https://{replit_url}",
+            f"http://{replit_url}",
+        ])
+
+    # Adicionar padrões gerais do Replit
+    ALLOWED_HOSTS.extend([
+        '*.replit.dev',
+        '*.repl.co',
+        '*'  # Para desenvolvimento - remover em produção
+    ])
+
+    print(f"🌍 Ambiente Replit detectado - URL: {replit_url}")
+else:
+    print("🏠 Ambiente local detectado")
 
 # Application definition
 INSTALLED_APPS = [
@@ -48,28 +81,34 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# ✅ Configuração CORS robusta para Replit
-CORS_ALLOW_ALL_ORIGINS = True 
+# ✅ Configuração CORS otimizada
+if is_replit():
+    # Configuração para Replit
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.replit\.dev$",
+        r"^https://.*\.repl\.co$",
+        r"^http://.*\.replit\.dev$",
+        r"^http://.*\.repl\.co$",
+    ]
 
-# URLs específicas que devem ser permitidas
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
-
-# ✅ Adicionar domínios Replit dinamicamente
-
-try:
-    hostname = socket.gethostname()
-    if 'replit' in hostname or 'repl' in hostname:
-        # Adicionar URLs do Replit
-        replit_urls = [
-            f"https://{hostname}",
-            f"http://{hostname}",
+    # Adicionar URL específica do Replit se disponível
+    replit_url = get_replit_url()
+    if replit_url:
+        CORS_ALLOWED_ORIGINS = [
+            f"https://{replit_url}",
+            f"http://{replit_url}",
         ]
-        CORS_ALLOWED_ORIGINS.extend(replit_urls)
-except:
-    pass
+    else:
+        CORS_ALLOWED_ORIGINS = []
+else:
+    # Configuração para desenvolvimento local
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
 
 # ✅ Headers CORS expandidos
 CORS_ALLOW_HEADERS = [
@@ -83,6 +122,8 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
     'cache-control',
+    'x-forwarded-for',
+    'x-forwarded-proto',
 ]
 
 # ✅ Métodos permitidos
@@ -101,12 +142,6 @@ CORS_ALLOW_CREDENTIALS = True
 # ✅ Configuração adicional para desenvolvimento
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
-    CORS_ALLOWED_ORIGIN_REGEXES = [
-        r"^https://.*\.replit\.dev$",
-        r"^https://.*\.repl\.co$",
-        r"^http://localhost:\d+$",
-        r"^https://localhost:\d+$",
-    ]
 
 ROOT_URLCONF = "sistema_capsulas.urls"
 
@@ -164,23 +199,40 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ✅ Configurações de logging para debug
+# ✅ Configurações de logging melhoradas para debug
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'level': 'INFO',
+            'propagate': False,
         },
         'corsheaders': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
@@ -191,3 +243,37 @@ if DEBUG:
     SECURE_PROXY_SSL_HEADER = None
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
+    CSRF_TRUSTED_ORIGINS = []
+
+    # Adicionar origens confiáveis para CSRF
+    if is_replit():
+        replit_url = get_replit_url()
+        if replit_url:
+            CSRF_TRUSTED_ORIGINS = [
+                f"https://{replit_url}",
+                f"http://{replit_url}",
+            ]
+
+# ✅ Configurações específicas do Replit
+if is_replit():
+    # Configuração de proxy para Replit
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# ✅ Configuração de porta
+PORT = int(os.environ.get('PORT', 8000))
+
+# ✅ Logs de configuração para debug
+print("🔧 CONFIGURAÇÕES DO DJANGO")
+print("=" * 40)
+print(f"🐛 DEBUG: {DEBUG}")
+print(f"🌍 ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(f"🚪 PORT: {PORT}")
+print(f"📡 CORS_ALLOW_ALL_ORIGINS: {CORS_ALLOW_ALL_ORIGINS}")
+if hasattr(locals(), 'CORS_ALLOWED_ORIGINS'):
+    print(f"🔗 CORS_ALLOWED_ORIGINS: {CORS_ALLOWED_ORIGINS}")
+if hasattr(locals(), 'CSRF_TRUSTED_ORIGINS'):
+    print(f"🛡️ CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
+print(f"🏠 Ambiente Replit: {is_replit()}")
+print("=" * 40)

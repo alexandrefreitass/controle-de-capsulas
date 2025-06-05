@@ -1,49 +1,59 @@
-// src/config/api.js
+// src/config/api.js - Versão atualizada para Replit
 import axios from 'axios';
 
 /**
- * ✅ Função para detectar o ambiente e retornar a URL base correta
+ * ✅ Função melhorada para detectar o ambiente e retornar a URL base correta
  */
 export const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
   const protocol = window.location.protocol;
 
-  // Ambiente Replit
+  console.log('🔍 Detectando ambiente:', { hostname, protocol });
+
+  // Ambiente Replit - melhor detecção
   if (hostname.includes('replit.dev') || hostname.includes('repl.co')) {
-    return `${protocol}//${hostname}`;
+    const replitUrl = `${protocol}//${hostname}`;
+    console.log('✅ Ambiente Replit detectado:', replitUrl);
+    return replitUrl;
   }
 
   // Desenvolvimento local
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:8000'; 
+    const localUrl = 'http://localhost:8000';
+    console.log('✅ Ambiente local detectado:', localUrl);
+    return localUrl;
   }
 
   // Produção Azure ou outros
   if (process.env.REACT_APP_API_URL) {
+    console.log('✅ URL da API definida por variável de ambiente:', process.env.REACT_APP_API_URL);
     return process.env.REACT_APP_API_URL;
   }
 
-  // Fallback
-  return 'http://localhost:8080';
+  // Fallback - usar porta 8000 para Replit
+  const fallbackUrl = `${protocol}//${hostname}`;
+  console.log('⚠️ Usando fallback:', fallbackUrl);
+  return fallbackUrl;
 };
 
 /**
- * ✅ Instância configurada do Axios
+ * ✅ Instância configurada do Axios com melhor tratamento de erros
  */
 export const apiClient = axios.create({
   baseURL: getApiBaseUrl(),
-  timeout: 15000, // 15 segundos
+  timeout: 30000, // 30 segundos para Replit
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
 /**
- * ✅ Interceptor para logs de debug
+ * ✅ Interceptor melhorado para logs de debug
  */
 apiClient.interceptors.request.use(
   (config) => {
-    console.log(`🔄 API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    const url = `${config.baseURL}${config.url}`;
+    console.log(`🔄 API Request: ${config.method?.toUpperCase()} ${url}`);
     return config;
   },
   (error) => {
@@ -62,10 +72,16 @@ apiClient.interceptors.response.use(
     const url = error.config?.url;
     console.error(`❌ API Response Error: ${status} ${url}`, error.message);
 
+    // Tratamento específico para problemas comuns do Replit
     if (error.code === 'ECONNABORTED') {
-      console.error('⏰ Request timeout');
+      console.error('⏰ Request timeout - servidor pode estar inicializando');
     } else if (!error.response) {
-      console.error('🌐 Network error - servidor pode estar offline');
+      console.error('🌐 Network error - verifique se o backend está rodando');
+      console.error('💡 Dica: Tente executar o backend com: cd backend && python manage.py runserver 0.0.0.0:8000');
+    } else if (status === 404) {
+      console.error('🔍 Endpoint não encontrado - verifique a URL da API');
+    } else if (status >= 500) {
+      console.error('🚨 Erro interno do servidor');
     }
 
     return Promise.reject(error);
@@ -73,8 +89,37 @@ apiClient.interceptors.response.use(
 );
 
 /**
- * ✅ Funções utilitárias para endpoints específicos
+ * ✅ Função de teste de conexão melhorada
  */
+export const testConnection = async () => {
+  try {
+    const baseUrl = getApiBaseUrl();
+    console.log(`🧪 Testando conexão com: ${baseUrl}`);
+
+    // Tentar endpoint de status primeiro
+    const response = await fetch(`${baseUrl}/`, { 
+      method: 'GET',
+      mode: 'cors'
+    });
+
+    if (response.ok) {
+      console.log('✅ Servidor Django está respondendo');
+      return true;
+    } else {
+      console.warn(`⚠️ Servidor respondeu com status: ${response.status}`);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Falha na conexão:', error.message);
+    console.error('💡 Possíveis soluções:');
+    console.error('   1. Verificar se o backend está rodando');
+    console.error('   2. Verificar configurações de CORS');
+    console.error('   3. Aguardar o servidor inicializar completamente');
+    return false;
+  }
+};
+
+// Resto do código permanece igual...
 export const apiEndpoints = {
   // Autenticação
   login: '/accounts/login/',
@@ -106,54 +151,12 @@ export const apiEndpoints = {
   formulas: '/api/formulas/',
 };
 
-/**
- * ✅ Função para fazer requisições com tratamento de erro padronizado
- */
-export const makeApiRequest = async (method, url, data = null, config = {}) => {
-  try {
-    const response = await apiClient({
-      method,
-      url,
-      data,
-      ...config,
-    });
-    return response;
-  } catch (error) {
-    // Log detalhado do erro
-    console.error('API Request Failed:', {
-      method,
-      url,
-      status: error.response?.status,
-      message: error.message,
-      data: error.response?.data,
-    });
+// Log da configuração inicial
+console.log('🔧 API configurada:', {
+  baseURL: getApiBaseUrl(),
+  timeout: apiClient.defaults.timeout,
+  headers: apiClient.defaults.headers
+});
 
-    throw error;
-  }
-};
-
-/**
- * ✅ Hook personalizado para debug de conexão
- */
-export const testConnection = async () => {
-  try {
-    const baseUrl = getApiBaseUrl();
-    console.log(`🧪 Testando conexão com: ${baseUrl}`);
-
-    const response = await fetch(`${baseUrl}/admin/`, { 
-      method: 'HEAD',
-      mode: 'no-cors' // Para evitar problemas de CORS em teste
-    });
-
-    console.log('✅ Servidor está respondendo');
-    return true;
-  } catch (error) {
-    console.error('❌ Falha na conexão:', error);
-    return false;
-  }
-};
-
-// Export da URL base para componentes que precisam
 export const API_BASE_URL = getApiBaseUrl();
-
 export default apiClient;
