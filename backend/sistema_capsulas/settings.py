@@ -4,21 +4,23 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.replit.dev', 'localhost', '127.0.0.1']
-
+# ✅ ALLOWED_HOSTS corrigido para Replit
+ALLOWED_HOSTS = [
+    '.replit.dev', 
+    '.repl.co',
+    'localhost', 
+    '127.0.0.1',
+    '0.0.0.0',
+    '*'  # ⚠️ Apenas para desenvolvimento - remover em produção
+]
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -26,7 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "corsheaders",
+    "corsheaders",  # ✅ CORS deve estar aqui
     "sc_accounts",
     "sc_fornecedores",
     "sc_materiasPrimas",
@@ -35,7 +37,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # ✅ CORS deve ser o primeiro
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -45,14 +47,32 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True  # Permitir todas as origens para desenvolvimento
+# ✅ Configuração CORS robusta para Replit
+CORS_ALLOW_ALL_ORIGINS = True  # ⚠️ Apenas para desenvolvimento
 
+# URLs específicas que devem ser permitidas
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # URL do seu frontend React local
-    "https://*.replit.dev",   # URLs do Replit
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://127.0.0.1:3000",
 ]
 
-# Headers adicionais para CORS
+# ✅ Adicionar domínios Replit dinamicamente
+import socket
+try:
+    hostname = socket.gethostname()
+    if 'replit' in hostname or 'repl' in hostname:
+        # Adicionar URLs do Replit
+        replit_urls = [
+            f"https://{hostname}",
+            f"http://{hostname}",
+        ]
+        CORS_ALLOWED_ORIGINS.extend(replit_urls)
+except:
+    pass
+
+# ✅ Headers CORS expandidos
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
@@ -63,12 +83,31 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'cache-control',
 ]
 
-# No ambiente de produção, isso será substituído pelo valor da variável de ambiente
-if os.environ.get("CORS_ALLOWED_ORIGINS"):
-    CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
-    CORS_ORIGIN_ALLOW_ALL = False
+# ✅ Métodos permitidos
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# ✅ Permitir cookies em requisições CORS
+CORS_ALLOW_CREDENTIALS = True
+
+# ✅ Configuração adicional para desenvolvimento
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://.*\.replit\.dev$",
+        r"^https://.*\.repl\.co$",
+        r"^http://localhost:\d+$",
+        r"^https://localhost:\d+$",
+    ]
 
 ROOT_URLCONF = "sistema_capsulas.urls"
 
@@ -89,10 +128,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "sistema_capsulas.wsgi.application"
 
-
 # Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -100,10 +136,7 @@ DATABASES = {
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -119,25 +152,43 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
+LANGUAGE_CODE = "pt-br"
+TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ✅ Configurações de logging para debug
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'corsheaders': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+# ✅ Configurações de segurança flexíveis para desenvolvimento
+if DEBUG:
+    SECURE_SSL_REDIRECT = False
+    SECURE_PROXY_SSL_HEADER = None
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False

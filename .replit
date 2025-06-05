@@ -1,4 +1,6 @@
 modules = ["bash", "nodejs-20", "python-3.11", "python-3.12", "web"]
+
+# ✅ Comando principal - inicia o backend Django
 run = "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8080"
 
 [nix]
@@ -7,21 +9,49 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8080"]
 
-[[ports]]
-localPort = 3000
-externalPort = 3000
-
+# ✅ Configuração de portas corrigida
 [[ports]]
 localPort = 8080
 externalPort = 80
+description = "Django Backend API"
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+description = "React Frontend (Dev Server)"
 
 [workflows]
-runButton = "Frontend Development"
+runButton = "Full Stack Development"
 
+# ✅ Workflow para desenvolver o backend
+[[workflows.workflow]]
+name = "Backend Development"
+author = 39906757
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && python manage.py runserver 0.0.0.0:8080"
+
+# ✅ Workflow para desenvolver o frontend
 [[workflows.workflow]]
 name = "Frontend Development"
 author = 39906757
 mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm start"
+
+# ✅ Workflow para rodar ambos (recomendado)
+[[workflows.workflow]]
+name = "Full Stack Development"
+author = 39906757
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && python manage.py runserver 0.0.0.0:8080"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"

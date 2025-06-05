@@ -9,15 +9,39 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // ✅ URL dinâmica baseada no ambiente
+  const getApiUrl = () => {
+    // Se estiver no Replit
+    if (window.location.hostname.includes('replit.dev') || window.location.hostname.includes('repl.co')) {
+      return `${window.location.protocol}//${window.location.hostname}`;
+    }
+    // Se estiver em desenvolvimento local
+    if (window.location.hostname === 'localhost') {
+      return 'http://localhost:8080';
+    }
+    // Para outros ambientes (produção, etc)
+    return process.env.REACT_APP_API_URL || 'http://localhost:8080';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/accounts/login/', {
+      const apiUrl = getApiUrl();
+      console.log('Tentando conectar em:', `${apiUrl}/accounts/login/`);
+
+      const response = await axios.post(`${apiUrl}/accounts/login/`, {
         username,
         password
+      }, {
+        // ✅ Headers adicionais para compatibilidade
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // ✅ Timeout para evitar travamento
+        timeout: 10000,
       });
 
       if (response.data.success) {
@@ -27,7 +51,19 @@ function Login() {
         setError('Credenciais inválidas. Tente novamente.');
       }
     } catch (error) {
-      setError('Erro ao conectar com o servidor. Tente novamente.');
+      console.error('Erro de conexão:', error);
+
+      if (error.code === 'ECONNABORTED') {
+        setError('Timeout: Servidor demorou para responder. Tente novamente.');
+      } else if (error.response) {
+        // Servidor respondeu com erro
+        setError(`Erro do servidor: ${error.response.status}. ${error.response.data?.error || 'Tente novamente.'}`);
+      } else if (error.request) {
+        // Requisição foi feita mas não houve resposta
+        setError('Erro ao conectar com o servidor. Verifique se o backend está rodando.');
+      } else {
+        setError('Erro inesperado. Tente novamente.');
+      }
     } finally {
       setLoading(false);
     }
