@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Producao() {
   const [lotesProducao, setLotesProducao] = useState([]);
@@ -22,7 +22,7 @@ function Producao() {
   const fetchLotesProducao = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/producao/');
+      const response = await apiClient.get(apiEndpoints.producao);
       setLotesProducao(response.data);
       setLoading(false);
     } catch (error) {
@@ -47,7 +47,7 @@ function Producao() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este lote de produção? A quantidade das matérias-primas consumidas será devolvida ao estoque.')) {
       try {
-        await axios.delete(`http://localhost:8000/api/producao/${id}/`);
+        await apiClient.delete(apiEndpoints.producaoDetalhe(id));
         fetchLotesProducao();
       } catch (error) {
         console.error('Erro ao excluir lote de produção:', error);

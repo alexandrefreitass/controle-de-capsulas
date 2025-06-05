@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Fornecedores() {
   const [fornecedores, setFornecedores] = useState([]);
@@ -10,13 +9,20 @@ function Fornecedores() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Verificar se o usuário está autenticado
+    const username = localStorage.getItem('username');
+    if (!username) {
+      navigate('/login');
+      return;
+    }
+
     buscarFornecedores();
-  }, []);
+  }, [navigate]);
 
   const buscarFornecedores = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/sc_fornecedores/fornecedores/');
+      const response = await apiClient.get(apiEndpoints.fornecedores);
       setFornecedores(response.data);
     } catch (error) {
       setError('Erro ao carregar fornecedores');
@@ -41,7 +47,7 @@ function Fornecedores() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este fornecedor?')) {
       try {
-        await axios.delete(`http://localhost:8000/sc_fornecedores/fornecedores/${id}/`);
+        await apiClient.delete(apiEndpoints.fornecedor(id));
         buscarFornecedores();
       } catch (error) {
         setError('Erro ao excluir fornecedor');
@@ -94,31 +100,18 @@ function Fornecedores() {
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Nome</th>
                     <th>CNPJ</th>
-                    <th>Contato</th>
-                    <th>Email</th>
-                    <th>Status</th>
+                    <th>Razão Social</th>
+                    <th>Nome Fantasia</th>
                     <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {fornecedores.map((fornecedor) => (
                     <tr key={fornecedor.id}>
-                      <td>
-                        <div style={{ fontWeight: 600 }}>{fornecedor.nome}</div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                          {fornecedor.endereco}
-                        </div>
-                      </td>
                       <td>{fornecedor.cnpj}</td>
-                      <td>{fornecedor.telefone}</td>
-                      <td>{fornecedor.email}</td>
-                      <td>
-                        <span className={`badge ${fornecedor.ativo ? 'badge-success' : 'badge-danger'}`}>
-                          {fornecedor.ativo ? 'Ativo' : 'Inativo'}
-                        </span>
-                      </td>
+                      <td>{fornecedor.razao_social}</td>
+                      <td>{fornecedor.fantasia}</td>
                       <td>
                         <div className="table-actions">
                           <button

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function MateriasPrimas() {
   const [materiasPrimas, setMateriasPrimas] = useState([]);
@@ -22,7 +22,7 @@ function MateriasPrimas() {
   const fetchMateriasPrimas = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/materias-primas/');
+      const response = await apiClient.get(apiEndpoints.materiasPrimas);
       setMateriasPrimas(response.data);
       setLoading(false);
     } catch (error) {
@@ -51,7 +51,7 @@ function MateriasPrimas() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir esta matéria prima?')) {
       try {
-        await axios.delete(`http://localhost:8000/api/materias-primas/${id}/`);
+        await apiClient.delete(apiEndpoints.materiaPrima(id));
         fetchMateriasPrimas();
       } catch (error) {
         console.error('Erro ao excluir matéria prima:', error);

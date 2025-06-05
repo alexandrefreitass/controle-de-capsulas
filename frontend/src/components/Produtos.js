@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -22,7 +22,7 @@ function Produtos() {
   const fetchProdutos = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/produtos/');
+      const response = await apiClient.get(apiEndpoints.produtos);
       setProdutos(response.data);
       setLoading(false);
     } catch (error) {
@@ -51,7 +51,7 @@ function Produtos() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
       try {
-        await axios.delete(`http://localhost:8000/api/produtos/${id}/`);
+        await apiClient.delete(apiEndpoints.produto(id));
         fetchProdutos();
       } catch (error) {
         console.error('Erro ao excluir produto:', error);
