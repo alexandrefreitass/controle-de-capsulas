@@ -92,18 +92,20 @@ function FornecedorForm() {
   return (
     <div className="module-container">
       <div className="container">
-        <div className="module-header">
-          <div className="module-nav">
-            <h1 className="module-title">
-              {isEditing ? 'Editar Fornecedor' : 'Novo Fornecedor'}
-            </h1>
-            <div className="module-actions">
-              <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar
-              </button>
-            </div>
+        <header className="module-header">
+          <div className="container">
+            <nav className="module-nav">
+              <h1 className="module-title">
+                {isEditing ? '✏️ Editar Fornecedor' : '➕ Novo Fornecedor'}
+              </h1>
+              <div className="module-actions">
+                <button className="btn btn-secondary" onClick={handleVoltar}>
+                  ← Voltar aos Fornecedores
+                </button>
+              </div>
+            </nav>
           </div>
-        </div>
+        </header>
 
         <div className="card">
           <div className="card-body">
