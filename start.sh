@@ -1,88 +1,51 @@
 #!/bin/bash
 
-# 🚀 Script de inicialização para Replit - Versão Corrigida
-# Salve este arquivo como start.sh na raiz do projeto
+# 🚀 Script de inicialização aprimorado para rodar Backend e Frontend
 
-echo "🔧 Configurando ambiente Replit..."
+echo "#####################################################"
+echo "#       INICIANDO AMBIENTE FULL-STACK (CNC)         #"
+echo "#####################################################"
+echo ""
 
-# Verificar se estamos no Replit
-if [ -n "$REPL_ID" ]; then
-    echo "✅ Ambiente Replit detectado"
-    echo "📍 REPL_ID: $REPL_ID"
-    echo "👤 REPL_OWNER: $REPL_OWNER"
-    echo "📦 REPL_SLUG: $REPL_SLUG"
-else
-    echo "⚠️ Ambiente local detectado"
-fi
+# --- 1. Iniciar o Frontend (React) em background ---
+echo "--- [1/2] Iniciando Frontend (React) ---"
+echo "🔧 Navegando para o diretório 'frontend'..."
+cd frontend
 
-# Verificar se o diretório backend existe
-if [ ! -d "backend" ]; then
-    echo "❌ Diretório 'backend' não encontrado!"
-    echo "📍 Certifique-se de estar na raiz do projeto"
-    exit 1
-fi
+echo "📦 Instalando dependências do Node.js (npm install)..."
+npm install --silent # --silent para um log mais limpo
 
-# Navegar para o diretório do backend
-cd backend
+echo "⚛️  Iniciando servidor de desenvolvimento do React em segundo plano (npm start &)..."
+# Usamos `&` para rodar o processo em background
+npm start &
 
-echo "🐍 Verificando Python..."
-python --version
+# Guarda o ID do processo do frontend para podermos finalizá-lo depois
+FRONTEND_PID=$!
+echo "✅ Servidor do Frontend iniciado com PID: $FRONTEND_PID. Logs aparecerão aqui."
+echo ""
 
-# Verificar se requirements.txt existe
-if [ ! -f "requirements.txt" ]; then
-    echo "❌ Arquivo requirements.txt não encontrado no diretório backend!"
-    echo "📁 Criando requirements.txt básico..."
-    cat > requirements.txt << EOF
-Django==5.2
-djangorestframework==3.14.0
-django-cors-headers==4.3.1
-gunicorn==21.2.0
-psycopg2-binary==2.9.7
-whitenoise==6.6.0
-python-decouple==3.8
-requests==2.31.0
-EOF
-    echo "✅ requirements.txt criado"
-fi
+# --- 2. Iniciar o Backend (Django) em foreground ---
+echo "--- [2/2] Iniciando Backend (Django) ---"
+echo "🔧 Navegando de volta e para o diretório 'backend'..."
+cd ../backend
 
-echo "📦 Instalando dependências..."
-pip install -r requirements.txt
+# As dependências do Python geralmente ficam em cache no Replit, será rápido
+echo "📦 Instalando dependências do Python (pip install)..."
+pip install -r requirements.txt --quiet # --quiet para um log mais limpo
 
-# Verificar se manage.py existe
-if [ ! -f "manage.py" ]; then
-    echo "❌ Arquivo manage.py não encontrado!"
-    echo "📍 Certifique-se de estar no diretório correto"
-    exit 1
-fi
-
-echo "🗃️ Executando migrações..."
+echo "🗃️ Executando migrações do Django..."
 python manage.py migrate
 
 echo "👥 Configurando usuários de desenvolvimento..."
 python manage.py setup_dev_users
 
-# Teste de conexão opcional (se existe na raiz)
-if [ -f "../test_connection.py" ]; then
-    echo "🧪 Testando configuração..."
-    python ../test_connection.py
-else
-    echo "⚠️ Script de teste não encontrado (opcional)"
-fi
-
 echo "🚀 Iniciando servidor Django..."
-echo "📡 Servidor estará disponível em:"
-if [ -n "$REPL_ID" ]; then
-    echo "   https://$REPL_SLUG-$REPL_OWNER.replit.app"
-    echo "   (porta interna: 8000)"
-else
-    echo "   http://localhost:8000"
-fi
-
-echo "⏰ Aguarde alguns segundos para o servidor inicializar..."
-
-# Definir variáveis de ambiente para Replit
-export DJANGO_SETTINGS_MODULE=sistema_capsulas.settings
-export PYTHONPATH=/home/runner/$REPL_SLUG/backend:$PYTHONPATH
-
-# Iniciar o servidor
+echo "📡 A aplicação estará disponível em: https://$REPL_SLUG-$REPL_OWNER.replit.app"
+# O Django roda em primeiro plano, segurando o script aqui
 python manage.py runserver 0.0.0.0:8000
+
+# --- Finalização (só será executado se o servidor Django for derrubado com Ctrl+C) ---
+echo "🛑 Servidor Django finalizado."
+echo "🔪 Finalizando o processo do servidor do Frontend (PID: $FRONTEND_PID)..."
+kill $FRONTEND_PID
+echo "✅ Ambiente finalizado."
