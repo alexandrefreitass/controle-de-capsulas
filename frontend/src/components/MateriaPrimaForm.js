@@ -115,44 +115,63 @@ function MateriaPrimaForm() {
               <form onSubmit={handleSubmit}>
                 <div className="form-grid">
                   <div className="form-group">
-                    <label htmlFor="nome">Nome da Matéria Prima</label>
+                    <label className="form-label" htmlFor="nome">
+                      Nome da Matéria Prima
+                    </label>
                     <input
                       type="text"
                       id="nome"
                       name="nome"
+                      className="form-input"
                       value={formData.nome}
                       onChange={handleChange}
                       placeholder="Ex: Vitamina C"
                       required
+                      disabled={loading}
                     />
                   </div>
 
                   <div className="form-group form-full-width">
-                    <label htmlFor="desc">Descrição</label>
+                    <label className="form-label" htmlFor="desc">
+                      Descrição
+                    </label>
                     <textarea
                       id="desc"
                       name="desc"
+                      className="form-input"
                       value={formData.desc}
                       onChange={handleChange}
                       placeholder="Descreva as características da matéria prima..."
                       rows="4"
                       required
+                      disabled={loading}
                     ></textarea>
                   </div>
                 </div>
 
-                <div className="form-actions">
-                  <button type="button" className="btn btn-secondary" onClick={handleVoltar}>
+                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleVoltar}
+                    disabled={loading}
+                  >
                     Cancelar
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success" 
+                    disabled={loading}
+                  >
                     {loading ? (
                       <>
-                        <div className="spinner spinner-sm"></div>
+                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
                         Salvando...
                       </>
                     ) : (
-                      '💾 Salvar'
+                      <>
+                        💾 Salvar
+                      </>
                     )}
                   </button>
                 </div>
