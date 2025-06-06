@@ -333,6 +333,7 @@ body {
     linear-gradient(rgba(139, 115, 85, 0.03) 1px, transparent 1px);
   background-size: 80px 80px;
   pointer-events: none;
+  z-index: 1;
 }
 
 .auth-card {
@@ -343,6 +344,8 @@ body {
   box-shadow: var(--shadow-xl);
   overflow: hidden;
   border: 1px solid var(--border-accent);
+  position: relative;
+  z-index: 2;
 }
 
 .auth-header {
