@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
-import { Package, Plus, Eye, Edit, Trash2 } from 'lucide-react'; // Import Lucide icons
+import { Package, Plus, Eye, Edit, Trash2, ArrowLeft, AlertTriangle } from 'lucide-react';
 
 function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -72,10 +72,12 @@ function Produtos() {
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar ao Dashboard
+                <ArrowLeft size={16} />
+                Voltar ao Dashboard
               </button>
               <button className="btn btn-primary" onClick={handleNovo}>
-                ➕ Novo Produto
+                <Plus size={16} />
+                Novo Produto
               </button>
             </div>
           </nav>
@@ -86,7 +88,7 @@ function Produtos() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <AlertTriangle size={16} />
               {error}
             </div>
           )}

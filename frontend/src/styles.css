@@ -732,6 +732,33 @@ body {
   outline: none;
 }
 
+/* Estilos para ícones Lucide */
+.module-title-icon {
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.btn svg {
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.btn-sm svg {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.alert svg {
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.table-empty-icon svg {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
 /* Animações suaves */
 * {
   transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
