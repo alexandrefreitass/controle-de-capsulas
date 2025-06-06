@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -5,14 +6,18 @@ import { Edit, Plus, ArrowLeft, Save, AlertTriangle } from 'lucide-react';
 
 function FornecedorForm() {
   const { id } = useParams();
-  const isEditing = Boolean(id);
   const navigate = useNavigate();
+  const isEditing = !!id;
 
   const [formData, setFormData] = useState({
     cnpj: '',
     razao_social: '',
-    fantasia: ''
+    fantasia: '',
+    email: '',
+    telefone: '',
+    endereco: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -24,38 +29,38 @@ function FornecedorForm() {
       return;
     }
 
-    // Se estiver editando, carregar os dados do fornecedor
     if (isEditing) {
-      fetchFornecedor();
+      buscarFornecedor();
     }
-  }, [isEditing, id, navigate]);
+  }, [id, isEditing, navigate]);
 
-  const fetchFornecedor = async () => {
+  const buscarFornecedor = async () => {
     try {
       setLoading(true);
       const response = await apiClient.get(apiEndpoints.fornecedor(id));
       setFormData(response.data);
-      setLoading(false);
     } catch (error) {
-      console.error('Erro ao carregar fornecedor:', error);
-      setError('Erro ao carregar dados do fornecedor.');
+      setError('Erro ao carregar fornecedor');
+      console.error('Erro:', error);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
       setLoading(true);
+      setError('');
 
       if (isEditing) {
         await apiClient.put(apiEndpoints.fornecedor(id), formData);
@@ -65,8 +70,24 @@ function FornecedorForm() {
 
       navigate('/fornecedores');
     } catch (error) {
-      console.error('Erro ao salvar fornecedor:', error);
-      setError('Erro ao salvar fornecedor. Verifique os dados e tente novamente.');
+      console.error('Erro completo:', error);
+
+      if (error.response) {
+        console.error('Dados da resposta de erro:', error.response.data);
+
+        if (error.response.data && error.response.data.error) {
+          setError(`Erro ao salvar fornecedor: ${error.response.data.error}`);
+        } else {
+          setError(`Erro ao salvar fornecedor. Código: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        console.error('Sem resposta do servidor');
+        setError('Servidor não respondeu. Verifique sua conexão.');
+      } else {
+        console.error('Erro na configuração da requisição:', error.message);
+        setError('Erro na requisição: ' + error.message);
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -75,32 +96,28 @@ function FornecedorForm() {
     navigate('/fornecedores');
   };
 
-
-
-  if (loading && isEditing) {
-    return (
-      <div className="module-container">
-        <div className="container">
-          <div className="loading">
-            <div className="spinner"></div>
-            <p>Carregando dados do fornecedor...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="module-container">
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              {isEditing ? <><Edit size={20} /> Editar Fornecedor</> : <><Plus size={20} /> Novo Fornecedor</>}
+              {isEditing ? (
+                <>
+                  <Edit className="module-title-icon" />
+                  Editar Fornecedor
+                </>
+              ) : (
+                <>
+                  <Plus className="module-title-icon" />
+                  Novo Fornecedor
+                </>
+              )}
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                <ArrowLeft size={20} /> Voltar aos Fornecedores
+                <ArrowLeft size={16} />
+                Voltar aos Fornecedores
               </button>
             </div>
           </nav>
@@ -111,96 +128,99 @@ function FornecedorForm() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span><AlertTriangle size={20} /></span>
+              <AlertTriangle size={16} />
               {error}
             </div>
           )}
 
-          <div className="card">
-            <div className="card-body">
-              <form onSubmit={handleSubmit}>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="cnpj">
-                      CNPJ
-                    </label>
-                    <input
-                      type="text"
-                      id="cnpj"
-                      name="cnpj"
-                      className="form-input"
-                      value={formData.cnpj}
-                      onChange={handleChange}
-                      placeholder="00.000.000/0000-00"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
+          <form onSubmit={handleSubmit}>
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="cnpj">CNPJ:</label>
+                <input
+                  type="text"
+                  id="cnpj"
+                  name="cnpj"
+                  value={formData.cnpj}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+              </div>
 
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="razao_social">
-                      Razão Social
-                    </label>
-                    <input
-                      type="text"
-                      id="razao_social"
-                      name="razao_social"
-                      className="form-input"
-                      value={formData.razao_social}
-                      onChange={handleChange}
-                      placeholder="Digite a razão social"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
+              <div className="form-group">
+                <label htmlFor="razao_social">Razão Social:</label>
+                <input
+                  type="text"
+                  id="razao_social"
+                  name="razao_social"
+                  value={formData.razao_social}
+                  onChange={handleChange}
+                  className="form-input"
+                  required
+                />
+              </div>
 
-                  <div className="form-group form-full-width">
-                    <label className="form-label" htmlFor="fantasia">
-                      Nome Fantasia
-                    </label>
-                    <input
-                      type="text"
-                      id="fantasia"
-                      name="fantasia"
-                      className="form-input"
-                      value={formData.fantasia}
-                      onChange={handleChange}
-                      placeholder="Digite o nome fantasia"
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
+              <div className="form-group">
+                <label htmlFor="fantasia">Nome Fantasia:</label>
+                <input
+                  type="text"
+                  id="fantasia"
+                  name="fantasia"
+                  value={formData.fantasia}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
 
-                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary" 
-                    onClick={handleVoltar}
-                    disabled={loading}
-                  >
-                    Cancelar
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="btn btn-success" 
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
-                        Salvando...
-                      </>
-                    ) : (
-                      <>
-                        <Save size={20} /> Salvar
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              <div className="form-group">
+                <label htmlFor="email">Email:</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="telefone">Telefone:</label>
+                <input
+                  type="text"
+                  id="telefone"
+                  name="telefone"
+                  value={formData.telefone}
+                  onChange={handleChange}
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group form-group-full">
+                <label htmlFor="endereco">Endereço:</label>
+                <textarea
+                  id="endereco"
+                  name="endereco"
+                  value={formData.endereco}
+                  onChange={handleChange}
+                  className="form-input"
+                  rows="3"
+                />
+              </div>
             </div>
-          </div>
+
+            <div className="form-actions">
+              <button type="button" className="btn btn-secondary" onClick={handleVoltar}>
+                <ArrowLeft size={16} />
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                <Save size={16} />
+                {loading ? 'Salvando...' : isEditing ? 'Atualizar' : 'Salvar'}
+              </button>
+            </div>
+          </form>
         </div>
       </main>
     </div>

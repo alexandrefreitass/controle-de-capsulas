@@ -23,7 +23,12 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    modules: ['node_modules'],
+    fallback: {
+      "path": false,
+      "fs": false
+    }
   },
   // ✅ CONFIGURAÇÃO DO SERVIDOR DE DESENVOLVIMENTO COM PROXY CORRIGIDA
   devServer: {
