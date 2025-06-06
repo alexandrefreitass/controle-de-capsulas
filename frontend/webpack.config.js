@@ -25,18 +25,20 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx']
   },
-  // ✅ CONFIGURAÇÃO DO SERVIDOR DE DESENVOLVIMENTO COM PROXY
+  // ✅ CONFIGURAÇÃO DO SERVIDOR DE DESENVOLVIMENTO COM PROXY CORRIGIDA
   devServer: {
     historyApiFallback: true, // Essencial para o React Router
-    port: 3000, // O Frontend roda na porta 3000
-    allowedHosts: 'all', // Permite o acesso via URL do Replit
-    // A mágica acontece aqui!
+    port: 3000,
+    allowedHosts: 'all', 
     proxy: {
-      // Se o webpack-dev-server receber uma requisição para /api/...
+      // Redireciona tudo que for /api/* para o backend
       '/api': {
-        // ...ele a redireciona para o nosso backend Django.
         target: 'http://localhost:8000',
-        // Muda a origem da requisição para o target, crucial para CORS
+        changeOrigin: true,
+      },
+      // ✅ ADICIONADO: Redireciona também /accounts/* para o backend
+      '/accounts': {
+        target: 'http://localhost:8000',
         changeOrigin: true,
       }
     }
