@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import { Edit, Plus, ArrowLeft, Save, AlertTriangle } from 'lucide-react';
 
 function FornecedorForm() {
   const { id } = useParams();
@@ -74,7 +75,7 @@ function FornecedorForm() {
     navigate('/fornecedores');
   };
 
-  
+
 
   if (loading && isEditing) {
     return (
@@ -95,11 +96,11 @@ function FornecedorForm() {
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              {isEditing ? '✏️ Editar Fornecedor' : '➕ Novo Fornecedor'}
+              {isEditing ? <><Edit size={20} /> Editar Fornecedor</> : <><Plus size={20} /> Novo Fornecedor</>}
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar aos Fornecedores
+                <ArrowLeft size={20} /> Voltar aos Fornecedores
               </button>
             </div>
           </nav>
@@ -110,7 +111,7 @@ function FornecedorForm() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <span><AlertTriangle size={20} /></span>
               {error}
             </div>
           )}
@@ -192,7 +193,7 @@ function FornecedorForm() {
                       </>
                     ) : (
                       <>
-                        💾 Salvar
+                        <Save size={20} /> Salvar
                       </>
                     )}
                   </button>
