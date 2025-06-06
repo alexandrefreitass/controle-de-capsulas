@@ -16,7 +16,7 @@
   
   /* Cores Complementares */
   --secondary-color: #64748b;
-  --success-color: #10b981;
+  --success-color: #7c7c54;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
   
@@ -152,7 +152,7 @@ body {
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: #059669;
+  background-color: #6b6b4a;
   transform: translateY(-1px);
   box-shadow: var(--shadow-lg);
 }
@@ -276,9 +276,9 @@ body {
 }
 
 .alert-success {
-  background-color: #f0fdf4;
-  border-color: #bbf7d0;
-  color: #166534;
+  background-color: #f9f8f3;
+  border-color: #d4d1b8;
+  color: #4a4a33;
 }
 
 .alert-error {
@@ -586,9 +586,9 @@ body {
 }
 
 .badge-success {
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  background: #f9f8f3;
+  color: #4a4a33;
+  border: 1px solid #d4d1b8;
 }
 
 .badge-warning {
