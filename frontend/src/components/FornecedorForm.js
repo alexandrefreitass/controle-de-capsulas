@@ -104,12 +104,12 @@ function FornecedorForm() {
             <h1 className="module-title">
               {isEditing ? (
                 <>
-                  <Edit className="module-title-icon" />
+                  <Edit size={20} className="module-title-icon" />
                   Editar Fornecedor
                 </>
               ) : (
                 <>
-                  <Plus className="module-title-icon" />
+                  <Plus size={20} className="module-title-icon" />
                   Novo Fornecedor
                 </>
               )}
