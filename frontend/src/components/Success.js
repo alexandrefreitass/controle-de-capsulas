@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Icon from './Icon';
 
 function Success() {
   const [username, setUsername] = useState('');
@@ -45,7 +46,8 @@ function Success() {
                 <div className="dashboard-username">{username}</div>
               </div>
               <button onClick={handleLogout} className="btn btn-danger btn-sm">
-                🚪 Sair
+                <Icon name="LogOut" size={16} />
+                Sair
               </button>
             </div>
           </nav>
@@ -54,14 +56,19 @@ function Success() {
 
       <main className="dashboard-main">
         <div className="container">
-          <div className="dashboard-title">Sistema de Gestão</div>
+          <div className="dashboard-title">
+            <Icon name="LayoutDashboard" size={24} />
+            Sistema de Gestão
+          </div>
           <div className="dashboard-subtitle">
             Selecione um módulo abaixo para começar
           </div>
 
           <div className="apps-grid">
             <div className="app-card" onClick={() => navigate('/fornecedores')}>
-              <div className="app-card-icon">🏢</div>
+              <div className="app-card-icon">
+                <Icon name="Building2" size={40} />
+              </div>
               <div className="app-card-title">Fornecedores</div>
               <div className="app-card-description">
                 Gerencie informações de fornecedores, contatos e dados comerciais
@@ -69,7 +76,9 @@ function Success() {
             </div>
 
             <div className="app-card" onClick={() => navigate('/materias-primas')}>
-              <div className="app-card-icon">📦</div>
+              <div className="app-card-icon">
+                <Icon name="FlaskConical" size={40} />
+              </div>
               <div className="app-card-title">Matérias Primas</div>
               <div className="app-card-description">
                 Controle de estoque, lotes e movimentação de materiais
@@ -77,7 +86,9 @@ function Success() {
             </div>
 
             <div className="app-card" onClick={() => navigate('/producao')}>
-              <div className="app-card-icon">⚙️</div>
+              <div className="app-card-icon">
+                <Icon name="Factory" size={40} />
+              </div>
               <div className="app-card-title">Produção</div>
               <div className="app-card-description">
                 Acompanhe processos produtivos e controle de qualidade
@@ -85,7 +96,9 @@ function Success() {
             </div>
 
             <div className="app-card" onClick={() => navigate('/produtos')}>
-              <div className="app-card-icon">🎯</div>
+              <div className="app-card-icon">
+                <Icon name="Package" size={40} />
+              </div>
               <div className="app-card-title">Produtos</div>
               <div className="app-card-description">
                 Catálogo de produtos, especificações e informações técnicas

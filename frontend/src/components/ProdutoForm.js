@@ -335,7 +335,7 @@ function ProdutoForm() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <Icon name="AlertTriangle" size={16} />
               {error}
             </div>
           )}

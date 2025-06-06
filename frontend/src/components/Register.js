@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -62,13 +63,16 @@ function Register() {
           <form onSubmit={handleSubmit}>
             {error && (
               <div className="alert alert-error">
-                <span>⚠️</span>
+                <Icon name="AlertTriangle" size={16} />
                 {error}
               </div>
             )}
 
             <div className="form-group">
-              <label className="form-label">Usuário</label>
+              <label className="form-label">
+                <Icon name="User" size={16} />
+                Usuário
+              </label>
               <input
                 type="text"
                 className="form-input"
@@ -82,7 +86,10 @@ function Register() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Senha</label>
+              <label className="form-label">
+                <Icon name="Lock" size={16} />
+                Senha
+              </label>
               <input
                 type="password"
                 className="form-input"
@@ -96,7 +103,10 @@ function Register() {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Confirmar Senha</label>
+              <label className="form-label">
+                <Icon name="KeyRound" size={16} />
+                Confirmar Senha
+              </label>
               <input
                 type="password"
                 className="form-input"
@@ -122,7 +132,8 @@ function Register() {
                 </>
               ) : (
                 <>
-                  ✨ Criar Conta
+                  <Icon name="UserPlus" size={16} />
+                  Criar Conta
                 </>
               )}
             </button>
@@ -136,6 +147,7 @@ function Register() {
             className="auth-link"
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
+            <Icon name="LogIn" size={14} />
             Faça login aqui
           </button>
         </div>

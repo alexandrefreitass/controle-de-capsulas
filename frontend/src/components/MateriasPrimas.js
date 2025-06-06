@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function MateriasPrimas() {
   const [materiasPrimas, setMateriasPrimas] = useState([]);
@@ -66,13 +67,18 @@ function MateriasPrimas() {
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
-            <h1 className="module-title">🧪 Gestão de Matérias Primas</h1>
+            <h1 className="module-title">
+              <Icon name="FlaskConical" size={32} className="module-title-icon" />
+              Gestão de Matérias Primas
+            </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar ao Dashboard
+                <Icon name="ArrowLeft" size={16} />
+                Voltar ao Dashboard
               </button>
               <button className="btn btn-primary" onClick={handleNovo}>
-                ➕ Nova Matéria Prima
+                <Icon name="Plus" size={16} />
+                Nova Matéria Prima
               </button>
             </div>
           </nav>
@@ -83,7 +89,7 @@ function MateriasPrimas() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <Icon name="AlertTriangle" size={16} />
               {error}
             </div>
           )}
@@ -95,11 +101,14 @@ function MateriasPrimas() {
               </div>
             ) : materiasPrimas.length === 0 ? (
               <div className="table-empty">
-                <div className="table-empty-icon">🧪</div>
+                <div className="table-empty-icon">
+                  <Icon name="FlaskConical" size={48} />
+                </div>
                 <h3>Nenhuma matéria prima cadastrada</h3>
                 <p>Comece adicionando sua primeira matéria prima.</p>
                 <button className="btn btn-primary" onClick={handleNovo}>
-                  ➕ Adicionar Matéria Prima
+                  <Icon name="Plus" size={16} />
+                  Adicionar Matéria Prima
                 </button>
               </div>
             ) : (
@@ -122,19 +131,22 @@ function MateriasPrimas() {
                             className="btn btn-info btn-sm"
                             onClick={() => handleLotes(materiaPrima.id)}
                           >
-                            📦 Lotes
+                            <Icon name="Package" size={14} />
+                            Lotes
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleEditar(materiaPrima.id)}
                           >
-                            ✏️ Editar
+                            <Icon name="Edit" size={14} />
+                            Editar
                           </button>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleExcluir(materiaPrima.id)}
                           >
-                            🗑️ Excluir
+                            <Icon name="Trash2" size={14} />
+                            Excluir
                           </button>
                         </div>
                       </td>

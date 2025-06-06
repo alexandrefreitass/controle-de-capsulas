@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // Importando o apiClient e os endpoints centralizados
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -58,12 +59,15 @@ function Login() {
           <form onSubmit={handleSubmit}>
             {error && (
               <div className="alert alert-error">
-                <span>⚠️</span>
+                <Icon name="AlertTriangle" size={16} />
                 {error}
               </div>
             )}
             <div className="form-group">
-              <label className="form-label">Usuário</label>
+              <label className="form-label">
+                <Icon name="User" size={16} />
+                Usuário
+              </label>
               <input
                 type="text"
                 className="form-input"
@@ -75,7 +79,10 @@ function Login() {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Senha</label>
+              <label className="form-label">
+                <Icon name="Lock" size={16} />
+                Senha
+              </label>
               <input
                 type="password"
                 className="form-input"
@@ -99,7 +106,8 @@ function Login() {
                 </>
               ) : (
                 <>
-                  🔐 Entrar
+                  <Icon name="LogIn" size={16} />
+                  Entrar
                 </>
               )}
             </button>
@@ -112,6 +120,7 @@ function Login() {
             className="auth-link"
             style={{ background: 'none', border: 'none', cursor: 'pointer' }}
           >
+            <Icon name="UserPlus" size={14} />
             Cadastre-se aqui
           </button>
         </div>

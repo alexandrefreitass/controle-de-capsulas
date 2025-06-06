@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function Producao() {
   const [lotesProducao, setLotesProducao] = useState([]);
@@ -68,13 +69,18 @@ function Producao() {
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
-            <h1 className="module-title">🏭 Gestão de Produção</h1>
+            <h1 className="module-title">
+              <Icon name="Factory" size={32} className="module-title-icon" />
+              Gestão de Produção
+            </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar ao Dashboard
+                <Icon name="ArrowLeft" size={16} />
+                Voltar ao Dashboard
               </button>
               <button className="btn btn-primary" onClick={handleNovo}>
-                ➕ Novo Lote de Produção
+                <Icon name="Plus" size={16} />
+                Novo Lote de Produção
               </button>
             </div>
           </nav>
@@ -85,7 +91,7 @@ function Producao() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <Icon name="AlertTriangle" size={16} />
               {error}
             </div>
           )}
@@ -97,11 +103,14 @@ function Producao() {
               </div>
             ) : lotesProducao.length === 0 ? (
               <div className="table-empty">
-                <div className="table-empty-icon">🏭</div>
+                <div className="table-empty-icon">
+                  <Icon name="Factory" size={48} />
+                </div>
                 <h3>Nenhum lote de produção cadastrado</h3>
                 <p>Comece adicionando seu primeiro lote de produção.</p>
                 <button className="btn btn-primary" onClick={handleNovo}>
-                  ➕ Adicionar Lote de Produção
+                  <Icon name="Plus" size={16} />
+                  Adicionar Lote de Produção
                 </button>
               </div>
             ) : (
@@ -130,13 +139,15 @@ function Producao() {
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleDetalhar(lote.id)}
                           >
-                            👁️ Detalhes
+                            <Icon name="Eye" size={14} />
+                            Detalhes
                           </button>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleExcluir(lote.id)}
                           >
-                            🗑️ Excluir
+                            <Icon name="Trash2" size={14} />
+                            Excluir
                           </button>
                         </div>
                       </td>

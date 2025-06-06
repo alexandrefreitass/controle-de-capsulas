@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
-import { Package, Plus, Eye, Edit, Trash2, ArrowLeft, AlertTriangle } from 'lucide-react';
+import Icon from './Icon';
 
 function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -67,16 +67,16 @@ function Produtos() {
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              <Package className="module-title-icon" />
+              <Icon name="Package" size={32} className="module-title-icon" />
               Gestão de Produtos
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                <ArrowLeft size={16} />
+                <Icon name="ArrowLeft" size={16} />
                 Voltar ao Dashboard
               </button>
               <button className="btn btn-primary" onClick={handleNovo}>
-                <Plus size={16} />
+                <Icon name="Plus" size={16} />
                 Novo Produto
               </button>
             </div>
@@ -88,7 +88,7 @@ function Produtos() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <AlertTriangle size={16} />
+              <Icon name="AlertTriangle" size={16} />
               {error}
             </div>
           )}
@@ -101,12 +101,12 @@ function Produtos() {
             ) : produtos.length === 0 ? (
               <div className="table-empty">
                 <div className="table-empty-icon">
-                  <Package size={48} />
+                  <Icon name="Package" size={48} />
                 </div>
                 <h3>Nenhum produto cadastrado</h3>
                 <p>Comece adicionando seu primeiro produto.</p>
                 <button className="btn btn-primary" onClick={handleNovo}>
-                  <Plus size={16} />
+                  <Icon name="Plus" size={16} />
                   Adicionar Produto
                 </button>
               </div>
@@ -132,21 +132,21 @@ function Produtos() {
                             className="btn btn-info btn-sm"
                             onClick={() => handleDetalhar(produto.id)}
                           >
-                            <Eye size={14} />
+                            <Icon name="Eye" size={14} />
                             Detalhes
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleEditar(produto.id)}
                           >
-                            <Edit size={14} />
+                            <Icon name="Edit" size={14} />
                             Editar
                           </button>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleExcluir(produto.id)}
                           >
-                            <Trash2 size={14} />
+                            <Icon name="Trash2" size={14} />
                             Excluir
                           </button>
                         </div>
