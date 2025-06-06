@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -74,52 +75,92 @@ function MateriaPrimaForm() {
   };
 
   if (loading && isEditing) {
-    return <p>Carregando dados da matéria prima...</p>;
+    return (
+      <div className="module-container">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>{isEditing ? 'Editar Matéria Prima' : 'Nova Matéria Prima'}</h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              {isEditing ? '✏️ Editar Matéria Prima' : '➕ Nova Matéria Prima'}
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                ← Voltar às Matérias Primas
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <span>⚠️</span>
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="nome">Nome:</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label htmlFor="nome">Nome da Matéria Prima</label>
+                    <input
+                      type="text"
+                      id="nome"
+                      name="nome"
+                      value={formData.nome}
+                      onChange={handleChange}
+                      placeholder="Ex: Vitamina C"
+                      required
+                    />
+                  </div>
 
-          <div className="form-group form-full-width">
-            <label htmlFor="desc">Descrição:</label>
-            <textarea
-              id="desc"
-              name="desc"
-              value={formData.desc}
-              onChange={handleChange}
-              rows="4"
-              required
-            ></textarea>
+                  <div className="form-group form-full-width">
+                    <label htmlFor="desc">Descrição</label>
+                    <textarea
+                      id="desc"
+                      name="desc"
+                      value={formData.desc}
+                      onChange={handleChange}
+                      placeholder="Descreva as características da matéria prima..."
+                      rows="4"
+                      required
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="form-actions">
+                  <button type="button" className="btn btn-secondary" onClick={handleVoltar}>
+                    Cancelar
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? (
+                      <>
+                        <div className="spinner spinner-sm"></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      '💾 Salvar'
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button type="button" onClick={handleVoltar} style={{ marginRight: '10px' }}>Cancelar</button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
-        </div>
-      </form>
+      </main>
     </div>
   );
 }

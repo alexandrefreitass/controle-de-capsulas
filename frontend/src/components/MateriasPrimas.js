@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -62,48 +63,89 @@ function MateriasPrimas() {
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>Gestão de Matérias Primas</h2>
-        <div>
-          <button className="back-btn" onClick={handleVoltar}>Voltar ao Dashboard</button>
-          <button onClick={handleNovo}>Nova Matéria Prima</button>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">🧪 Gestão de Matérias Primas</h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                ← Voltar ao Dashboard
+              </button>
+              <button className="btn btn-primary" onClick={handleNovo}>
+                ➕ Nova Matéria Prima
+              </button>
+            </div>
+          </nav>
         </div>
-      </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <span>⚠️</span>
+              {error}
+            </div>
+          )}
 
-      {loading ? (
-        <p>Carregando matérias primas...</p>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Descrição</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materiasPrimas.length === 0 ? (
-              <tr>
-                <td colSpan="3" style={{ textAlign: 'center' }}>Nenhuma matéria prima cadastrada.</td>
-              </tr>
+          <div className="table-container">
+            {loading ? (
+              <div className="loading">
+                <div className="spinner"></div>
+              </div>
+            ) : materiasPrimas.length === 0 ? (
+              <div className="table-empty">
+                <div className="table-empty-icon">🧪</div>
+                <h3>Nenhuma matéria prima cadastrada</h3>
+                <p>Comece adicionando sua primeira matéria prima.</p>
+                <button className="btn btn-primary" onClick={handleNovo}>
+                  ➕ Adicionar Matéria Prima
+                </button>
+              </div>
             ) : (
-              materiasPrimas.map((materiaPrima) => (
-                <tr key={materiaPrima.id}>
-                  <td>{materiaPrima.nome}</td>
-                  <td>{materiaPrima.desc}</td>
-                  <td className="action-buttons">
-                    <button className="lotes-btn" onClick={() => handleLotes(materiaPrima.id)}>Lotes</button>
-                    <button className="edit-btn" onClick={() => handleEditar(materiaPrima.id)}>Editar</button>
-                    <button className="delete-btn" onClick={() => handleExcluir(materiaPrima.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {materiasPrimas.map((materiaPrima) => (
+                    <tr key={materiaPrima.id}>
+                      <td>{materiaPrima.nome}</td>
+                      <td>{materiaPrima.desc}</td>
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleLotes(materiaPrima.id)}
+                          >
+                            📦 Lotes
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleEditar(materiaPrima.id)}
+                          >
+                            ✏️ Editar
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleExcluir(materiaPrima.id)}
+                          >
+                            🗑️ Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-          </tbody>
-        </table>
-      )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
