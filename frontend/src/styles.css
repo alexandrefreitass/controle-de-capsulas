@@ -7,8 +7,8 @@
 }
 
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
+  --primary-color: #A08035;
+  --primary-hover: #8a6d2e;
   --secondary-color: #64748b;
   --success-color: #059669;
   --warning-color: #d97706;
@@ -266,7 +266,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #1e40af 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #8a6d2e 100%);
   padding: 1rem;
 }
 
@@ -417,7 +417,7 @@ body {
 .app-card-icon {
   width: 3rem;
   height: 3rem;
-  background: linear-gradient(135deg, var(--primary-color), #1e40af);
+  background: linear-gradient(135deg, var(--primary-color), #8a6d2e);
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
@@ -561,9 +561,9 @@ body {
 }
 
 .badge-info {
-  background: #eff6ff;
-  color: #1e40af;
-  border: 1px solid #bfdbfe;
+  background: #fefdf8;
+  color: #A08035;
+  border: 1px solid #e6d3a3;
 }
 
 /* Loading */
