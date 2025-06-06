@@ -23,11 +23,30 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    modules: ['node_modules'],
+    fallback: {
+      "path": false,
+      "fs": false
+    }
   },
+  // ✅ CONFIGURAÇÃO DO SERVIDOR DE DESENVOLVIMENTO COM PROXY CORRIGIDA
   devServer: {
-    historyApiFallback: true,
-    port: 3000
+    historyApiFallback: true, // Essencial para o React Router
+    port: 3000,
+    allowedHosts: 'all', 
+    proxy: {
+      // Redireciona tudo que for /api/* para o backend
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      // ✅ ADICIONADO: Redireciona também /accounts/* para o backend
+      '/accounts': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      }
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({

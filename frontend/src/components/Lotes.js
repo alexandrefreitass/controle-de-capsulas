@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Lotes() {
   const { materiaPrimaId } = useParams();
@@ -20,14 +20,14 @@ function Lotes() {
 
     // Carregar a matéria prima
     fetchMateriaPrima();
-    
+
     // Carregar os lotes
     fetchLotes();
   }, [navigate, materiaPrimaId]);
 
   const fetchMateriaPrima = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/materias-primas/${materiaPrimaId}/`);
+      const response = await apiClient.get(apiEndpoints.materiaPrima(materiaPrimaId));
       setMateriaPrima(response.data);
     } catch (error) {
       console.error('Erro ao carregar matéria prima:', error);
@@ -38,7 +38,7 @@ function Lotes() {
   const fetchLotes = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/lotes/');
+      const response = await apiClient.get(apiEndpoints.lotes);
       // Filtrar apenas os lotes da matéria prima selecionada
       const lotesFiltrados = response.data.filter(
         lote => lote.materia_prima.id === parseInt(materiaPrimaId)
@@ -67,7 +67,7 @@ function Lotes() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este lote?')) {
       try {
-        await axios.delete(`http://localhost:8000/api/lotes/${id}/`);
+        await apiClient.delete(apiEndpoints.lote(id));
         fetchLotes();
       } catch (error) {
         console.error('Erro ao excluir lote:', error);

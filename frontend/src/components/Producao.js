@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function Producao() {
   const [lotesProducao, setLotesProducao] = useState([]);
@@ -22,7 +24,7 @@ function Producao() {
   const fetchLotesProducao = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/producao/');
+      const response = await apiClient.get(apiEndpoints.producao);
       setLotesProducao(response.data);
       setLoading(false);
     } catch (error) {
@@ -47,7 +49,7 @@ function Producao() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este lote de produção? A quantidade das matérias-primas consumidas será devolvida ao estoque.')) {
       try {
-        await axios.delete(`http://localhost:8000/api/producao/${id}/`);
+        await apiClient.delete(apiEndpoints.producaoDetalhe(id));
         fetchLotesProducao();
       } catch (error) {
         console.error('Erro ao excluir lote de produção:', error);
@@ -64,53 +66,99 @@ function Producao() {
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>Gestão de Produção</h2>
-        <div>
-          <button className="back-btn" onClick={handleVoltar}>Voltar ao Dashboard</button>
-          <button onClick={handleNovo}>Novo Lote de Produção</button>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              <Icon name="Factory" size={32} className="module-title-icon" />
+              Gestão de Produção
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar ao Dashboard
+              </button>
+              <button className="btn btn-primary" onClick={handleNovo}>
+                <Icon name="Plus" size={16} />
+                Novo Lote de Produção
+              </button>
+            </div>
+          </nav>
         </div>
-      </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <Icon name="AlertTriangle" size={16} />
+              {error}
+            </div>
+          )}
 
-      {loading ? (
-        <p>Carregando lotes de produção...</p>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Produto</th>
-              <th>Lote</th>
-              <th>Tamanho do Lote</th>
-              <th>Data de Produção</th>
-              <th>Matérias-primas Utilizadas</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lotesProducao.length === 0 ? (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center' }}>Nenhum lote de produção cadastrado.</td>
-              </tr>
+          <div className="table-container">
+            {loading ? (
+              <div className="loading">
+                <div className="spinner"></div>
+              </div>
+            ) : lotesProducao.length === 0 ? (
+              <div className="table-empty">
+                <div className="table-empty-icon">
+                  <Icon name="Factory" size={48} />
+                </div>
+                <h3>Nenhum lote de produção cadastrado</h3>
+                <p>Comece adicionando seu primeiro lote de produção.</p>
+                <button className="btn btn-primary" onClick={handleNovo}>
+                  <Icon name="Plus" size={16} />
+                  Adicionar Lote de Produção
+                </button>
+              </div>
             ) : (
-              lotesProducao.map((lote) => (
-                <tr key={lote.id}>
-                  <td>{lote.produto.nome}</td>
-                  <td>{lote.lote}</td>
-                  <td>{lote.lote_tamanho}</td>
-                  <td>{formatarData(lote.data_producao)}</td>
-                  <td>{lote.materiais_consumidos.length} item(ns)</td>
-                  <td className="action-buttons">
-                    <button className="view-btn" onClick={() => handleDetalhar(lote.id)}>Detalhes</button>
-                    <button className="delete-btn" onClick={() => handleExcluir(lote.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Lote</th>
+                    <th>Tamanho do Lote</th>
+                    <th>Data de Produção</th>
+                    <th>Matérias-primas Utilizadas</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lotesProducao.map((lote) => (
+                    <tr key={lote.id}>
+                      <td>{lote.produto.nome}</td>
+                      <td>{lote.lote}</td>
+                      <td>{lote.lote_tamanho}</td>
+                      <td>{formatarData(lote.data_producao)}</td>
+                      <td>{lote.materiais_consumidos.length} item(ns)</td>
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleDetalhar(lote.id)}
+                          >
+                            <Icon name="Eye" size={14} />
+                            Detalhes
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleExcluir(lote.id)}
+                          >
+                            <Icon name="Trash2" size={14} />
+                            Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-          </tbody>
-        </table>
-      )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

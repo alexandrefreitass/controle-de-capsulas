@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import Icon from './Icon';
 
 function Success() {
   const [username, setUsername] = useState('');
@@ -8,7 +9,6 @@ function Success() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Recuperar o nome de usuário do localStorage
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
       setUsername(storedUsername);
@@ -16,50 +16,97 @@ function Success() {
     setLoading(false);
   }, []);
 
-  // Função para fazer logout
   const handleLogout = () => {
     localStorage.removeItem('username');
     navigate('/login');
   };
 
-  // Se não houver usuário logado, redirecionar para login
   if (!loading && !username) {
     navigate('/login');
     return null;
   }
 
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <h1>Sistema CNC - KONNEKIT</h1>
-        <div className="user-info">
-          <span>Bem-vindo, {username}!</span>
-          <button onClick={handleLogout} className="logout-btn">Sair</button>
+        <div className="container">
+          <nav className="dashboard-nav">
+            <div className="dashboard-logo">Sistema CNC</div>
+            <div className="dashboard-user">
+              <div>
+                <div className="dashboard-welcome">Bem-vindo,</div>
+                <div className="dashboard-username">{username}</div>
+              </div>
+              <button onClick={handleLogout} className="btn btn-danger btn-sm">
+                <Icon name="LogOut" size={16} />
+                Sair
+              </button>
+            </div>
+          </nav>
         </div>
       </header>
 
-      <div className="apps-grid">
-        <div className="app-card" onClick={() => navigate('/fornecedores')}>
-          <h3>Fornecedores</h3>
-          <p>Gerenciamento de fornecedores</p>
-        </div>
-        
-        <div className="app-card" onClick={() => navigate('/materias-primas')}>
-          <h3>Matérias Primas</h3>
-          <p>Controle de estoque e materiais</p>
-        </div>
-        
-        <div className="app-card" onClick={() => navigate('/producao')}>
-          <h3>Produção</h3>
-          <p>Acompanhamento de produção</p>
-        </div>
-        
-        <div className="app-card" onClick={() => navigate('/produtos')}>
-          <h3>Produtos</h3>
-          <p>Catálogo de produtos</p>
-        </div>
+      <main className="dashboard-main">
+        <div className="container">
+          <div className="dashboard-title">
+            <Icon name="LayoutDashboard" size={24} />
+            Sistema de Gestão
+          </div>
+          <div className="dashboard-subtitle">
+            Selecione um módulo abaixo para começar
+          </div>
 
-      </div>
+          <div className="apps-grid">
+            <div className="app-card" onClick={() => navigate('/fornecedores')}>
+              <div className="app-card-icon">
+                <Icon name="Building2" size={40} />
+              </div>
+              <div className="app-card-title">Fornecedores</div>
+              <div className="app-card-description">
+                Gerencie informações de fornecedores, contatos e dados comerciais
+              </div>
+            </div>
+
+            <div className="app-card" onClick={() => navigate('/materias-primas')}>
+              <div className="app-card-icon">
+                <Icon name="FlaskConical" size={40} />
+              </div>
+              <div className="app-card-title">Matérias Primas</div>
+              <div className="app-card-description">
+                Controle de estoque, lotes e movimentação de materiais
+              </div>
+            </div>
+
+            <div className="app-card" onClick={() => navigate('/producao')}>
+              <div className="app-card-icon">
+                <Icon name="Factory" size={40} />
+              </div>
+              <div className="app-card-title">Produção</div>
+              <div className="app-card-description">
+                Acompanhe processos produtivos e controle de qualidade
+              </div>
+            </div>
+
+            <div className="app-card" onClick={() => navigate('/produtos')}>
+              <div className="app-card-icon">
+                <Icon name="Package" size={40} />
+              </div>
+              <div className="app-card-title">Produtos</div>
+              <div className="app-card-description">
+                Catálogo de produtos, especificações e informações técnicas
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

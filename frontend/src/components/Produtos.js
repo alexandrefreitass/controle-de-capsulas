@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -22,12 +23,12 @@ function Produtos() {
   const fetchProdutos = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/produtos/');
+      const response = await apiClient.get(apiEndpoints.produtos);
       setProdutos(response.data);
-      setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
-      setError('Erro ao carregar produtos. Tente novamente mais tarde.');
+      setError('Erro ao carregar produtos');
+    } finally {
       setLoading(false);
     }
   };
@@ -51,61 +52,113 @@ function Produtos() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
       try {
-        await axios.delete(`http://localhost:8000/api/produtos/${id}/`);
+        await apiClient.delete(apiEndpoints.produto(id));
         fetchProdutos();
       } catch (error) {
         console.error('Erro ao excluir produto:', error);
-        setError('Erro ao excluir produto. Tente novamente.');
+        setError('Erro ao excluir produto');
       }
     }
   };
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>Gestão de Produtos</h2>
-        <div>
-          <button className="back-btn" onClick={handleVoltar}>Voltar ao Dashboard</button>
-          <button onClick={handleNovo}>Novo Produto</button>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              <Icon name="Package" size={32} className="module-title-icon" />
+              Gestão de Produtos
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar ao Dashboard
+              </button>
+              <button className="btn btn-primary" onClick={handleNovo}>
+                <Icon name="Plus" size={16} />
+                Novo Produto
+              </button>
+            </div>
+          </nav>
         </div>
-      </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <Icon name="AlertTriangle" size={16} />
+              {error}
+            </div>
+          )}
 
-      {loading ? (
-        <p>Carregando produtos...</p>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Apresentação</th>
-              <th>Forma Farmacêutica</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {produtos.length === 0 ? (
-              <tr>
-                <td colSpan="4" style={{ textAlign: 'center' }}>Nenhum produto cadastrado.</td>
-              </tr>
+          <div className="table-container">
+            {loading ? (
+              <div className="loading">
+                <div className="spinner"></div>
+              </div>
+            ) : produtos.length === 0 ? (
+              <div className="table-empty">
+                <div className="table-empty-icon">
+                  <Icon name="Package" size={48} />
+                </div>
+                <h3>Nenhum produto cadastrado</h3>
+                <p>Comece adicionando seu primeiro produto.</p>
+                <button className="btn btn-primary" onClick={handleNovo}>
+                  <Icon name="Plus" size={16} />
+                  Adicionar Produto
+                </button>
+              </div>
             ) : (
-              produtos.map((produto) => (
-                <tr key={produto.id}>
-                  <td>{produto.nome}</td>
-                  <td>{produto.apresentacao}</td>
-                  <td>{produto.formula.forma_farmaceutica}</td>
-                  <td className="action-buttons">
-                    <button className="view-btn" onClick={() => handleDetalhar(produto.id)}>Detalhes</button>
-                    <button className="edit-btn" onClick={() => handleEditar(produto.id)}>Editar</button>
-                    <button className="delete-btn" onClick={() => handleExcluir(produto.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Apresentação</th>
+                    <th>Forma Farmacêutica</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {produtos.map((produto) => (
+                    <tr key={produto.id}>
+                      <td>{produto.nome}</td>
+                      <td>{produto.apresentacao}</td>
+                      <td>{produto.formula.forma_farmaceutica}</td>
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            className="btn btn-info btn-sm"
+                            onClick={() => handleDetalhar(produto.id)}
+                          >
+                            <Icon name="Eye" size={14} />
+                            Detalhes
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleEditar(produto.id)}
+                          >
+                            <Icon name="Edit" size={14} />
+                            Editar
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleExcluir(produto.id)}
+                          >
+                            <Icon name="Trash2" size={14} />
+                            Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-          </tbody>
-        </table>
-      )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

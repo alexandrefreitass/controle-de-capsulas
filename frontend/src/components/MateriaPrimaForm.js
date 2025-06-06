@@ -1,12 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function MateriaPrimaForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     nome: '',
     desc: ''
@@ -31,7 +33,7 @@ function MateriaPrimaForm() {
   const fetchMateriaPrima = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/materias-primas/${id}/`);
+      const response = await apiClient.get(apiEndpoints.materiaPrima(id));
       setFormData(response.data);
       setLoading(false);
     } catch (error) {
@@ -51,16 +53,16 @@ function MateriaPrimaForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      
+
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/materias-primas/${id}/`, formData);
+        await apiClient.put(apiEndpoints.materiaPrima(id), formData);
       } else {
-        await axios.post('http://localhost:8000/api/materias-primas/', formData);
+        await apiClient.post(apiEndpoints.materiasPrimas, formData);
       }
-      
+
       navigate('/materias-primas');
     } catch (error) {
       console.error('Erro ao salvar matéria prima:', error);
@@ -74,52 +76,123 @@ function MateriaPrimaForm() {
   };
 
   if (loading && isEditing) {
-    return <p>Carregando dados da matéria prima...</p>;
+    return (
+      <div className="module-container">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>{isEditing ? 'Editar Matéria Prima' : 'Nova Matéria Prima'}</h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              {isEditing ? (
+                <>
+                  <Icon name="Edit" size={20} className="module-title-icon" />
+                  Editar Matéria Prima
+                </>
+              ) : (
+                <>
+                  <Icon name="Plus" size={20} className="module-title-icon" />
+                  Nova Matéria Prima
+                </>
+              )}
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar às Matérias Primas
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <Icon name="AlertTriangle" size={16} />
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="nome">Nome:</label>
-            <input
-              type="text"
-              id="nome"
-              name="nome"
-              value={formData.nome}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="nome">
+                      Nome da Matéria Prima
+                    </label>
+                    <input
+                      type="text"
+                      id="nome"
+                      name="nome"
+                      className="form-input"
+                      value={formData.nome}
+                      onChange={handleChange}
+                      placeholder="Ex: Vitamina C"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group form-full-width">
-            <label htmlFor="desc">Descrição:</label>
-            <textarea
-              id="desc"
-              name="desc"
-              value={formData.desc}
-              onChange={handleChange}
-              rows="4"
-              required
-            ></textarea>
+                  <div className="form-group form-full-width">
+                    <label className="form-label" htmlFor="desc">
+                      Descrição
+                    </label>
+                    <textarea
+                      id="desc"
+                      name="desc"
+                      className="form-input"
+                      value={formData.desc}
+                      onChange={handleChange}
+                      placeholder="Descreva as características da matéria prima..."
+                      rows="4"
+                      required
+                      disabled={loading}
+                    ></textarea>
+                  </div>
+                </div>
+
+                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleVoltar}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Save" size={16} />
+                        {isEditing ? 'Atualizar' : 'Salvar'}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button type="button" onClick={handleVoltar} style={{ marginRight: '10px' }}>Cancelar</button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
-        </div>
-      </form>
+      </main>
     </div>
   );
 }

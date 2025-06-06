@@ -1,17 +1,23 @@
+
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
+import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function FornecedorForm() {
   const { id } = useParams();
-  const isEditing = Boolean(id);
   const navigate = useNavigate();
-  
+  const isEditing = !!id;
+
   const [formData, setFormData] = useState({
     cnpj: '',
     razao_social: '',
-    fantasia: ''
+    fantasia: '',
+    email: '',
+    telefone: '',
+    endereco: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,31 +29,30 @@ function FornecedorForm() {
       return;
     }
 
-    // Se estiver editando, carregar os dados do fornecedor
     if (isEditing) {
-      fetchFornecedor();
+      buscarFornecedor();
     }
-  }, [isEditing, id, navigate]);
+  }, [id, isEditing, navigate]);
 
-  const fetchFornecedor = async () => {
+  const buscarFornecedor = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/fornecedores/${id}/`);
+      const response = await apiClient.get(apiEndpoints.fornecedor(id));
       setFormData(response.data);
-      setLoading(false);
     } catch (error) {
-      console.error('Erro ao carregar fornecedor:', error);
-      setError('Erro ao carregar dados do fornecedor.');
+      setError('Erro ao carregar fornecedor');
+      console.error('Erro:', error);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [name]: value
-    });
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -55,17 +60,34 @@ function FornecedorForm() {
     
     try {
       setLoading(true);
-      
+      setError('');
+
       if (isEditing) {
-        await axios.put(`http://localhost:8000/api/fornecedores/${id}/`, formData);
+        await apiClient.put(apiEndpoints.fornecedor(id), formData);
       } else {
-        await axios.post('http://localhost:8000/api/fornecedores/', formData);
+        await apiClient.post(apiEndpoints.fornecedores, formData);
       }
-      
+
       navigate('/fornecedores');
     } catch (error) {
-      console.error('Erro ao salvar fornecedor:', error);
-      setError('Erro ao salvar fornecedor. Verifique os dados e tente novamente.');
+      console.error('Erro completo:', error);
+
+      if (error.response) {
+        console.error('Dados da resposta de erro:', error.response.data);
+
+        if (error.response.data && error.response.data.error) {
+          setError(`Erro ao salvar fornecedor: ${error.response.data.error}`);
+        } else {
+          setError(`Erro ao salvar fornecedor. Código: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        console.error('Sem resposta do servidor');
+        setError('Servidor não respondeu. Verifique sua conexão.');
+      } else {
+        console.error('Erro na configuração da requisição:', error.message);
+        setError('Erro na requisição: ' + error.message);
+      }
+    } finally {
       setLoading(false);
     }
   };
@@ -75,64 +97,187 @@ function FornecedorForm() {
   };
 
   if (loading && isEditing) {
-    return <p>Carregando dados do fornecedor...</p>;
+    return (
+      <div className="module-container">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>{isEditing ? 'Editar Fornecedor' : 'Novo Fornecedor'}</h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              {isEditing ? (
+                <>
+                  <Icon name="Edit" size={20} className="module-title-icon" />
+                  Editar Fornecedor
+                </>
+              ) : (
+                <>
+                  <Icon name="Plus" size={20} className="module-title-icon" />
+                  Novo Fornecedor
+                </>
+              )}
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar aos Fornecedores
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <Icon name="AlertTriangle" size={16} />
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="cnpj">CNPJ:</label>
-            <input
-              type="text"
-              id="cnpj"
-              name="cnpj"
-              value={formData.cnpj}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="cnpj">
+                      CNPJ
+                    </label>
+                    <input
+                      type="text"
+                      id="cnpj"
+                      name="cnpj"
+                      className="form-input"
+                      value={formData.cnpj}
+                      onChange={handleChange}
+                      placeholder="Ex: 12.345.678/0001-90"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group">
-            <label htmlFor="razao_social">Razão Social:</label>
-            <input
-              type="text"
-              id="razao_social"
-              name="razao_social"
-              value={formData.razao_social}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="razao_social">
+                      Razão Social
+                    </label>
+                    <input
+                      type="text"
+                      id="razao_social"
+                      name="razao_social"
+                      className="form-input"
+                      value={formData.razao_social}
+                      onChange={handleChange}
+                      placeholder="Ex: Empresa XYZ Ltda"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group form-full-width">
-            <label htmlFor="fantasia">Nome Fantasia:</label>
-            <input
-              type="text"
-              id="fantasia"
-              name="fantasia"
-              value={formData.fantasia}
-              onChange={handleChange}
-              required
-            />
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="fantasia">
+                      Nome Fantasia
+                    </label>
+                    <input
+                      type="text"
+                      id="fantasia"
+                      name="fantasia"
+                      className="form-input"
+                      value={formData.fantasia}
+                      onChange={handleChange}
+                      placeholder="Ex: XYZ Store"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="email">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="form-input"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Ex: contato@empresa.com"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="telefone">
+                      Telefone
+                    </label>
+                    <input
+                      type="text"
+                      id="telefone"
+                      name="telefone"
+                      className="form-input"
+                      value={formData.telefone}
+                      onChange={handleChange}
+                      placeholder="Ex: (11) 99999-9999"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="form-group form-full-width">
+                    <label className="form-label" htmlFor="endereco">
+                      Endereço
+                    </label>
+                    <textarea
+                      id="endereco"
+                      name="endereco"
+                      className="form-input"
+                      value={formData.endereco}
+                      onChange={handleChange}
+                      placeholder="Endereço completo do fornecedor..."
+                      rows="3"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleVoltar}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Save" size={16} />
+                        {isEditing ? 'Atualizar' : 'Salvar'}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button type="button" onClick={handleVoltar} style={{ marginRight: '10px' }}>Cancelar</button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
-        </div>
-      </form>
+      </main>
     </div>
   );
 }

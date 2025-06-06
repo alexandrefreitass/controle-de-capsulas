@@ -1,0 +1,58 @@
+modules = ["bash", "nodejs-20", "python-3.11", "python-3.12", "web"]
+
+# ✅ Comando principal - inicia o backend Django na porta 8000
+run = "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"]
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
+localPort = 8000
+
+[[ports]]
+localPort = 8080
+externalPort = 80
+
+[workflows]
+runButton = "Backend Development"
+
+# ✅ Workflow para desenvolver o backend
+[[workflows.workflow]]
+name = "Backend Development"
+author = 39906757
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && python manage.py runserver 0.0.0.0:8000"
+
+# ✅ Workflow para desenvolver o frontend
+[[workflows.workflow]]
+name = "Frontend Development"
+author = 39906757
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm start"
+
+# ✅ Workflow para rodar ambos
+[[workflows.workflow]]
+name = "Full Stack Development"
+author = 39906757
+mode = "parallel"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && python manage.py runserver 0.0.0.0:8000"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd frontend && npm start"
