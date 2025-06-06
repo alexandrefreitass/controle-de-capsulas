@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// 1. ✅ Importar o apiClient e os endpoints
+import { apiClient, apiEndpoints } from '../config/api';
 
 function ProducaoForm() {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     produto_id: '',
     lote: '',
@@ -13,7 +13,7 @@ function ProducaoForm() {
     data_producao: new Date().toISOString().split('T')[0], // Data atual como padrão
     materiais_consumidos: []
   });
-  
+
   const [produtos, setProdutos] = useState([]);
   const [lotesMateriasPrimas, setLotesMateriasPrimas] = useState([]);
   const [materiaisSelecionados, setMateriaisSelecionados] = useState([]);
@@ -21,7 +21,7 @@ function ProducaoForm() {
     lote_materia_prima_id: '',
     quant_consumida_mg: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -35,14 +35,15 @@ function ProducaoForm() {
 
     // Carregar produtos
     fetchProdutos();
-    
+
     // Carregar lotes de matérias-primas
     fetchLotesMateriasPrimas();
   }, [navigate]);
 
   const fetchProdutos = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/produtos/');
+      // 2. ✅ Usar o apiClient e os endpoints
+      const response = await apiClient.get(apiEndpoints.produtos);
       setProdutos(response.data);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -52,7 +53,8 @@ function ProducaoForm() {
 
   const fetchLotesMateriasPrimas = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/lotes/');
+      // 3. ✅ Usar o apiClient e os endpoints
+      const response = await apiClient.get(apiEndpoints.lotes);
       // Filtrar apenas lotes com quantidade disponível
       const lotesDisponiveis = response.data.filter(lote => lote.quant_disponivel_mg > 0);
       setLotesMateriasPrimas(lotesDisponiveis);
@@ -83,43 +85,43 @@ function ProducaoForm() {
       setError('Selecione uma matéria-prima e informe a quantidade consumida.');
       return;
     }
-    
+
     // Verificar se a quantidade é válida
     const loteSelecionado = lotesMateriasPrimas.find(
       lote => lote.id === parseInt(novoMaterial.lote_materia_prima_id)
     );
-    
+
     if (!loteSelecionado) {
       setError('Lote de matéria-prima não encontrado.');
       return;
     }
-    
+
     const quantidadeConsumida = parseFloat(novoMaterial.quant_consumida_mg);
-    
+
     if (quantidadeConsumida <= 0) {
       setError('A quantidade consumida deve ser maior que zero.');
       return;
     }
-    
+
     if (quantidadeConsumida > loteSelecionado.quant_disponivel_mg) {
       setError(`Quantidade insuficiente. Disponível: ${loteSelecionado.quant_disponivel_mg}mg`);
       return;
     }
-    
+
     // Verificar se o lote já foi adicionado
     if (materiaisSelecionados.some(m => m.lote_materia_prima_id === novoMaterial.lote_materia_prima_id)) {
       setError('Este lote de matéria-prima já foi adicionado.');
       return;
     }
-    
+
     // Adicionar material à lista
     const novosMateriais = [
       ...materiaisSelecionados,
       { ...novoMaterial, id: Date.now() } // ID temporário
     ];
-    
+
     setMateriaisSelecionados(novosMateriais);
-    
+
     // Atualizar formData
     setFormData({
       ...formData,
@@ -128,21 +130,21 @@ function ProducaoForm() {
         quant_consumida_mg: material.quant_consumida_mg
       }))
     });
-    
+
     // Limpar o formulário de novo material
     setNovoMaterial({
       lote_materia_prima_id: '',
       quant_consumida_mg: ''
     });
-    
+
     setError('');
   };
 
   const handleRemoverMaterial = (id) => {
     const novosMateriais = materiaisSelecionados.filter(material => material.id !== id);
-    
+
     setMateriaisSelecionados(novosMateriais);
-    
+
     // Atualizar formData
     setFormData({
       ...formData,
@@ -155,16 +157,16 @@ function ProducaoForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (materiaisSelecionados.length === 0) {
       setError('Adicione pelo menos uma matéria-prima consumida.');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError('');
-      
+
       // Converter para formatos corretos
       const dataToSend = {
         ...formData,
@@ -175,19 +177,20 @@ function ProducaoForm() {
           quant_consumida_mg: parseFloat(material.quant_consumida_mg)
         }))
       };
-      
+
       console.log('Enviando dados:', dataToSend);
-      
-      const response = await axios.post('http://localhost:8000/api/producao/', dataToSend);
+
+      // 4. ✅ Usar o apiClient e os endpoints para o POST
+      const response = await apiClient.post(apiEndpoints.producao, dataToSend);
       console.log('Resposta da criação:', response.data);
-      
+
       navigate('/producao');
     } catch (error) {
       console.error('Erro completo:', error);
-      
+
       if (error.response) {
         console.error('Resposta de erro do servidor:', error.response.data);
-        
+
         if (error.response.data && error.response.data.error) {
           setError(`Erro ao salvar lote de produção: ${error.response.data.error}`);
         } else {
@@ -320,7 +323,7 @@ function ProducaoForm() {
 
                 <div className="form-section" style={{ marginTop: '2rem' }}>
                   <h3>Matérias-primas Consumidas</h3>
-                  
+
                   <div className="form-grid">
                     <div className="form-group">
                       <label className="form-label" htmlFor="lote_materia_prima_id">
