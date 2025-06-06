@@ -1,13 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+// 1. ✅ Importar o apiClient e os endpoints
+import { apiClient, apiEndpoints } from '../config/api';
 
 function ProdutoForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     nome: '',
     descricao: '',
@@ -19,7 +19,7 @@ function ProdutoForm() {
     },
     ingredientes: []
   });
-  
+
   const [apresentacoes, setApresentacoes] = useState([]);
   const [formasFarmaceuticas, setFormasFarmaceuticas] = useState([]);
   const [formulas, setFormulas] = useState([]);
@@ -29,39 +29,31 @@ function ProdutoForm() {
     lote_materia_prima_id: '',
     quant_mg: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Verificar se o usuário está autenticado
     const username = localStorage.getItem('username');
     if (!username) {
       navigate('/login');
       return;
     }
 
-    // Carregar apresentações disponíveis
     fetchApresentacoes();
-    
-    // Carregar formas farmacêuticas disponíveis
     fetchFormasFarmaceuticas();
-    
-    // Carregar fórmulas existentes
     fetchFormulas();
-    
-    // Carregar lotes de matérias-primas
     fetchLotesMateriasPrimas();
-    
-    // Se estiver editando, carregar os dados do produto
+
     if (isEditing) {
       fetchProduto();
     }
   }, [isEditing, id, navigate]);
 
+  // 2. ✅ Todas as funções de fetch foram corrigidas
   const fetchApresentacoes = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/apresentacoes/');
+      const response = await apiClient.get(apiEndpoints.apresentacoes);
       setApresentacoes(response.data);
     } catch (error) {
       console.error('Erro ao carregar apresentações:', error);
@@ -71,7 +63,7 @@ function ProdutoForm() {
 
   const fetchFormasFarmaceuticas = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/formas-farmaceuticas/');
+      const response = await apiClient.get(apiEndpoints.formasFarmaceuticas);
       setFormasFarmaceuticas(response.data);
     } catch (error) {
       console.error('Erro ao carregar formas farmacêuticas:', error);
@@ -81,7 +73,7 @@ function ProdutoForm() {
 
   const fetchFormulas = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/formulas/');
+      const response = await apiClient.get(apiEndpoints.formulas);
       setFormulas(response.data);
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
@@ -91,7 +83,7 @@ function ProdutoForm() {
 
   const fetchLotesMateriasPrimas = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/lotes/');
+      const response = await apiClient.get(apiEndpoints.lotes);
       setLotesMateriasPrimas(response.data);
     } catch (error) {
       console.error('Erro ao carregar lotes de matérias-primas:', error);
@@ -102,9 +94,9 @@ function ProdutoForm() {
   const fetchProduto = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/produtos/${id}/`);
+      const response = await apiClient.get(apiEndpoints.produto(id));
       const produtoData = response.data;
-      
+
       setFormData({
         nome: produtoData.nome,
         descricao: produtoData.descricao,
@@ -117,10 +109,8 @@ function ProdutoForm() {
         },
         ingredientes: produtoData.formula.ingredientes || []
       });
-      
-      // Definir que estamos usando uma fórmula existente
+
       setFormulaSelecionada('existente');
-      
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar produto:', error);
@@ -151,9 +141,8 @@ function ProdutoForm() {
   const handleFormulaChange = (e) => {
     const value = e.target.value;
     setFormulaSelecionada(value);
-    
+
     if (value === 'nova') {
-      // Reiniciar dados da fórmula
       setFormData({
         ...formData,
         formula: {
@@ -164,10 +153,9 @@ function ProdutoForm() {
         ingredientes: []
       });
     } else {
-      // Carregar fórmula existente
       const formulaId = parseInt(value);
       const formulaEncontrada = formulas.find(f => f.id === formulaId);
-      
+
       if (formulaEncontrada) {
         setFormData({
           ...formData,
@@ -196,32 +184,28 @@ function ProdutoForm() {
       setError('Selecione uma matéria-prima e informe a quantidade.');
       return;
     }
-    
-    // Verificar se a quantidade é válida
+
     const quantidadeMg = parseFloat(novoIngrediente.quant_mg);
-    
+
     if (quantidadeMg <= 0) {
       setError('A quantidade deve ser maior que zero.');
       return;
     }
-    
-    // Verificar se o lote já foi adicionado
+
     if (formData.ingredientes.some(i => i.lote_materia_prima.id === parseInt(novoIngrediente.lote_materia_prima_id))) {
       setError('Este lote de matéria-prima já foi adicionado.');
       return;
     }
-    
-    // Buscar detalhes da matéria-prima
+
     const loteSelecionado = lotesMateriasPrimas.find(lote => lote.id === parseInt(novoIngrediente.lote_materia_prima_id));
-    
+
     if (!loteSelecionado) {
       setError('Lote de matéria-prima não encontrado.');
       return;
     }
-    
-    // Adicionar ingrediente à lista
+
     const novoIngredienteCompleto = {
-      id: Date.now(), // ID temporário
+      id: Date.now(),
       lote_materia_prima: {
         id: loteSelecionado.id,
         lote: loteSelecionado.lote,
@@ -232,18 +216,17 @@ function ProdutoForm() {
       },
       quant_mg: quantidadeMg
     };
-    
+
     setFormData({
       ...formData,
       ingredientes: [...formData.ingredientes, novoIngredienteCompleto]
     });
-    
-    // Limpar o formulário de novo ingrediente
+
     setNovoIngrediente({
       lote_materia_prima_id: '',
       quant_mg: ''
     });
-    
+
     setError('');
   };
 
@@ -256,12 +239,11 @@ function ProdutoForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
       setError('');
-      
-      // Preparar dados para envio
+
       const dataToSend = {
         nome: formData.nome,
         descricao: formData.descricao,
@@ -273,32 +255,30 @@ function ProdutoForm() {
           quant_kg_padrao: parseFloat(formData.formula.quant_kg_padrao)
         }
       };
-      
-      // Adicionar ingredientes apenas se for uma nova fórmula
+
       if (formulaSelecionada === 'nova' && formData.ingredientes.length > 0) {
         dataToSend.ingredientes = formData.ingredientes.map(ingrediente => ({
           lote_materia_prima_id: ingrediente.lote_materia_prima.id,
           quant_mg: ingrediente.quant_mg
         }));
       }
-      
+
       console.log('Enviando dados:', dataToSend);
-      
-      let response;
+
+      // 3. ✅ Correção no envio (POST/PUT)
       if (isEditing) {
-        response = await axios.put(`http://localhost:8000/api/produtos/${id}/`, dataToSend);
+        await apiClient.put(apiEndpoints.produto(id), dataToSend);
       } else {
-        response = await axios.post('http://localhost:8000/api/produtos/', dataToSend);
+        await apiClient.post(apiEndpoints.produtos, dataToSend);
       }
-      
-      console.log('Resposta:', response.data);
+
       navigate('/produtos');
     } catch (error) {
       console.error('Erro completo:', error);
-      
+
       if (error.response) {
         console.error('Resposta de erro do servidor:', error.response.data);
-        
+
         if (error.response.data && error.response.data.error) {
           setError(`Erro ao salvar produto: ${error.response.data.error}`);
         } else {
@@ -320,19 +300,8 @@ function ProdutoForm() {
     navigate('/produtos');
   };
 
-  if (loading && isEditing) {
-    return (
-      <div className="module-container">
-        <div className="container">
-          <div className="loading">
-            <div className="spinner"></div>
-            <p>Carregando dados do produto...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  // O resto do seu componente JSX continua aqui, sem alterações...
+  // ...
   return (
     <div className="module-container">
       <header className="module-header">
@@ -424,7 +393,7 @@ function ProdutoForm() {
 
                 <div className="form-section">
                   <h3>Fórmula</h3>
-                  
+
                   {!isEditing && (
                     <div className="form-group">
                       <label className="form-label" htmlFor="formula_tipo">
@@ -449,7 +418,7 @@ function ProdutoForm() {
                       </select>
                     </div>
                   )}
-                  
+
                   <div className="form-grid">
                     <div className="form-group">
                       <label className="form-label" htmlFor="formula.forma_farmaceutica">
@@ -462,7 +431,7 @@ function ProdutoForm() {
                         value={formData.formula.forma_farmaceutica}
                         onChange={handleChange}
                         required
-                        disabled={formulaSelecionada !== 'nova' && isEditing || loading}
+                        disabled={(formulaSelecionada !== 'nova' && !isEditing) || loading}
                       >
                         <option value="">Selecione uma forma farmacêutica</option>
                         {formasFarmaceuticas.map(forma => (
@@ -486,7 +455,7 @@ function ProdutoForm() {
                         onChange={handleChange}
                         min="1"
                         required
-                        disabled={formulaSelecionada !== 'nova' && isEditing || loading}
+                        disabled={(formulaSelecionada !== 'nova' && !isEditing) || loading}
                       />
                     </div>
 
@@ -504,7 +473,7 @@ function ProdutoForm() {
                         min="0.001"
                         step="0.001"
                         required
-                        disabled={formulaSelecionada !== 'nova' && isEditing || loading}
+                        disabled={(formulaSelecionada !== 'nova' && !isEditing) || loading}
                       />
                     </div>
                   </div>
@@ -513,7 +482,7 @@ function ProdutoForm() {
                 {formulaSelecionada === 'nova' && !isEditing && (
                   <div className="form-section">
                     <h3>Ingredientes</h3>
-                    
+
                     <div className="form-grid">
                       <div className="form-group">
                         <label className="form-label" htmlFor="lote_materia_prima_id">
