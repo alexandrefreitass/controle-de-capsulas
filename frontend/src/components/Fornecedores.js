@@ -62,7 +62,7 @@ function Fornecedores() {
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              <Icon name="Building2" className="module-title-icon" />
+              <Icon name="Building2" size={32} className="module-title-icon" />
               Gestão de Fornecedores
             </h1>
             <div className="module-actions">
