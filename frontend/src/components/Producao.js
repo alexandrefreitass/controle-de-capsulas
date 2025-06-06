@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -64,53 +65,89 @@ function Producao() {
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>Gestão de Produção</h2>
-        <div>
-          <button className="back-btn" onClick={handleVoltar}>Voltar ao Dashboard</button>
-          <button onClick={handleNovo}>Novo Lote de Produção</button>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">🏭 Gestão de Produção</h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                ← Voltar ao Dashboard
+              </button>
+              <button className="btn btn-primary" onClick={handleNovo}>
+                ➕ Novo Lote de Produção
+              </button>
+            </div>
+          </nav>
         </div>
-      </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <span>⚠️</span>
+              {error}
+            </div>
+          )}
 
-      {loading ? (
-        <p>Carregando lotes de produção...</p>
-      ) : (
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Produto</th>
-              <th>Lote</th>
-              <th>Tamanho do Lote</th>
-              <th>Data de Produção</th>
-              <th>Matérias-primas Utilizadas</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lotesProducao.length === 0 ? (
-              <tr>
-                <td colSpan="6" style={{ textAlign: 'center' }}>Nenhum lote de produção cadastrado.</td>
-              </tr>
+          <div className="table-container">
+            {loading ? (
+              <div className="loading">
+                <div className="spinner"></div>
+              </div>
+            ) : lotesProducao.length === 0 ? (
+              <div className="table-empty">
+                <div className="table-empty-icon">🏭</div>
+                <h3>Nenhum lote de produção cadastrado</h3>
+                <p>Comece adicionando seu primeiro lote de produção.</p>
+                <button className="btn btn-primary" onClick={handleNovo}>
+                  ➕ Adicionar Lote de Produção
+                </button>
+              </div>
             ) : (
-              lotesProducao.map((lote) => (
-                <tr key={lote.id}>
-                  <td>{lote.produto.nome}</td>
-                  <td>{lote.lote}</td>
-                  <td>{lote.lote_tamanho}</td>
-                  <td>{formatarData(lote.data_producao)}</td>
-                  <td>{lote.materiais_consumidos.length} item(ns)</td>
-                  <td className="action-buttons">
-                    <button className="view-btn" onClick={() => handleDetalhar(lote.id)}>Detalhes</button>
-                    <button className="delete-btn" onClick={() => handleExcluir(lote.id)}>Excluir</button>
-                  </td>
-                </tr>
-              ))
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Produto</th>
+                    <th>Lote</th>
+                    <th>Tamanho do Lote</th>
+                    <th>Data de Produção</th>
+                    <th>Matérias-primas Utilizadas</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lotesProducao.map((lote) => (
+                    <tr key={lote.id}>
+                      <td>{lote.produto.nome}</td>
+                      <td>{lote.lote}</td>
+                      <td>{lote.lote_tamanho}</td>
+                      <td>{formatarData(lote.data_producao)}</td>
+                      <td>{lote.materiais_consumidos.length} item(ns)</td>
+                      <td>
+                        <div className="table-actions">
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => handleDetalhar(lote.id)}
+                          >
+                            👁️ Detalhes
+                          </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleExcluir(lote.id)}
+                          >
+                            🗑️ Excluir
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
-          </tbody>
-        </table>
-      )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

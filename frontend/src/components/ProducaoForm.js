@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -216,157 +217,233 @@ function ProducaoForm() {
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>Novo Lote de Produção</h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
-
-      {error && <div className="error">{error}</div>}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="produto_id">Produto:</label>
-            <select
-              id="produto_id"
-              name="produto_id"
-              value={formData.produto_id}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Selecione um produto</option>
-              {produtos.map(produto => (
-                <option key={produto.id} value={produto.id}>
-                  {produto.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="lote">Número do Lote:</label>
-            <input
-              type="text"
-              id="lote"
-              name="lote"
-              value={formData.lote}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="lote_tamanho">Tamanho do Lote:</label>
-            <input
-              type="number"
-              id="lote_tamanho"
-              name="lote_tamanho"
-              value={formData.lote_tamanho}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="data_producao">Data de Produção:</label>
-            <input
-              type="date"
-              id="data_producao"
-              name="data_producao"
-              value={formData.data_producao}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="material-section">
-          <h3>Matérias-primas Consumidas</h3>
-          
-          <div className="form-grid">
-            <div className="form-group">
-              <label htmlFor="lote_materia_prima_id">Matéria-prima (Lote):</label>
-              <select
-                id="lote_materia_prima_id"
-                name="lote_materia_prima_id"
-                value={novoMaterial.lote_materia_prima_id}
-                onChange={handleNovoMaterialChange}
-              >
-                <option value="">Selecione um lote de matéria-prima</option>
-                {lotesMateriasPrimas.map(lote => (
-                  <option key={lote.id} value={lote.id}>
-                    {lote.materia_prima.nome} - Lote: {lote.lote} ({lote.quant_disponivel_mg}mg disponível)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="quant_consumida_mg">Quantidade Consumida (mg):</label>
-              <input
-                type="number"
-                id="quant_consumida_mg"
-                name="quant_consumida_mg"
-                value={novoMaterial.quant_consumida_mg}
-                onChange={handleNovoMaterialChange}
-                min="0"
-                step="0.01"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>&nbsp;</label>
-              <button 
-                type="button" 
-                onClick={handleAdicionarMaterial}
-                className="add-btn"
-              >
-                Adicionar Matéria-prima
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">➕ Novo Lote de Produção</h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                ← Voltar à Produção
               </button>
             </div>
-          </div>
+          </nav>
+        </div>
+      </header>
 
-          {materiaisSelecionados.length > 0 ? (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Matéria-prima (Lote)</th>
-                  <th>Quantidade Consumida (mg)</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {materiaisSelecionados.map(material => (
-                  <tr key={material.id}>
-                    <td>{obterNomeMateriaPrima(material.lote_materia_prima_id)}</td>
-                    <td>{material.quant_consumida_mg} mg</td>
-                    <td>
-                      <button 
-                        type="button"
-                        className="delete-btn"
-                        onClick={() => handleRemoverMaterial(material.id)}
-                      >
-                        Remover
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>Nenhuma matéria-prima adicionada.</p>
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <span>⚠️</span>
+              {error}
+            </div>
           )}
-        </div>
 
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button type="button" onClick={handleVoltar} style={{ marginRight: '10px' }}>Cancelar</button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="produto_id">
+                      Produto
+                    </label>
+                    <select
+                      id="produto_id"
+                      name="produto_id"
+                      className="form-input"
+                      value={formData.produto_id}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                    >
+                      <option value="">Selecione um produto</option>
+                      {produtos.map(produto => (
+                        <option key={produto.id} value={produto.id}>
+                          {produto.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="lote">
+                      Número do Lote
+                    </label>
+                    <input
+                      type="text"
+                      id="lote"
+                      name="lote"
+                      className="form-input"
+                      value={formData.lote}
+                      onChange={handleChange}
+                      placeholder="Ex: L001"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="lote_tamanho">
+                      Tamanho do Lote
+                    </label>
+                    <input
+                      type="number"
+                      id="lote_tamanho"
+                      name="lote_tamanho"
+                      className="form-input"
+                      value={formData.lote_tamanho}
+                      onChange={handleChange}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="data_producao">
+                      Data de Produção
+                    </label>
+                    <input
+                      type="date"
+                      id="data_producao"
+                      name="data_producao"
+                      className="form-input"
+                      value={formData.data_producao}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-section" style={{ marginTop: '2rem' }}>
+                  <h3>Matérias-primas Consumidas</h3>
+                  
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="lote_materia_prima_id">
+                        Matéria-prima (Lote)
+                      </label>
+                      <select
+                        id="lote_materia_prima_id"
+                        name="lote_materia_prima_id"
+                        className="form-input"
+                        value={novoMaterial.lote_materia_prima_id}
+                        onChange={handleNovoMaterialChange}
+                        disabled={loading}
+                      >
+                        <option value="">Selecione um lote de matéria-prima</option>
+                        {lotesMateriasPrimas.map(lote => (
+                          <option key={lote.id} value={lote.id}>
+                            {lote.materia_prima.nome} - Lote: {lote.lote} ({lote.quant_disponivel_mg}mg disponível)
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="quant_consumida_mg">
+                        Quantidade Consumida (mg)
+                      </label>
+                      <input
+                        type="number"
+                        id="quant_consumida_mg"
+                        name="quant_consumida_mg"
+                        className="form-input"
+                        value={novoMaterial.quant_consumida_mg}
+                        onChange={handleNovoMaterialChange}
+                        min="0"
+                        step="0.01"
+                        placeholder="0.00"
+                        disabled={loading}
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">&nbsp;</label>
+                      <button 
+                        type="button" 
+                        className="btn btn-primary"
+                        onClick={handleAdicionarMaterial}
+                        disabled={loading}
+                      >
+                        ➕ Adicionar Matéria-prima
+                      </button>
+                    </div>
+                  </div>
+
+                  {materiaisSelecionados.length > 0 ? (
+                    <div className="table-container" style={{ marginTop: '1rem' }}>
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Matéria-prima (Lote)</th>
+                            <th>Quantidade Consumida (mg)</th>
+                            <th>Ações</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {materiaisSelecionados.map(material => (
+                            <tr key={material.id}>
+                              <td>{obterNomeMateriaPrima(material.lote_materia_prima_id)}</td>
+                              <td>{material.quant_consumida_mg} mg</td>
+                              <td>
+                                <div className="table-actions">
+                                  <button 
+                                    type="button"
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleRemoverMaterial(material.id)}
+                                    disabled={loading}
+                                  >
+                                    🗑️ Remover
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : (
+                    <div className="table-empty" style={{ marginTop: '1rem' }}>
+                      <p>Nenhuma matéria-prima adicionada.</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleVoltar}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        💾 Salvar
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </form>
+      </main>
     </div>
   );
 }
