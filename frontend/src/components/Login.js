@@ -51,7 +51,7 @@ function Login() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">CNC System</div>
+          <div className="auth-logo">Sistema CNC</div>
           <div className="auth-subtitle">KONNEKIT - Sistema de Gestão</div>
         </div>
         <div className="auth-body">

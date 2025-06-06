@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function MateriaPrimaForm() {
   const { id } = useParams();
@@ -90,11 +91,22 @@ function MateriaPrimaForm() {
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              {isEditing ? '✏️ Editar Matéria Prima' : '➕ Nova Matéria Prima'}
+              {isEditing ? (
+                <>
+                  <Icon name="Edit" size={20} className="module-title-icon" />
+                  Editar Matéria Prima
+                </>
+              ) : (
+                <>
+                  <Icon name="Plus" size={20} className="module-title-icon" />
+                  Nova Matéria Prima
+                </>
+              )}
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar às Matérias Primas
+                <Icon name="ArrowLeft" size={16} />
+                Voltar às Matérias Primas
               </button>
             </div>
           </nav>
@@ -170,7 +182,8 @@ function MateriaPrimaForm() {
                       </>
                     ) : (
                       <>
-                        💾 Salvar
+                        <Icon name="Save" size={16} />
+                        {isEditing ? 'Atualizar' : 'Salvar'}
                       </>
                     )}
                   </button>

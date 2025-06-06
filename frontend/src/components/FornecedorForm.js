@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
-import { Edit, Plus, ArrowLeft, Save, AlertTriangle } from 'lucide-react';
+import Icon from './Icon';
 
 function FornecedorForm() {
   const { id } = useParams();
@@ -96,6 +96,16 @@ function FornecedorForm() {
     navigate('/fornecedores');
   };
 
+  if (loading && isEditing) {
+    return (
+      <div className="module-container">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="module-container">
       <header className="module-header">
@@ -104,19 +114,19 @@ function FornecedorForm() {
             <h1 className="module-title">
               {isEditing ? (
                 <>
-                  <Edit size={20} className="module-title-icon" />
+                  <Icon name="Edit" size={20} className="module-title-icon" />
                   Editar Fornecedor
                 </>
               ) : (
                 <>
-                  <Plus size={20} className="module-title-icon" />
+                  <Icon name="Plus" size={20} className="module-title-icon" />
                   Novo Fornecedor
                 </>
               )}
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                <ArrowLeft size={16} />
+                <Icon name="ArrowLeft" size={16} />
                 Voltar aos Fornecedores
               </button>
             </div>
@@ -128,99 +138,144 @@ function FornecedorForm() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <AlertTriangle size={16} />
+              <span>⚠️</span>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-grid">
-              <div className="form-group">
-                <label htmlFor="cnpj">CNPJ:</label>
-                <input
-                  type="text"
-                  id="cnpj"
-                  name="cnpj"
-                  value={formData.cnpj}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              </div>
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="cnpj">
+                      CNPJ
+                    </label>
+                    <input
+                      type="text"
+                      id="cnpj"
+                      name="cnpj"
+                      className="form-input"
+                      value={formData.cnpj}
+                      onChange={handleChange}
+                      placeholder="Ex: 12.345.678/0001-90"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="razao_social">Razão Social:</label>
-                <input
-                  type="text"
-                  id="razao_social"
-                  name="razao_social"
-                  value={formData.razao_social}
-                  onChange={handleChange}
-                  className="form-input"
-                  required
-                />
-              </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="razao_social">
+                      Razão Social
+                    </label>
+                    <input
+                      type="text"
+                      id="razao_social"
+                      name="razao_social"
+                      className="form-input"
+                      value={formData.razao_social}
+                      onChange={handleChange}
+                      placeholder="Ex: Empresa XYZ Ltda"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="fantasia">Nome Fantasia:</label>
-                <input
-                  type="text"
-                  id="fantasia"
-                  name="fantasia"
-                  value={formData.fantasia}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="fantasia">
+                      Nome Fantasia
+                    </label>
+                    <input
+                      type="text"
+                      id="fantasia"
+                      name="fantasia"
+                      className="form-input"
+                      value={formData.fantasia}
+                      onChange={handleChange}
+                      placeholder="Ex: XYZ Store"
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="email">Email:</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="email">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      className="form-input"
+                      value={formData.email}
+                      onChange={handleChange}
+                      placeholder="Ex: contato@empresa.com"
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="form-group">
-                <label htmlFor="telefone">Telefone:</label>
-                <input
-                  type="text"
-                  id="telefone"
-                  name="telefone"
-                  value={formData.telefone}
-                  onChange={handleChange}
-                  className="form-input"
-                />
-              </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="telefone">
+                      Telefone
+                    </label>
+                    <input
+                      type="text"
+                      id="telefone"
+                      name="telefone"
+                      className="form-input"
+                      value={formData.telefone}
+                      onChange={handleChange}
+                      placeholder="Ex: (11) 99999-9999"
+                      disabled={loading}
+                    />
+                  </div>
 
-              <div className="form-group form-group-full">
-                <label htmlFor="endereco">Endereço:</label>
-                <textarea
-                  id="endereco"
-                  name="endereco"
-                  value={formData.endereco}
-                  onChange={handleChange}
-                  className="form-input"
-                  rows="3"
-                />
-              </div>
+                  <div className="form-group form-full-width">
+                    <label className="form-label" htmlFor="endereco">
+                      Endereço
+                    </label>
+                    <textarea
+                      id="endereco"
+                      name="endereco"
+                      className="form-input"
+                      value={formData.endereco}
+                      onChange={handleChange}
+                      placeholder="Endereço completo do fornecedor..."
+                      rows="3"
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={handleVoltar}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-success" 
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
+                        Salvando...
+                      </>
+                    ) : (
+                      <>
+                        <Icon name="Save" size={16} />
+                        {isEditing ? 'Atualizar' : 'Salvar'}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
-
-            <div className="form-actions">
-              <button type="button" className="btn btn-secondary" onClick={handleVoltar}>
-                <ArrowLeft size={16} />
-                Cancelar
-              </button>
-              <button type="submit" className="btn btn-primary" disabled={loading}>
-                <Save size={16} />
-                {loading ? 'Salvando...' : isEditing ? 'Atualizar' : 'Salvar'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </main>
     </div>

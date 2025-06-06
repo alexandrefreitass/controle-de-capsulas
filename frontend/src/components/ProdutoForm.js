@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 // 1. ✅ Importar o apiClient e os endpoints
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function ProdutoForm() {
   const { id } = useParams();
@@ -308,11 +309,22 @@ function ProdutoForm() {
         <div className="container">
           <nav className="module-nav">
             <h1 className="module-title">
-              {isEditing ? '✏️ Editar Produto' : '➕ Novo Produto'}
+              {isEditing ? (
+                <>
+                  <Icon name="Edit" size={20} className="module-title-icon" />
+                  Editar Produto
+                </>
+              ) : (
+                <>
+                  <Icon name="Plus" size={20} className="module-title-icon" />
+                  Novo Produto
+                </>
+              )}
             </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar aos Produtos
+                <Icon name="ArrowLeft" size={16} />
+                Voltar aos Produtos
               </button>
             </div>
           </nav>
@@ -530,7 +542,8 @@ function ProdutoForm() {
                           onClick={handleAdicionarIngrediente}
                           disabled={loading}
                         >
-                          ➕ Adicionar Ingrediente
+                          <Icon name="Plus" size={16} />
+                          Adicionar Ingrediente
                         </button>
                       </div>
                     </div>
@@ -559,7 +572,8 @@ function ProdutoForm() {
                                     onClick={() => handleRemoverIngrediente(ingrediente.id)}
                                     disabled={loading}
                                   >
-                                    🗑️ Remover
+                                    <Icon name="Trash2" size={14} />
+                                    Remover
                                   </button>
                                 </td>
                               </tr>
@@ -569,7 +583,9 @@ function ProdutoForm() {
                       </div>
                     ) : (
                       <div className="table-empty">
-                        <div className="table-empty-icon">🧪</div>
+                        <div className="table-empty-icon">
+                          <Icon name="Package" size={48} />
+                        </div>
                         <h3>Nenhum ingrediente adicionado</h3>
                         <p>Adicione ingredientes para compor a fórmula.</p>
                       </div>
@@ -624,7 +640,8 @@ function ProdutoForm() {
                       </>
                     ) : (
                       <>
-                        💾 Salvar
+                        <Icon name="Save" size={16} />
+                        {isEditing ? 'Atualizar' : 'Salvar'}
                       </>
                     )}
                   </button>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 // 1. ✅ Importar o apiClient e os endpoints
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function ProducaoForm() {
   const navigate = useNavigate();
@@ -223,10 +224,14 @@ function ProducaoForm() {
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
-            <h1 className="module-title">➕ Novo Lote de Produção</h1>
+            <h1 className="module-title">
+              <Icon name="Plus" size={20} className="module-title-icon" />
+              Novo Lote de Produção
+            </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar à Produção
+                <Icon name="ArrowLeft" size={16} />
+                Voltar à Produção
               </button>
             </div>
           </nav>
@@ -372,7 +377,8 @@ function ProducaoForm() {
                         onClick={handleAdicionarMaterial}
                         disabled={loading}
                       >
-                        ➕ Adicionar Matéria-prima
+                        <Icon name="Plus" size={16} />
+                        Adicionar Matéria-prima
                       </button>
                     </div>
                   </div>
@@ -400,7 +406,8 @@ function ProducaoForm() {
                                     onClick={() => handleRemoverMaterial(material.id)}
                                     disabled={loading}
                                   >
-                                    🗑️ Remover
+                                    <Icon name="Trash2" size={14} />
+                                    Remover
                                   </button>
                                 </div>
                               </td>
@@ -437,7 +444,8 @@ function ProducaoForm() {
                       </>
                     ) : (
                       <>
-                        💾 Salvar
+                        <Icon name="Save" size={16} />
+                        Salvar
                       </>
                     )}
                   </button>

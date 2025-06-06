@@ -38,7 +38,7 @@ function Success() {
       <header className="dashboard-header">
         <div className="container">
           <nav className="dashboard-nav">
-            <div className="dashboard-logo">CNC System</div>
+            <div className="dashboard-logo">Sistema CNC</div>
             <div className="dashboard-user">
               <div>
                 <div className="dashboard-welcome">Bem-vindo,</div>
