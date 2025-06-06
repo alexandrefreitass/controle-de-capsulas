@@ -757,4 +757,41 @@ a:hover {
 
 .module-title {
   color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.module-title-icon {
+  color: var(--primary-color);
+}
+
+/* Estilos para ícones em botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn svg {
+  flex-shrink: 0;
+}
+
+/* Estilos para alertas com ícones */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.alert svg {
+  flex-shrink: 0;
+}
+
+/* Estilos para estado vazio */
+.table-empty-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--text-secondary);
 }

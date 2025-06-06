@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import { Building2, ArrowLeft, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react';
 
 function Fornecedores() {
   const [fornecedores, setFornecedores] = useState([]);
@@ -60,13 +61,18 @@ function Fornecedores() {
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
-            <h1 className="module-title">🏢 Gestão de Fornecedores</h1>
+            <h1 className="module-title">
+              <Building2 className="module-title-icon" />
+              Gestão de Fornecedores
+            </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
-                ← Voltar ao Dashboard
+                <ArrowLeft size={16} />
+                Voltar ao Dashboard
               </button>
               <button className="btn btn-primary" onClick={handleNovo}>
-                ➕ Novo Fornecedor
+                <Plus size={16} />
+                Novo Fornecedor
               </button>
             </div>
           </nav>
@@ -77,7 +83,7 @@ function Fornecedores() {
         <div className="container">
           {error && (
             <div className="alert alert-error">
-              <span>⚠️</span>
+              <AlertTriangle size={16} />
               {error}
             </div>
           )}
@@ -89,11 +95,14 @@ function Fornecedores() {
               </div>
             ) : fornecedores.length === 0 ? (
               <div className="table-empty">
-                <div className="table-empty-icon">🏢</div>
+                <div className="table-empty-icon">
+                  <Building2 size={48} />
+                </div>
                 <h3>Nenhum fornecedor cadastrado</h3>
                 <p>Comece adicionando seu primeiro fornecedor.</p>
                 <button className="btn btn-primary" onClick={handleNovo}>
-                  ➕ Adicionar Fornecedor
+                  <Plus size={16} />
+                  Adicionar Fornecedor
                 </button>
               </div>
             ) : (
@@ -118,13 +127,15 @@ function Fornecedores() {
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleEditar(fornecedor.id)}
                           >
-                            ✏️ Editar
+                            <Edit size={14} />
+                            Editar
                           </button>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleExcluir(fornecedor.id)}
                           >
-                            🗑️ Excluir
+                            <Trash2 size={14} />
+                            Excluir
                           </button>
                         </div>
                       </td>

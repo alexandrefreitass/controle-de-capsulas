@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import { Package, Plus, Eye, Edit, Trash2 } from 'lucide-react'; // Import Lucide icons
 
 function Produtos() {
   const [produtos, setProdutos] = useState([]);
@@ -66,7 +66,10 @@ function Produtos() {
       <header className="module-header">
         <div className="container">
           <nav className="module-nav">
-            <h1 className="module-title">🧬 Gestão de Produtos</h1>
+            <h1 className="module-title">
+              <Package className="module-title-icon" />
+              Gestão de Produtos
+            </h1>
             <div className="module-actions">
               <button className="btn btn-secondary" onClick={handleVoltar}>
                 ← Voltar ao Dashboard
@@ -95,11 +98,14 @@ function Produtos() {
               </div>
             ) : produtos.length === 0 ? (
               <div className="table-empty">
-                <div className="table-empty-icon">🧬</div>
+                <div className="table-empty-icon">
+                  <Package size={48} />
+                </div>
                 <h3>Nenhum produto cadastrado</h3>
                 <p>Comece adicionando seu primeiro produto.</p>
                 <button className="btn btn-primary" onClick={handleNovo}>
-                  ➕ Adicionar Produto
+                  <Plus size={16} />
+                  Adicionar Produto
                 </button>
               </div>
             ) : (
@@ -124,19 +130,22 @@ function Produtos() {
                             className="btn btn-info btn-sm"
                             onClick={() => handleDetalhar(produto.id)}
                           >
-                            👁️ Detalhes
+                            <Eye size={14} />
+                            Detalhes
                           </button>
                           <button
                             className="btn btn-secondary btn-sm"
                             onClick={() => handleEditar(produto.id)}
                           >
-                            ✏️ Editar
+                            <Edit size={14} />
+                            Editar
                           </button>
                           <button
                             className="btn btn-danger btn-sm"
                             onClick={() => handleExcluir(produto.id)}
                           >
-                            🗑️ Excluir
+                            <Trash2 size={14} />
+                            Excluir
                           </button>
                         </div>
                       </td>
