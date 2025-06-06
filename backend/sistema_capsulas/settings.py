@@ -11,9 +11,14 @@ SECRET_KEY = "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ✅ Função para detectar ambiente Replit
+# ✅ Função melhorada para detectar ambiente Replit
 def is_replit():
-    return 'REPL_ID' in os.environ or 'REPLIT_DB_URL' in os.environ or 'replit' in socket.gethostname().lower()
+    return (
+        'REPL_ID' in os.environ or 
+        'REPLIT_DB_URL' in os.environ or 
+        'replit' in socket.gethostname().lower() or
+        'runner' in os.getcwd().lower()
+    )
 
 # ✅ Função para obter URL do Replit
 def get_replit_url():
@@ -21,7 +26,7 @@ def get_replit_url():
         repl_slug = os.environ.get('REPL_SLUG', '')
         repl_owner = os.environ.get('REPL_OWNER', '')
         if repl_slug and repl_owner:
-            return f"{repl_slug}.{repl_owner}.repl.co"
+            return f"{repl_slug}-{repl_owner}.replit.app"
     except:
         pass
     return None
@@ -47,6 +52,7 @@ if is_replit():
     ALLOWED_HOSTS.extend([
         '*.replit.dev',
         '*.repl.co',
+        '*.replit.app',
         '*'  # Para desenvolvimento - remover em produção
     ])
 
@@ -88,8 +94,10 @@ if is_replit():
     CORS_ALLOWED_ORIGIN_REGEXES = [
         r"^https://.*\.replit\.dev$",
         r"^https://.*\.repl\.co$",
+        r"^https://.*\.replit\.app$",
         r"^http://.*\.replit\.dev$",
         r"^http://.*\.repl\.co$",
+        r"^http://.*\.replit\.app$",
     ]
 
     # Adicionar URL específica do Replit se disponível
@@ -268,12 +276,8 @@ PORT = int(os.environ.get('PORT', 8000))
 print("🔧 CONFIGURAÇÕES DO DJANGO")
 print("=" * 40)
 print(f"🐛 DEBUG: {DEBUG}")
-print(f"🌍 ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(f"🌍 ALLOWED_HOSTS: {ALLOWED_HOSTS[:3]}...")  # Mostrar apenas os primeiros 3
 print(f"🚪 PORT: {PORT}")
 print(f"📡 CORS_ALLOW_ALL_ORIGINS: {CORS_ALLOW_ALL_ORIGINS}")
-if hasattr(locals(), 'CORS_ALLOWED_ORIGINS'):
-    print(f"🔗 CORS_ALLOWED_ORIGINS: {CORS_ALLOWED_ORIGINS}")
-if hasattr(locals(), 'CSRF_TRUSTED_ORIGINS'):
-    print(f"🛡️ CSRF_TRUSTED_ORIGINS: {CSRF_TRUSTED_ORIGINS}")
 print(f"🏠 Ambiente Replit: {is_replit()}")
 print("=" * 40)

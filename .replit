@@ -9,14 +9,13 @@ channel = "stable-24_05"
 [deployment]
 run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"]
 
-# ✅ Configuração de portas corrigida - 8000 é a porta padrão do Django
-[[ports]]
-localPort = 8000
-externalPort = 80
-
 [[ports]]
 localPort = 3000
 externalPort = 3000
+
+[[ports]]
+localPort = 8080
+externalPort = 80
 
 [workflows]
 runButton = "Backend Development"

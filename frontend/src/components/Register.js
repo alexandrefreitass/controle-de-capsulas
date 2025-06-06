@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -28,9 +28,9 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/accounts/register/', {
+      const response = await apiClient.post(apiEndpoints.register, {
         username,
-        password
+        password,
       });
 
       if (response.data.success) {
