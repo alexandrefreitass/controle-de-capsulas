@@ -9,8 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # --- Carregamento de Segredos e Debug ---
 # Em um projeto real, use o Replit Secrets para o SECRET_KEY.
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9")
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-agf&-5qs2#9r2$fgak6zinoa2=gpk1$u_1vtxz8k2xy9(2eao9",
+)
+DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 
 # ==============================================================================
@@ -19,12 +22,13 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Permite os hosts locais e todos os subdomínios possíveis do Replit.
 ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-    '.replit.dev',
-    '.repl.co',
-    '.replit.app',
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    ".replit.dev",
+    ".repl.co",
+    ".replit.app",
+    "df32-135-237-130-228.ngrok-free.app",
 ]
 
 # Permite que o frontend (em qualquer URL do Replit) se comunique com o backend.
@@ -34,7 +38,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.replit\.app$",
 ]
 # Adiciona origens locais se NÃO estivermos no ambiente Replit.
-if 'REPL_ID' not in os.environ:
+if "REPL_ID" not in os.environ:
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
@@ -46,12 +50,12 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.repl.co",
     "https://*.replit.app",
 ]
-if 'REPL_ID' not in os.environ:
+if "REPL_ID" not in os.environ:
     CSRF_TRUSTED_ORIGINS.append("http://localhost:3000")
 
 # Garante que o Django saiba que está atrás de um proxy seguro no Replit.
-if 'REPL_ID' in os.environ:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+if "REPL_ID" in os.environ:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     USE_X_FORWARDED_HOST = True
     USE_X_FORWARDED_PORT = True
 
@@ -123,7 +127,9 @@ DATABASES = {
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -137,41 +143,41 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Logging para ver o que está acontecendo, especialmente com CORS.
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'simple': {
-            'format': '{levelname} {asctime} {module}: {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "{levelname} {asctime} {module}: {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
-        'corsheaders': {
-            'handlers': ['console'],
-            'level': 'DEBUG', # Nível DEBUG para CORS para ver todas as requisições
-            'propagate': False,
+        "corsheaders": {
+            "handlers": ["console"],
+            "level": "DEBUG",  # Nível DEBUG para CORS para ver todas as requisições
+            "propagate": False,
         },
     },
 }
