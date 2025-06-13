@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:80",
 ]
 
 # Permite que o frontend (em qualquer URL do Replit) se comunique com o backend.
