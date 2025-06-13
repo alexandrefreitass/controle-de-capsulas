@@ -6,6 +6,10 @@ import axios from 'axios';
  * Em desenvolvimento, com o proxy, a URL base é o próprio host do frontend ('').
  * Em produção, usaremos uma variável de ambiente.
  */
+
+// const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+
 const getApiBaseUrl = () => {
   // Para produção, a URL será injetada pelo processo de build (ex: Azure App Service)
   if (process.env.NODE_ENV === 'production') {

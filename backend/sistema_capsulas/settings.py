@@ -29,6 +29,11 @@ ALLOWED_HOSTS = [
     ".repl.co",
     ".replit.app",
     "df32-135-237-130-228.ngrok-free.app",
+    "35.193.161.31",
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 # Permite que o frontend (em qualquer URL do Replit) se comunique com o backend.
