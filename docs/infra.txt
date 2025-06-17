@@ -1,0 +1,96 @@
+instalar dependências backend
+
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y build-essential python3 python3-pip python3-venv python3-dev
+
+instalar dependências do frontend
+
+sudo apt install -y nodejs npm
+
+*-*-*-*-*-*-**-*-*-*-*-*
+
+# Navegue até a pasta do seu backend (ajuste o caminho se for diferente)
+cd ~/backend
+
+# Crie um ambiente virtual para isolar as dependências do Python
+python3 -m venv venv
+
+
+# dependência para desenvolvimento postgres
+sudo apt install libpq-dev
+
+# Ative o ambiente virtual
+source venv/bin/activate
+
+# Agora que o ambiente está ativo, instale os pacotes do requirements.txt
+pip install -r requirements.txt
+
+# Execute as migrações para criar as tabelas no banco de dados
+python manage.py migrate
+
+# Execute a rotina de criação de usuarios beta
+ python manage.py setup_dev_users
+
+
+*-*-*-*-*-*- frontend -*-*-*-*-*-
+cd ~/frontend
+
+# Instale todos os pacotes definidos no package.json
+npm install
+
+
+# Edite o arquivo de configuração da API do frontend
+# Este comando substitui a URL base vazia pelo endereço do seu backend
+# **IMPORTANTE: Substitua <IP_PUBLICO_DA_VM> pelo IP real da sua máquina!**
+
+sed -i "return 'http://35.193.161.31:8000';" src/config/api.js
+
+
+# Instale o screen (roda os servidores em Segundo plano)
+sudo apt install -y screen
+
+
+
+-*-*-*-*-**- sessões virtuais para execução em 2o plano  *-* - *- * - *
+# 1. Crie uma nova sessão de terminal virtual chamada 'backend'
+screen -S backend
+
+# --- Você entrará em uma nova tela de terminal ---
+
+# 2. Ative o ambiente virtual do Python novamente
+source ~/backend/venv/bin/activate
+
+# 3. Inicie o servidor Django para que ele seja acessível de fora da VM
+# O '0.0.0.0' significa que ele aceitará conexões de qualquer endereço IP
+python ~/backend/manage.py runserver 0.0.0.0:8000
+
+# 4. Agora, para sair da tela do screen sem parar o servidor, pressione:
+# Ctrl+A, e depois pressione a tecla D (de "detach").
+
+
+
+
+
+# 1. Crie outra sessão de terminal para o frontend
+screen -S frontend
+
+# --- Você entrará em outra nova tela de terminal ---
+
+# 2. Navegue para a pasta do frontend e inicie o servidor
+cd ~/frontend
+npm start
+
+# 3. Assim como antes, saia da tela do screen pressionando:
+# Ctrl+A, e depois pressione a tecla D.
+
+
+
+**-*-*-*-* firewall *-*-*-*-*
+gcloud projects list
+gcloud config set project cnc-capsulas
+
+gcloud compute firewall-rules create allow-cnc-app --allow="tcp:3000,tcp:8000" --description="Permitir tráfego para os servidores da aplicação CNC"
+
+
+
