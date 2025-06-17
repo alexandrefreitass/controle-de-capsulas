@@ -30,24 +30,20 @@ module.exports = {
       "fs": false
     }
   },
-  // ✅ CONFIGURAÇÃO DO SERVIDOR DE DESENVOLVIMENTO COM PROXY CORRIGIDA
-  devServer: {
+  // ✅ dev
+ devServer: {
     historyApiFallback: true, // Essencial para o React Router
     port: 3000,
-    allowedHosts: 'all', 
-    proxy: {
-      // Redireciona tudo que for /api/* para o backend
-      '/api': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      // ✅ ADICIONADO: Redireciona também /accounts/* para o backend
-      '/accounts': {
-        target: 'http://localhost:8000',
+    // A configuração do proxy foi ajustada para o novo formato de array
+    proxy: [
+      {
+        context: ['/api', '/accounts'], // Caminhos a serem redirecionados
+        target: 'http://localhost:8000', // Endereço do seu backend
         changeOrigin: true,
       }
-    }
+    ]
   },
+
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html'
