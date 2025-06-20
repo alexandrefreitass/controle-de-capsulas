@@ -40,10 +40,17 @@ export const apiClient = axios.create({
 /**
  * ✅ Interceptadores para logs de debug (mantidos por serem uma ótima prática)
  */
+// Interceptador para requisições
 apiClient.interceptors.request.use(
   (config) => {
-    // Agora a URL logada será a relativa, ex: /accounts/login/
-    console.log(`🔄 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    // Log de requisição
+    console.log('🔄 API Request:', config.method.toUpperCase(), config.url);
+    
+    // Se for POST ou PUT, mostrar os dados sendo enviados
+    if ((config.method === 'post' || config.method === 'put') && config.data) {
+      console.log('📤 Request Data:', config.data);
+    }
+    
     return config;
   },
   (error) => {
@@ -52,15 +59,23 @@ apiClient.interceptors.request.use(
   }
 );
 
+// Interceptador para respostas
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(`✅ API Response: ${response.status} ${response.config.url}`);
+    console.log('✅ API Response:', response.status, response.config.url);
     return response;
   },
   (error) => {
-    const status = error.response?.status;
-    const url = error.config?.url;
-    console.error(`❌ API Response Error: ${status} ${url}`, error.message);
+    console.error('❌ API Response Error:', 
+      error.response ? `${error.response.status} ${error.config.url}` : error.message,
+      error
+    );
+    
+    // Mostrar detalhes do erro se disponíveis
+    if (error.response && error.response.data) {
+      console.error('📥 Error Details:', error.response.data);
+    }
+    
     return Promise.reject(error);
   }
 );
@@ -68,35 +83,26 @@ apiClient.interceptors.response.use(
 /**
  * ✅ Endpoints centralizados (mantidos por serem uma ótima prática)
  */
+// Endpoints da API - Adicione prefixo '/api/' a todos os endpoints
 export const apiEndpoints = {
-  // Autenticação
-  login: '/accounts/login/',
-  register: '/accounts/register/',
-
-  // Fornecedores
-  fornecedores: '/api/fornecedores/',
-  fornecedor: (id) => `/api/fornecedores/${id}/`,
-
-  // Matérias Primas
+  // Auth
+  login: 'auth/login/',  // Este pode continuar sem o prefixo /api/, se for um endpoint de autenticação separado
+  register: 'auth/register/',
+  
+  // Matérias Primas - Adicione prefixo '/api/'
   materiasPrimas: '/api/materias-primas/',
   materiaPrima: (id) => `/api/materias-primas/${id}/`,
-
-  // Lotes
+  materiaPrimaEstoque: (id) => `/api/materias-primas/${id}/estoque/`,
+  materiaPrimaAbrirEmbalagem: (id) => `/api/materias-primas/${id}/abrir-embalagem/`,
+  
+  // Lotes - Adicione prefixo '/api/'
   lotes: '/api/lotes/',
   lote: (id) => `/api/lotes/${id}/`,
-
-  // Produtos
-  produtos: '/api/produtos/',
-  produto: (id) => `/api/produtos/${id}/`,
-
-  // Produção
-  producao: '/api/producao/',
-  producaoDetalhe: (id) => `/api/producao/${id}/`,
-
-  // Configurações
-  apresentacoes: '/api/apresentacoes/',
-  formasFarmaceuticas: '/api/formas-farmaceuticas/',
-  formulas: '/api/formulas/',
+  loteEstoque: (id) => `/api/lotes/${id}/estoque/`,
+  
+  // Fornecedores - Adicione prefixo '/api/'
+  fornecedores: '/api/fornecedores/',
+  fornecedor: (id) => `/api/fornecedores/${id}/`,
 };
 
 // Log da configuração inicial

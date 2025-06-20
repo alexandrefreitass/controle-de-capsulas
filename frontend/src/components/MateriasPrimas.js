@@ -7,6 +7,7 @@ function MateriasPrimas() {
   const [materiasPrimas, setMateriasPrimas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,6 +80,43 @@ function MateriasPrimas() {
     );
   };
 
+  // Atualizar a função que exibe datas para incluir informação sobre validade após abertura
+  const renderValidade = (materiaPrima) => {
+    const { data_validade, embalagem_aberta, data_abertura_embalagem, dias_validade_apos_aberto } = materiaPrima;
+    
+    if (!data_validade) return "-";
+    
+    // Formatar data normal
+    const dataValidade = formatDate(data_validade);
+    
+    // Se a embalagem não estiver aberta, mostra apenas a data de validade normal
+    if (!embalagem_aberta || !data_abertura_embalagem) {
+      return dataValidade;
+    }
+    
+    // Calcular nova data de validade após abertura
+    const dataAbertura = new Date(data_abertura_embalagem);
+    const novaValidade = new Date(dataAbertura);
+    novaValidade.setDate(dataAbertura.getDate() + dias_validade_apos_aberto);
+    
+    // Formatar nova data
+    const novaDataValidade = formatDate(novaValidade);
+    
+    return (
+      <div className="validade-info">
+        <div className="validade-original text-muted small">
+          <span>Original: {dataValidade}</span>
+        </div>
+        <div className="validade-atual font-weight-bold">
+          <span>Após abertura: {novaDataValidade}</span>
+        </div>
+        <div className="abertura-info text-muted small">
+          <span>Aberto em: {formatDate(data_abertura_embalagem)}</span>
+        </div>
+      </div>
+    );
+  };
+
   const handleVoltar = () => {
     navigate('/success');
   };
@@ -107,16 +145,40 @@ function MateriasPrimas() {
     }
   };
 
+  // Atualizar função handleAbrirEmbalagem para mostrar o feedback
   const handleAbrirEmbalagem = async (id) => {
     if (window.confirm('Deseja marcar esta embalagem como aberta? Isso afetará o cálculo da data de validade.')) {
       try {
         setLoading(true);
-        await apiClient.post(apiEndpoints.materiaPrimaAbrirEmbalagem(id), {});
+        const response = await apiClient.post(apiEndpoints.materiaPrimaAbrirEmbalagem(id), {});
+        
+        // Mostrar mensagem de feedback se disponível
+        if (response.data.mensagem) {
+          setSuccessMessage(response.data.mensagem);
+          
+          // Limpar mensagem após alguns segundos
+          setTimeout(() => {
+            setSuccessMessage('');
+          }, 5000);
+        }
+        
         fetchMateriasPrimas();
       } catch (error) {
         console.error('Erro ao marcar embalagem como aberta:', error);
-        setError('Erro ao atualizar o status da embalagem. Tente novamente.');
+        
+        // Verificar se há mensagem de erro específica
+        if (error.response?.data?.error) {
+          setError(error.response.data.error);
+        } else {
+          setError('Erro ao atualizar o status da embalagem. Tente novamente.');
+        }
+        
         setLoading(false);
+        
+        // Limpar mensagem de erro após alguns segundos
+        setTimeout(() => {
+          setError('');
+        }, 5000);
       }
     }
   };
@@ -150,6 +212,12 @@ function MateriasPrimas() {
             <div className="alert alert-error">
               <Icon name="AlertTriangle" size={16} />
               {error}
+            </div>
+          )}
+          {successMessage && (
+            <div className="alert alert-success">
+              <Icon name="CheckCircle" size={16} />
+              {successMessage}
             </div>
           )}
 
@@ -196,7 +264,7 @@ function MateriasPrimas() {
                       <td>
                         {materiaPrima.quantidade_disponivel} {materiaPrima.unidade_medida}
                       </td>
-                      <td>{formatDate(materiaPrima.data_validade)}</td>
+                      <td>{renderValidade(materiaPrima)}</td>
                       <td>{renderStatus(materiaPrima.status)}</td>
                       <td>
                         <div className="table-actions">
@@ -208,6 +276,7 @@ function MateriasPrimas() {
                             <Icon name="Package" size={14} />
                           </button>
                           
+                          {/* Mostrar botão apenas se embalagem não estiver aberta */}
                           {!materiaPrima.embalagem_aberta && (
                             <button
                               className="btn btn-warning btn-sm"

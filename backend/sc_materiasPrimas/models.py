@@ -16,11 +16,13 @@ class MateriaPrima(models.Model):
     )
     data_fabricacao = models.DateField(null=True, blank=True)
     data_validade = models.DateField(null=True, blank=True)
-    dias_validade_apos_aberto = models.IntegerField(default=30)
-    data_abertura_embalagem = models.DateField(null=True, blank=True)
-    data_util = models.DateField(null=True, blank=True)
-    embalagem_aberta = models.BooleanField(default=False)
-    laudo = models.FileField(upload_to="laudos/", null=True, blank=True)
+    dias_validade_apos_aberto = models.IntegerField(
+        default=30
+    )  # Dias válidos após abertura
+    embalagem_aberta = models.BooleanField(default=False)  # Status de abertura
+    data_abertura_embalagem = models.DateField(
+        null=True, blank=True
+    )  # Data de abertura
 
     # Campos adicionados para o MVP
     quantidade_disponivel = models.FloatField(default=0)
@@ -28,9 +30,14 @@ class MateriaPrima(models.Model):
     categoria = models.CharField(max_length=50, blank=True)
     condicao_armazenamento = models.CharField(max_length=255, blank=True)
     localizacao = models.CharField(max_length=100, blank=True)
-    status = models.CharField(max_length=50, default="disponível")
+    # status = models.CharField(max_length=50, default="disponível")
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     data_entrada = models.DateField(default=timezone.now)
+
+    # Adicione um campo para armazenar o status manualmente quando necessário
+    _status_interno = models.CharField(
+        max_length=50, default="disponível", db_column="status"
+    )
 
     def __str__(self):
         return f"{self.nome} - Lote: {self.lote}"
@@ -39,20 +46,20 @@ class MateriaPrima(models.Model):
         """Marca a embalagem como aberta e registra a data de abertura"""
         self.embalagem_aberta = True
         self.definir_data_abertura_embalagem()
-        self.definir_data_util()
+        self.definir_data_validade_efetiva()
         self.save()
         return self.embalagem_aberta
 
-    def definir_data_util(self):
+    def definir_data_validade_efetiva(self):
         """Define a data útil com base na validade regular ou do produto aberto"""
         if self.embalagem_aberta and self.data_abertura_embalagem:
-            self.data_util = self.data_abertura_embalagem + timedelta(
+            self.data_validade_efetiva = self.data_abertura_embalagem + timedelta(
                 days=self.dias_validade_apos_aberto
             )
         else:
-            self.data_util = self.data_validade
+            self.data_validade_efetiva = self.data_validade
         self.save()
-        return self.data_util
+        return self.data_validade_efetiva
 
     def definir_data_abertura_embalagem(self):
         """Registra a data de abertura da embalagem como hoje"""
@@ -65,7 +72,7 @@ class MateriaPrima(models.Model):
         """Verifica se a matéria prima está dentro do prazo de validade"""
         hoje = timezone.now().date()
         data_referencia = (
-            self.data_util if self.embalagem_aberta else self.data_validade
+            self.data_validade_efetiva if self.embalagem_aberta else self.data_validade
         )
 
         if data_referencia < hoje:
@@ -112,6 +119,119 @@ class MateriaPrima(models.Model):
     def calcular_valor_em_estoque(self):
         """Calcula o valor total da matéria prima em estoque"""
         return self.quantidade_disponivel * self.preco_unitario
+
+    @property
+    def data_validade_efetiva(self):
+        """Retorna a data de validade considerando abertura da embalagem"""
+        from django.utils import timezone
+        import datetime
+
+        # Garantir que data_validade seja um objeto date
+        if not self.data_validade:
+            return None
+
+        # Converter para date se for string
+        data_validade = self.data_validade
+        if isinstance(data_validade, str):
+            try:
+                data_validade = datetime.datetime.strptime(
+                    data_validade, "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                return None
+
+        # Se não estiver aberto, retorna a data normal
+        if not self.embalagem_aberta or not self.data_abertura_embalagem:
+            return data_validade
+
+        # Garantir que data_abertura seja objeto date
+        data_abertura = self.data_abertura_embalagem
+        if isinstance(data_abertura, str):
+            try:
+                data_abertura = datetime.datetime.strptime(
+                    data_abertura, "%Y-%m-%d"
+                ).date()
+            except ValueError:
+                return data_validade  # Fallback para validade original
+
+        # Calcular nova data
+        try:
+            return data_abertura + datetime.timedelta(
+                days=self.dias_validade_apos_aberto
+            )
+        except (TypeError, ValueError) as e:
+            print(f"Erro ao calcular data_validade_efetiva: {e}")
+            return data_validade  # Fallback para validade original
+
+    @property
+    def status(self):
+        """Determina o status da matéria prima baseado na validade e quantidade"""
+        # Se você quiser usar o status calculado em vez do armazenado, descomente as linhas abaixo
+        # from django.utils import timezone
+        # hoje = timezone.now().date()
+        #
+        # # Determina qual data de validade usar
+        # data_validade = self.data_validade
+        #
+        # if not data_validade:
+        #     return "sem validade"
+        #
+        # dias_para_vencer = (data_validade - hoje).days
+        #
+        # if self.quantidade_disponivel <= 0:
+        #     return "esgotado"
+        # elif dias_para_vencer < 0:
+        #     return "vencido"
+        # elif dias_para_vencer <= 30:
+        #     return "próximo ao vencimento"
+        # else:
+        #     return "disponível"
+
+        # Por enquanto, retorne o status armazenado
+        return self._status_interno
+
+    @status.setter
+    def status(self, valor):
+        """Define o valor do status"""
+        self._status_interno = valor
+
+    def __init__(self, *args, **kwargs):
+        # Remove status dos kwargs antes de passar para o construtor pai
+        if "status" in kwargs:
+            print(f"⚠️ Status removido na inicialização: {kwargs.pop('status')}")
+        super().__init__(*args, **kwargs)
+
+    def calcular_status(self):
+        """Calcula o status com base em regras de negócio"""
+        from django.utils import timezone
+
+        hoje = timezone.now().date()
+
+        # Determina qual data de validade usar
+        data_validade_considerar = (
+            self.data_validade_efetiva
+            if hasattr(self, "data_validade_efetiva")
+            else self.data_validade
+        )
+
+        if not data_validade_considerar:
+            return "sem validade"
+
+        dias_para_vencer = (data_validade_considerar - hoje).days
+
+        if self.quantidade_disponivel <= 0:
+            return "esgotado"
+        elif dias_para_vencer < 0:
+            return "vencido"
+        elif dias_para_vencer <= 30:
+            return "próximo ao vencimento"
+        else:
+            return "disponível"
+
+    def save(self, *args, **kwargs):
+        """Atualiza o status antes de salvar"""
+        self.status = self.calcular_status()
+        super().save(*args, **kwargs)
 
 
 class LoteMateriaPrima(models.Model):

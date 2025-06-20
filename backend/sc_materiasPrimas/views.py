@@ -4,6 +4,9 @@ from .models import MateriaPrima, LoteMateriaPrima
 from sc_fornecedores.models import Fornecedor
 import json
 from django.utils import timezone
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -19,7 +22,7 @@ def materia_prima_list(request):
                     "cod_interno": mp.cod_interno,
                     "nome": mp.nome,
                     "desc": mp.desc,
-                    "lote": mp.lote,
+                    "numero_lote": mp.numero_lote,
                     "nota_fiscal": mp.nota_fiscal,
                     "fornecedor": {
                         "id": mp.fornecedor.id,
@@ -28,7 +31,7 @@ def materia_prima_list(request):
                     "data_fabricacao": mp.data_fabricacao,
                     "data_validade": mp.data_validade,
                     "dias_validade_apos_aberto": mp.dias_validade_apos_aberto,
-                    "data_util": mp.data_util,
+                    "data_validade_efetiva": mp.data_validade_efetiva,
                     "embalagem_aberta": mp.embalagem_aberta,
                     "quantidade_disponivel": mp.quantidade_disponivel,
                     "unidade_medida": mp.unidade_medida,
@@ -40,28 +43,50 @@ def materia_prima_list(request):
         return JsonResponse(materias_primas_data, safe=False)
 
     elif request.method == "POST":
-        data = json.loads(request.body)
         try:
+            # Adicionar logs para diagnóstico
+            print("==== INÍCIO DO PROCESSAMENTO ====")
+            body_unicode = request.body.decode("utf-8")
+            print(f"Corpo da requisição recebida: {body_unicode}")
+
+            data = json.loads(body_unicode)
+            print(f"Dados JSON parseados: {data}")
+
+            # Verificar se há status nos dados recebidos
+            if "status" in data:
+                print(f"⚠️ Campo 'status' encontrado com valor: {data['status']}")
+                data.pop("status")
+                print("✅ Campo 'status' removido dos dados")
+
+            # Compatibilidade - mapear 'lote' para 'numero_lote'
+            if "lote" in data:
+                print("Convertendo campo 'lote' para 'numero_lote'")
+                data["numero_lote"] = data.pop("lote")
+
             # Validar campos obrigatórios
             required_fields = [
                 "cod_interno",
                 "nome",
-                "lote",
+                "numero_lote",
                 "nota_fiscal",
                 "fornecedor_id",
                 "data_fabricacao",
                 "data_validade",
             ]
 
+            missing_fields = []
             for field in required_fields:
-                if not field in data or not data[field]:
-                    return JsonResponse(
-                        {
-                            "error": f"O campo {field} é obrigatório.",
-                            "received_data": data,
-                        },
-                        status=400,
-                    )
+                if field not in data or data[field] is None or data[field] == "":
+                    missing_fields.append(field)
+
+            if missing_fields:
+                return JsonResponse(
+                    {
+                        "error": f"Campos obrigatórios não preenchidos: {', '.join(missing_fields)}",
+                        "missing_fields": missing_fields,
+                    },
+                    status=400,
+                )
 
             # Buscar fornecedor
             try:
@@ -74,12 +99,17 @@ def materia_prima_list(request):
                     status=404,
                 )
 
+            # Remover status explicitamente
+            if "status" in data:
+                print(f"Removendo status: {data['status']}")
+                data.pop("status")
+
             # Criar a matéria prima
             materia_prima = MateriaPrima.objects.create(
                 cod_interno=data.get("cod_interno"),
                 nome=data.get("nome"),
                 desc=data.get("desc", ""),
-                lote=data.get("lote"),
+                numero_lote=data.get("numero_lote"),
                 nota_fiscal=data.get("nota_fiscal"),
                 fornecedor=fornecedor,
                 data_fabricacao=data.get("data_fabricacao"),
@@ -91,14 +121,14 @@ def materia_prima_list(request):
                 categoria=data.get("categoria", ""),
                 condicao_armazenamento=data.get("condicao_armazenamento", ""),
                 localizacao=data.get("localizacao", ""),
-                status=data.get("status", "disponível"),
                 preco_unitario=data.get("preco_unitario", 0),
+                # Não incluir status aqui
             )
 
             # Se a embalagem estiver aberta, definir a data de abertura
             if materia_prima.embalagem_aberta:
                 materia_prima.definir_data_abertura_embalagem()
-                materia_prima.definir_data_util()
+                materia_prima.definir_data_validade_efetiva()
 
             return JsonResponse(
                 {
@@ -106,7 +136,7 @@ def materia_prima_list(request):
                     "cod_interno": materia_prima.cod_interno,
                     "nome": materia_prima.nome,
                     "desc": materia_prima.desc,
-                    "lote": materia_prima.lote,
+                    "numero_lote": materia_prima.numero_lote,
                     "nota_fiscal": materia_prima.nota_fiscal,
                     "fornecedor": {
                         "id": materia_prima.fornecedor.id,
@@ -114,16 +144,20 @@ def materia_prima_list(request):
                     },
                     "data_fabricacao": materia_prima.data_fabricacao,
                     "data_validade": materia_prima.data_validade,
-                    "data_util": materia_prima.data_util,
                     "quantidade_disponivel": materia_prima.quantidade_disponivel,
+                    # Incluir o status como um campo calculado é ok ao retornar
                     "status": materia_prima.status,
                 },
                 status=201,
             )
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"error": "Dados inválidos: não é um JSON válido"}, status=400
+            )
         except Exception as e:
             import traceback
 
-            print("Erro ao criar matéria prima:", str(e))
+            print("Erro detalhado:", str(e))
             print(traceback.format_exc())
             return JsonResponse({"error": str(e)}, status=400)
 
@@ -134,7 +168,7 @@ def materia_prima_detail(request, pk):
     try:
         materia_prima = MateriaPrima.objects.get(pk=pk)
     except MateriaPrima.DoesNotExist:
-        return JsonResponse({"error": "Matéria prima não encontrada"}, status=404)
+        return JsonResponse({"error": "Materia prima não encontrada"}, status=404)
 
     if request.method == "GET":
         return JsonResponse(
@@ -143,7 +177,7 @@ def materia_prima_detail(request, pk):
                 "cod_interno": materia_prima.cod_interno,
                 "nome": materia_prima.nome,
                 "desc": materia_prima.desc,
-                "lote": materia_prima.lote,
+                "numero_lote": materia_prima.numero_lote,
                 "nota_fiscal": materia_prima.nota_fiscal,
                 "fornecedor": {
                     "id": materia_prima.fornecedor.id,
@@ -153,7 +187,7 @@ def materia_prima_detail(request, pk):
                 "data_validade": materia_prima.data_validade,
                 "dias_validade_apos_aberto": materia_prima.dias_validade_apos_aberto,
                 "data_abertura_embalagem": materia_prima.data_abertura_embalagem,
-                "data_util": materia_prima.data_util,
+                "data_validade_efetiva": materia_prima.data_validade_efetiva,
                 "embalagem_aberta": materia_prima.embalagem_aberta,
                 "quantidade_disponivel": materia_prima.quantidade_disponivel,
                 "unidade_medida": materia_prima.unidade_medida,
@@ -167,71 +201,62 @@ def materia_prima_detail(request, pk):
         )
 
     elif request.method == "PUT":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        # Atualizar campos simples
-        for field in [
-            "nome",
-            "desc",
-            "lote",
-            "nota_fiscal",
-            "data_fabricacao",
-            "data_validade",
-            "dias_validade_apos_aberto",
-            "quantidade_disponivel",
-            "unidade_medida",
-            "categoria",
-            "condicao_armazenamento",
-            "localizacao",
-            "status",
-            "preco_unitario",
-            "cod_interno",
-        ]:
-            if field in data:
-                setattr(materia_prima, field, data[field])
-
-        # Atualizar fornecedor se informado
-        if "fornecedor_id" in data:
-            try:
-                materia_prima.fornecedor = Fornecedor.objects.get(
-                    pk=data["fornecedor_id"]
+            # IMPORTANTE: Remover explicitamente o status dos dados recebidos
+            if "status" in data:
+                print(
+                    f"Removendo campo 'status' ({data['status']}) dos dados recebidos"
                 )
-            except Fornecedor.DoesNotExist:
-                return JsonResponse({"error": "Fornecedor não encontrado"}, status=404)
+                data.pop("status")
 
-        # Tratamento especial para embalagem aberta
-        if "embalagem_aberta" in data:
-            was_closed = not materia_prima.embalagem_aberta
-            materia_prima.embalagem_aberta = data["embalagem_aberta"]
+            # Lista de campos que podem ser atualizados diretamente
+            allowed_fields = [
+                "nome",
+                "desc",
+                "numero_lote",
+                "nota_fiscal",
+                "data_fabricacao",
+                "data_validade",
+                "dias_validade_apos_aberto",
+                "quantidade_disponivel",
+                "unidade_medida",
+                "categoria",
+                "condicao_armazenamento",
+                "localizacao",
+                "preco_unitario",
+                # Não inclua "status" aqui
+            ]
 
-            # Se estava fechada e agora está aberta, definir data de abertura
-            if was_closed and materia_prima.embalagem_aberta:
-                materia_prima.definir_data_abertura_embalagem()
-                materia_prima.definir_data_util()
+            # Atualizar campos permitidos
+            for field in allowed_fields:
+                if field in data:
+                    setattr(materia_prima, field, data[field])
 
-        materia_prima.save()
-        materia_prima.verificar_validade()  # Atualiza o status com base na validade
+            # Tratar relacionamentos especiais
+            if "fornecedor_id" in data and data["fornecedor_id"]:
+                try:
+                    fornecedor = Fornecedor.objects.get(pk=data["fornecedor_id"])
+                    materia_prima.fornecedor = fornecedor
+                except Fornecedor.DoesNotExist:
+                    return JsonResponse(
+                        {
+                            "error": f"Fornecedor com ID {data['fornecedor_id']} não encontrado"
+                        },
+                        status=404,
+                    )
 
-        return JsonResponse(
-            {
-                "id": materia_prima.id,
-                "cod_interno": materia_prima.cod_interno,
-                "nome": materia_prima.nome,
-                "desc": materia_prima.desc,
-                "lote": materia_prima.lote,
-                "nota_fiscal": materia_prima.nota_fiscal,
-                "fornecedor": {
-                    "id": materia_prima.fornecedor.id,
-                    "razao_social": materia_prima.fornecedor.razao_social,
-                },
-                "data_fabricacao": materia_prima.data_fabricacao,
-                "data_validade": materia_prima.data_validade,
-                "data_util": materia_prima.data_util,
-                "embalagem_aberta": materia_prima.embalagem_aberta,
-                "quantidade_disponivel": materia_prima.quantidade_disponivel,
-                "status": materia_prima.status,
-            }
-        )
+            materia_prima.save()
+
+            # Resto do código...
+
+        except Exception as e:
+            import traceback
+
+            print("ERRO ao atualizar matéria prima:", str(e))
+            print(traceback.format_exc())
+            return JsonResponse({"error": str(e)}, status=400)
 
     elif request.method == "DELETE":
         materia_prima.delete()
@@ -534,28 +559,43 @@ def atualizar_estoque(request, pk):
 
 @csrf_exempt
 def registrar_abertura_embalagem(request, pk):
-    """Endpoint para registrar a abertura de uma embalagem"""
-    try:
-        materia_prima = MateriaPrima.objects.get(pk=pk)
-    except MateriaPrima.DoesNotExist:
-        return JsonResponse({"error": "Matéria prima não encontrada"}, status=404)
-
+    """Registrar a abertura da embalagem da matéria prima"""
     if request.method == "POST":
-        if materia_prima.embalagem_aberta:
-            return JsonResponse({"error": "Embalagem já está aberta"}, status=400)
+        try:
+            materia_prima = MateriaPrima.objects.get(pk=pk)
+        except MateriaPrima.DoesNotExist:
+            return JsonResponse({"error": "Matéria prima não encontrada"}, status=404)
 
-        materia_prima.abrir_embalagem()
+        # Registra abertura
+        from django.utils import timezone
+
+        data_hoje = timezone.now().date()
+
+        materia_prima.embalagem_aberta = True
+        materia_prima.data_abertura_embalagem = data_hoje
+        materia_prima.save()
+
+        # Calcular nova data de validade
+        nova_validade = materia_prima.data_validade_efetiva
+
+        # Formatação das datas para JSON
+        data_abertura_formatada = data_hoje.isoformat() if data_hoje else None
+        data_validade_formatada = nova_validade.isoformat() if nova_validade else None
 
         return JsonResponse(
             {
                 "id": materia_prima.id,
                 "nome": materia_prima.nome,
                 "embalagem_aberta": materia_prima.embalagem_aberta,
-                "data_abertura_embalagem": materia_prima.data_abertura_embalagem,
-                "data_util": materia_prima.data_util,
-                "mensagem": "Embalagem marcada como aberta com sucesso",
+                "data_abertura": data_abertura_formatada,
+                "dias_validade_apos_aberto": materia_prima.dias_validade_apos_aberto,
+                "nova_validade": data_validade_formatada,
+                "status": materia_prima.status,
+                "mensagem": f"Embalagem registrada como aberta. Nova validade: {nova_validade.strftime('%d/%m/%Y') if nova_validade else 'N/A'}",
             }
         )
+
+    return JsonResponse({"error": "Método não permitido"}, status=405)
 
 
 @csrf_exempt
@@ -610,3 +650,37 @@ def lote_estoque(request, pk):
             return JsonResponse(
                 {"error": f"Erro ao atualizar estoque: {str(e)}"}, status=500
             )
+
+    # Substitua qualquer consulta que use data_validade_efetiva
+    # POR EXEMPLO, se você tem algo como:
+    # materias_vencidas = MateriaPrima.objects.filter(data_validade_efetiva__lt=hoje)
+
+    # Substitua por:
+    from django.utils import timezone
+
+    hoje = timezone.now().date()
+    todas_materias = MateriaPrima.objects.all()
+    materias_vencidas = []
+
+    for mp in todas_materias:
+        try:
+            if hasattr(mp, "data_validade_efetiva") and mp.data_validade_efetiva < hoje:
+                materias_vencidas.append(mp)
+        except Exception as e:
+            print(f"Erro ao verificar data_validade_efetiva para MP {mp.id}: {e}")
+
+    # Se estiver usando em um JSON, certifique-se de usar getattr com valor padrão:
+    return JsonResponse(
+        {
+            "id": materia_prima.id,
+            # Outros campos...
+            "data_validade": materia_prima.data_validade,
+            # Use getattr para propriedades que podem não existir
+            "data_validade_efetiva": (
+                materia_prima.data_validade.isoformat()
+                if materia_prima.data_validade
+                else None
+            ),
+            # Outros campos...
+        }
+    )

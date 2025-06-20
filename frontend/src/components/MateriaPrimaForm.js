@@ -23,7 +23,6 @@ function MateriaPrimaForm() {
     categoria: '',
     condicao_armazenamento: '',
     localizacao: '',
-    status: 'disponível',
     preco_unitario: 0
   });
   
@@ -63,6 +62,12 @@ function MateriaPrimaForm() {
       setLoading(true);
       const response = await apiClient.get(apiEndpoints.materiaPrima(id));
       
+      // Se a resposta contiver 'lote', mapeie para 'numero_lote'
+      if (response.data.lote && !response.data.numero_lote) {
+        response.data.numero_lote = response.data.lote;
+        delete response.data.lote;
+      }
+      
       // Formatação de datas para o formato esperado pelo input type="date"
       const data = {
         ...response.data,
@@ -93,18 +98,25 @@ function MateriaPrimaForm() {
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     
-    // Converter valores numéricos
+    // Converter valores numéricos inteiros
     if (['cod_interno', 'nota_fiscal', 'dias_validade_apos_aberto'].includes(name)) {
       setFormData({
         ...formData,
-        [name]: value === '' ? '' : parseInt(value, 10)
+        [name]: value === '' ? null : parseInt(value, 10)
       });
     } 
     // Converter valores decimais
     else if (['quantidade_disponivel', 'preco_unitario'].includes(name)) {
       setFormData({
         ...formData,
-        [name]: value === '' ? '' : parseFloat(value)
+        [name]: value === '' ? 0 : parseFloat(value)
+      });
+    }
+    // Fornecedor ID é um número que deve ser convertido corretamente
+    else if (name === 'fornecedor_id') {
+      setFormData({
+        ...formData,
+        [name]: value === '' ? null : parseInt(value, 10)
       });
     }
     // Valores normais (strings)
@@ -116,22 +128,103 @@ function MateriaPrimaForm() {
     }
   };
 
+  // Função para validar datas
+  const validateDates = (formData) => {
+    // Verificar se as datas são válidas
+    if (formData.data_fabricacao) {
+      try {
+        new Date(formData.data_fabricacao);
+      } catch (error) {
+        return "Data de fabricação inválida";
+      }
+    }
+    
+    if (formData.data_validade) {
+      try {
+        new Date(formData.data_validade);
+      } catch (error) {
+        return "Data de validade inválida";
+      }
+    }
+    
+    // Verificar se a data de validade é posterior à de fabricação
+    if (formData.data_fabricacao && formData.data_validade) {
+      const fabDate = new Date(formData.data_fabricacao);
+      const valDate = new Date(formData.data_validade);
+      
+      if (valDate < fabDate) {
+        return "A data de validade deve ser posterior à data de fabricação";
+      }
+    }
+    
+    return null; // Sem erros
+  };
+
   const validateForm = () => {
+    // Lista de campos obrigatórios conforme o backend
     const requiredFields = [
       'nome', 'cod_interno', 'numero_lote', 'nota_fiscal', 
       'fornecedor_id', 'data_fabricacao', 'data_validade'
     ];
     
-    const missingFields = requiredFields.filter(field => !formData[field]);
+    const missingFields = requiredFields.filter(field => {
+      // Verificar se o valor existe e não é vazio
+      const value = formData[field];
+      return value === undefined || value === null || value === '';
+    });
     
     if (missingFields.length > 0) {
-      setError(`Campos obrigatórios não preenchidos: ${missingFields.join(', ')}`);
+      const fieldNames = missingFields.map(field => {
+        // Mapear nomes de campos para versões mais legíveis
+        const fieldMap = {
+          'nome': 'Nome',
+          'cod_interno': 'Código Interno',
+          'numero_lote': 'Número do Lote',
+          'nota_fiscal': 'Nota Fiscal',
+          'fornecedor_id': 'Fornecedor',
+          'data_fabricacao': 'Data de Fabricação',
+          'data_validade': 'Data de Validade'
+        };
+        return fieldMap[field] || field;
+      });
+      
+      setError(`Campos obrigatórios não preenchidos: ${fieldNames.join(', ')}`);
+      return false;
+    }
+    
+    // Verificações adicionais
+    if (formData.preco_unitario < 0) {
+      setError('O preço unitário não pode ser negativo');
+      return false;
+    }
+    
+    if (formData.quantidade_disponivel < 0) {
+      setError('A quantidade disponível não pode ser negativa');
+      return false;
+    }
+    
+    // Verificar se a data de validade é posterior à data de fabricação
+    if (formData.data_fabricacao && formData.data_validade) {
+      const fabricacao = new Date(formData.data_fabricacao);
+      const validade = new Date(formData.data_validade);
+      
+      if (validade <= fabricacao) {
+        setError('A data de validade deve ser posterior à data de fabricação');
+        return false;
+      }
+    }
+    
+    // Adicionar validação de datas
+    const dateError = validateDates(formData);
+    if (dateError) {
+      setError(dateError);
       return false;
     }
     
     return true;
   };
 
+  // Antes de enviar os dados para o backend, vamos remover campos obsoletos
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -142,16 +235,43 @@ function MateriaPrimaForm() {
     try {
       setLoading(true);
       setError('');
+      
+      // Criar uma cópia dos dados e remover status explicitamente
+      const dataToSend = { ...formData };
+      
+      // Verificar se há status explicitamente
+      if ('status' in dataToSend) {
+        console.log('⚠️ Status encontrado nos dados do formulário:', dataToSend.status);
+        delete dataToSend.status;
+        console.log('✅ Status removido dos dados a serem enviados');
+      }
+      
+      // Garantir que não haja status serializado em outro lugar
+      const stringifiedData = JSON.stringify(dataToSend);
+      if (stringifiedData.includes('"status"')) {
+        console.error('⚠️ O status ainda está presente nos dados serializados!');
+      }
+      
+      console.log('Dados enviados para o servidor:', dataToSend);
 
       if (isEditing) {
-        await apiClient.put(apiEndpoints.materiaPrima(id), formData);
+        await apiClient.put(apiEndpoints.materiaPrima(id), dataToSend);
       } else {
-        await apiClient.post(apiEndpoints.materiasPrimas, formData);
+        const response = await apiClient.post(apiEndpoints.materiasPrimas, dataToSend);
+        console.log('Resposta do servidor:', response.data);
       }
 
       navigate('/materias-primas');
     } catch (error) {
       console.error('Erro ao salvar matéria prima:', error);
+      
+      if (error.response) {
+        console.error('Detalhes do erro:', {
+          status: error.response.status,
+          data: error.response.data
+        });
+      }
+      
       if (error.response && error.response.data && error.response.data.error) {
         setError(`Erro: ${error.response.data.error}`);
       } else {
