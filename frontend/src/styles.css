@@ -930,3 +930,69 @@ a:hover {
   margin-bottom: 1rem;
   color: var(--text-secondary);
 }
+
+
+/* Atualização das materias primas */
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.status-available {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: rgb(46, 204, 113);
+}
+
+.status-warning {
+  background-color: rgba(241, 196, 15, 0.15);
+  color: rgb(196, 161, 15);
+}
+
+.status-expired {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: rgb(231, 76, 60);
+}
+
+.status-depleted {
+  background-color: rgba(52, 73, 94, 0.15);
+  color: rgb(52, 73, 94);
+}
+
+.status-quarantine {
+  background-color: rgba(155, 89, 182, 0.15);
+  color: rgb(155, 89, 182);
+}
+
+.status-unknown {
+  background-color: rgba(189, 195, 199, 0.15);
+  color: rgb(127, 140, 141);
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section-title {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.form-full-width {
+  grid-column: 1 / -1;
+}

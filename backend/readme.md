@@ -140,6 +140,7 @@ python manage.py setup_dev_users
 Este comando criará automaticamente os seguintes usuários para teste:
 
 **Usuários comuns:**
+
 - Username: user1, Senha: 123@mudar
 - Username: operador, Senha: 123@mudar
 - Username: farmaceutico, Senha: 123@mudar
