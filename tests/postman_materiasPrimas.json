@@ -1,0 +1,162 @@
+{
+  "info": {
+    "name": "API Matérias-Primas CNC",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar todas as matérias-primas",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", ""]
+        }
+      }
+    },
+    {
+      "name": "Criar uma nova matéria-prima",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"cod_interno\": 1001,\n    \"nome\": \"Ácido Ascórbico\",\n    \"desc\": \"Vitamina C - Grau farmacêutico\",\n    \"lote\": \"AC10052023\",\n    \"nota_fiscal\": 12345,\n    \"fornecedor_id\": 1,\n    \"data_fabricacao\": \"2023-01-15\",\n    \"data_validade\": \"2025-01-15\",\n    \"dias_validade_apos_aberto\": 60,\n    \"quantidade_disponivel\": 25.5,\n    \"unidade_medida\": \"kg\",\n    \"categoria\": \"ativo\",\n    \"condicao_armazenamento\": \"Local seco e arejado, temperatura ambiente\",\n    \"localizacao\": \"Prateleira A3\",\n    \"preco_unitario\": 45.75\n}"
+        }
+      }
+    },
+    {
+      "name": "Obter detalhes de uma matéria-prima",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", ""]
+        }
+      }
+    },
+    {
+      "name": "Atualizar uma matéria-prima",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"nome\": \"Ácido Ascórbico USP\",\n    \"desc\": \"Vitamina C - Grau farmacêutico USP\",\n    \"lote\": \"AC10052023\",\n    \"quantidade_disponivel\": 23.0,\n    \"localizacao\": \"Prateleira A4\",\n    \"status\": \"disponível\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Excluir uma matéria-prima",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", ""]
+        }
+      }
+    },
+    {
+      "name": "Atualizar estoque (adicionar)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/estoque/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", "estoque", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"operacao\": \"adicionar\",\n    \"quantidade\": 5.0\n}"
+        }
+      }
+    },
+    {
+      "name": "Atualizar estoque (subtrair)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/estoque/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", "estoque", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"operacao\": \"subtrair\",\n    \"quantidade\": 2.5\n}"
+        }
+      }
+    },
+    {
+      "name": "Registrar abertura de embalagem",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/api/materias-primas/1/abrir-embalagem/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "materias-primas", "1", "abrir-embalagem", ""]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        }
+      }
+    }
+  ]
+}
