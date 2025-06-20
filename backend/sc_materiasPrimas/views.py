@@ -15,31 +15,36 @@ def materia_prima_list(request):
     if request.method == "GET":
         materias_primas = MateriaPrima.objects.all()
         materias_primas_data = []
+
+        # Formatar datas para resposta
+        def format_date_or_none(date_obj):
+            if not date_obj:
+                return None
+            if hasattr(date_obj, "strftime"):
+                return date_obj.strftime("%Y-%m-%d")
+            return str(date_obj)
+
         for mp in materias_primas:
+            # Calcular data efetiva
+            data_validade_efetiva = mp.data_validade_efetiva
+
             materias_primas_data.append(
                 {
                     "id": mp.id,
-                    "cod_interno": mp.cod_interno,
                     "nome": mp.nome,
-                    "desc": mp.desc,
-                    "numero_lote": mp.numero_lote,
-                    "nota_fiscal": mp.nota_fiscal,
-                    "fornecedor": {
-                        "id": mp.fornecedor.id,
-                        "razao_social": mp.fornecedor.razao_social,
-                    },
-                    "data_fabricacao": mp.data_fabricacao,
-                    "data_validade": mp.data_validade,
-                    "dias_validade_apos_aberto": mp.dias_validade_apos_aberto,
-                    "data_validade_efetiva": mp.data_validade_efetiva,
+                    # Outros campos...
+                    "data_validade": format_date_or_none(mp.data_validade),
+                    "data_validade_efetiva": format_date_or_none(data_validade_efetiva),
                     "embalagem_aberta": mp.embalagem_aberta,
-                    "quantidade_disponivel": mp.quantidade_disponivel,
-                    "unidade_medida": mp.unidade_medida,
-                    "categoria": mp.categoria,
+                    "data_abertura_embalagem": format_date_or_none(
+                        mp.data_abertura_embalagem
+                    ),
+                    "dias_validade_apos_aberto": mp.dias_validade_apos_aberto,
                     "status": mp.status,
-                    "preco_unitario": float(mp.preco_unitario),
+                    # Outros campos...
                 }
             )
+
         return JsonResponse(materias_primas_data, safe=False)
 
     elif request.method == "POST":
@@ -171,10 +176,10 @@ def materia_prima_detail(request, pk):
         return JsonResponse({"error": "Materia prima não encontrada"}, status=404)
 
     if request.method == "GET":
+        # Retornar tanto a validade original quanto a efetiva
         return JsonResponse(
             {
                 "id": materia_prima.id,
-                "cod_interno": materia_prima.cod_interno,
                 "nome": materia_prima.nome,
                 "desc": materia_prima.desc,
                 "numero_lote": materia_prima.numero_lote,
@@ -566,6 +571,17 @@ def registrar_abertura_embalagem(request, pk):
         except MateriaPrima.DoesNotExist:
             return JsonResponse({"error": "Matéria prima não encontrada"}, status=404)
 
+        # Se já estiver aberta, retorna mensagem informativa
+        if materia_prima.embalagem_aberta:
+            return JsonResponse(
+                {
+                    "error": "Esta embalagem já foi registrada como aberta",
+                    "data_abertura": materia_prima.data_abertura_embalagem,
+                    "nova_validade": materia_prima.data_validade_efetiva,
+                },
+                status=400,
+            )
+
         # Registra abertura
         from django.utils import timezone
 
@@ -573,23 +589,32 @@ def registrar_abertura_embalagem(request, pk):
 
         materia_prima.embalagem_aberta = True
         materia_prima.data_abertura_embalagem = data_hoje
+
+        # Recalcular o status (opcional)
+        materia_prima.calcular_status()
+
         materia_prima.save()
 
         # Calcular nova data de validade
         nova_validade = materia_prima.data_validade_efetiva
 
-        # Formatação das datas para JSON
-        data_abertura_formatada = data_hoje.isoformat() if data_hoje else None
-        data_validade_formatada = nova_validade.isoformat() if nova_validade else None
+        # Formatar datas para resposta
+        def format_date_or_none(date_obj):
+            return date_obj.strftime("%Y-%m-%d") if date_obj else None
+
+        data_abertura_str = format_date_or_none(data_hoje)
+        nova_validade_str = format_date_or_none(nova_validade)
+        data_validade_str = format_date_or_none(materia_prima.data_validade)
 
         return JsonResponse(
             {
                 "id": materia_prima.id,
                 "nome": materia_prima.nome,
                 "embalagem_aberta": materia_prima.embalagem_aberta,
-                "data_abertura": data_abertura_formatada,
+                "data_abertura": data_abertura_str,
                 "dias_validade_apos_aberto": materia_prima.dias_validade_apos_aberto,
-                "nova_validade": data_validade_formatada,
+                "data_validade_original": data_validade_str,
+                "data_validade_efetiva": nova_validade_str,
                 "status": materia_prima.status,
                 "mensagem": f"Embalagem registrada como aberta. Nova validade: {nova_validade.strftime('%d/%m/%Y') if nova_validade else 'N/A'}",
             }

@@ -25,7 +25,17 @@ function MateriasPrimas() {
     try {
       setLoading(true);
       const response = await apiClient.get(apiEndpoints.materiasPrimas);
-      setMateriasPrimas(response.data);
+      
+      // Processar datas para garantir formato consistente
+      const materiasProcessadas = response.data.map(mp => ({
+        ...mp,
+        // Garantir que datas sejam strings no formato ISO ou null
+        data_validade: mp.data_validade || null,
+        data_validade_efetiva: mp.data_validade_efetiva || mp.data_validade || null,
+        data_abertura_embalagem: mp.data_abertura_embalagem || null
+      }));
+      
+      setMateriasPrimas(materiasProcessadas);
       setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar matérias primas:', error);
@@ -34,11 +44,18 @@ function MateriasPrimas() {
     }
   };
 
-  // Função para formatar datas
+  // Função para formatar datas de maneira segura
   const formatDate = (dateString) => {
-    if (!dateString) return '-';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR');
+    if (!dateString) return "-";
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "-"; // Data inválida
+      return date.toLocaleDateString('pt-BR'); // DD/MM/AAAA
+    } catch (error) {
+      console.error("Erro ao formatar data:", error);
+      return "-";
+    }
   };
 
   // Função para exibir o status com ícone e cor apropriada
@@ -80,41 +97,33 @@ function MateriasPrimas() {
     );
   };
 
-  // Atualizar a função que exibe datas para incluir informação sobre validade após abertura
+  // Função para mostrar a data de validade correta
   const renderValidade = (materiaPrima) => {
-    const { data_validade, embalagem_aberta, data_abertura_embalagem, dias_validade_apos_aberto } = materiaPrima;
+    // Se não há dados de validade, mostra traço
+    if (!materiaPrima.data_validade) return "-";
     
-    if (!data_validade) return "-";
-    
-    // Formatar data normal
-    const dataValidade = formatDate(data_validade);
-    
-    // Se a embalagem não estiver aberta, mostra apenas a data de validade normal
-    if (!embalagem_aberta || !data_abertura_embalagem) {
-      return dataValidade;
+    // Se a embalagem está aberta, mostrar a data de validade efetiva
+    if (materiaPrima.embalagem_aberta && materiaPrima.data_abertura_embalagem) {
+      const dataValidade = formatDate(materiaPrima.data_validade); // Data original
+      const dataEfetiva = formatDate(materiaPrima.data_validade_efetiva); // Nova data após abertura
+      
+      return (
+        <div className="validade-info">
+          <div className="validade-original text-muted small">
+            <span>Original: {dataValidade}</span>
+          </div>
+          <div className="nova-validade font-weight-bold">
+            <span>Após abertura: {dataEfetiva}</span>
+          </div>
+          <div className="abertura-info text-muted small">
+            <span>Aberto em: {formatDate(materiaPrima.data_abertura_embalagem)}</span>
+          </div>
+        </div>
+      );
     }
     
-    // Calcular nova data de validade após abertura
-    const dataAbertura = new Date(data_abertura_embalagem);
-    const novaValidade = new Date(dataAbertura);
-    novaValidade.setDate(dataAbertura.getDate() + dias_validade_apos_aberto);
-    
-    // Formatar nova data
-    const novaDataValidade = formatDate(novaValidade);
-    
-    return (
-      <div className="validade-info">
-        <div className="validade-original text-muted small">
-          <span>Original: {dataValidade}</span>
-        </div>
-        <div className="validade-atual font-weight-bold">
-          <span>Após abertura: {novaDataValidade}</span>
-        </div>
-        <div className="abertura-info text-muted small">
-          <span>Aberto em: {formatDate(data_abertura_embalagem)}</span>
-        </div>
-      </div>
-    );
+    // Se a embalagem não está aberta, mostrar apenas a data de validade normal
+    return formatDate(materiaPrima.data_validade);
   };
 
   const handleVoltar = () => {

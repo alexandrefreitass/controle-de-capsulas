@@ -123,14 +123,13 @@ class MateriaPrima(models.Model):
     @property
     def data_validade_efetiva(self):
         """Retorna a data de validade considerando abertura da embalagem"""
-        from django.utils import timezone
         import datetime
 
-        # Garantir que data_validade seja um objeto date
+        # Se não tiver data de validade, retorna None
         if not self.data_validade:
             return None
 
-        # Converter para date se for string
+        # Garantir que data_validade seja um objeto date
         data_validade = self.data_validade
         if isinstance(data_validade, str):
             try:
@@ -140,7 +139,7 @@ class MateriaPrima(models.Model):
             except ValueError:
                 return None
 
-        # Se não estiver aberto, retorna a data normal
+        # Se não estiver aberto ou não tiver data de abertura, retorna a validade original
         if not self.embalagem_aberta or not self.data_abertura_embalagem:
             return data_validade
 
@@ -152,85 +151,75 @@ class MateriaPrima(models.Model):
                     data_abertura, "%Y-%m-%d"
                 ).date()
             except ValueError:
-                return data_validade  # Fallback para validade original
+                return data_validade
 
         # Calcular nova data
         try:
             return data_abertura + datetime.timedelta(
-                days=self.dias_validade_apos_aberto
+                days=self.dias_validade_apos_aberto or 30
             )
-        except (TypeError, ValueError) as e:
+        except Exception as e:
             print(f"Erro ao calcular data_validade_efetiva: {e}")
             return data_validade  # Fallback para validade original
 
     @property
     def status(self):
         """Determina o status da matéria prima baseado na validade e quantidade"""
-        # Se você quiser usar o status calculado em vez do armazenado, descomente as linhas abaixo
-        # from django.utils import timezone
-        # hoje = timezone.now().date()
-        #
-        # # Determina qual data de validade usar
-        # data_validade = self.data_validade
-        #
-        # if not data_validade:
-        #     return "sem validade"
-        #
-        # dias_para_vencer = (data_validade - hoje).days
-        #
-        # if self.quantidade_disponivel <= 0:
-        #     return "esgotado"
-        # elif dias_para_vencer < 0:
-        #     return "vencido"
-        # elif dias_para_vencer <= 30:
-        #     return "próximo ao vencimento"
-        # else:
-        #     return "disponível"
-
-        # Por enquanto, retorne o status armazenado
+        # Retornar o status interno armazenado
+        # Isto evita os problemas anteriores com o cálculo dinâmico
         return self._status_interno
 
     @status.setter
     def status(self, valor):
-        """Define o valor do status"""
+        """Define o status manualmente"""
         self._status_interno = valor
 
-    def __init__(self, *args, **kwargs):
-        # Remove status dos kwargs antes de passar para o construtor pai
-        if "status" in kwargs:
-            print(f"⚠️ Status removido na inicialização: {kwargs.pop('status')}")
-        super().__init__(*args, **kwargs)
-
     def calcular_status(self):
-        """Calcula o status com base em regras de negócio"""
+        """Calcula o status com base em regras de negócio e atualiza o campo interno"""
         from django.utils import timezone
+        import datetime
 
         hoje = timezone.now().date()
 
-        # Determina qual data de validade usar
-        data_validade_considerar = (
-            self.data_validade_efetiva
-            if hasattr(self, "data_validade_efetiva")
-            else self.data_validade
-        )
+        # Determinar qual data de validade usar
+        data_validade = self.data_validade_efetiva
 
-        if not data_validade_considerar:
-            return "sem validade"
-
-        dias_para_vencer = (data_validade_considerar - hoje).days
-
-        if self.quantidade_disponivel <= 0:
-            return "esgotado"
-        elif dias_para_vencer < 0:
-            return "vencido"
-        elif dias_para_vencer <= 30:
-            return "próximo ao vencimento"
+        if not data_validade:
+            novo_status = "sem validade"
         else:
-            return "disponível"
+            # Garantir que data_validade seja objeto date
+            if isinstance(data_validade, str):
+                try:
+                    data_validade = datetime.datetime.strptime(
+                        data_validade, "%Y-%m-%d"
+                    ).date()
+                except ValueError:
+                    return "sem validade"
+
+            # Calcular dias para vencer
+            try:
+                dias_para_vencer = (data_validade - hoje).days
+
+                if self.quantidade_disponivel <= 0:
+                    novo_status = "esgotado"
+                elif dias_para_vencer < 0:
+                    novo_status = "vencido"
+                elif dias_para_vencer <= 30:
+                    novo_status = "próximo ao vencimento"
+                else:
+                    novo_status = "disponível"
+            except TypeError:
+                novo_status = "erro na data"
+
+        # Atualizar o status interno
+        self._status_interno = novo_status
+        return novo_status
 
     def save(self, *args, **kwargs):
-        """Atualiza o status antes de salvar"""
-        self.status = self.calcular_status()
+        """Sobrescreve método save para recalcular status se necessário"""
+        # Calcular o status antes de salvar
+        # Descomente se desejar atualizar o status automaticamente
+        # self.calcular_status()
         super().save(*args, **kwargs)
 
 

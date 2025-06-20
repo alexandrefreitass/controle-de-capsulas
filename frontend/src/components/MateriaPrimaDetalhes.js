@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
@@ -225,7 +225,7 @@ function MateriaPrimaDetalhes() {
                       </div>
                     </div>
                     
-                    {materiaPrima.embalagem_aberta && (
+                    {materiaPrima.embalagem_aberta && materiaPrima.data_abertura_embalagem && (
                       <>
                         <div className="validade-item">
                           <div className="validade-label">Data de abertura:</div>
@@ -239,7 +239,7 @@ function MateriaPrimaDetalhes() {
                         
                         <div className="validade-item destaque">
                           <div className="validade-label">Nova data de validade:</div>
-                          <div className="validade-valor">{formatDate(infoValidade.novaValidade)}</div>
+                          <div className="validade-valor">{formatDate(materiaPrima.data_validade_efetiva)}</div>
                         </div>
                       </>
                     )}

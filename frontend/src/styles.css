@@ -1181,3 +1181,35 @@ a:hover {
 .info-value {
   color: #212529;
 }
+.validade-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.validade-original {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-decoration: line-through;
+}
+
+.nova-validade {
+  font-weight: 600;
+  color: #dc3545; /* Cor de alerta para destacar a nova validade */
+}
+
+.abertura-info {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.riscado {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.destaque {
+  background-color: rgba(255, 193, 7, 0.1);
+  padding: 5px;
+  border-radius: 4px;
+}
