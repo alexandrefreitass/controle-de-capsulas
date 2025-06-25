@@ -1,58 +1,48 @@
-modules = ["bash", "nodejs-20", "python-3.11", "python-3.12", "web"]
+# Define o ponto de entrada, útil para o Replit entender o projeto.
+# Aponta para o arquivo principal do seu frontend.
+entrypoint = "frontend/src/index.js"
 
-# ✅ Comando principal - inicia o backend Django na porta 8000
-run = "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"
+# Comando a ser executado quando você aperta o botão "Run".
+# Ele navega para a pasta do frontend e executa o script "start",
+# que por sua vez usará o "concurrently" para rodar backend e frontend.
+run = "cd frontend && npm start"
 
-[nix]
-channel = "stable-24_05"
+# Comando executado uma única vez quando o Repl é iniciado (boot).
+# Essencial para automatizar a instalação de TODAS as dependências.
+onBoot = """
+echo "--- Iniciando instalação das dependências do Backend ---"
+cd backend
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python manage.py migrate
+# A criação de usuários de dev é melhor como um passo manual ou em um script separado.
+# Deixei comentado para não popular o banco a cada boot. Descomente se precisar.
+# echo "--- Criando usuários de desenvolvimento ---"
+# python manage.py setup_dev_users
+echo "--- Backend pronto ---"
 
-[deployment]
-run = ["sh", "-c", "cd backend && python manage.py migrate && python manage.py setup_dev_users && python manage.py runserver 0.0.0.0:8000"]
+echo "--- Iniciando instalação das dependências do Frontend ---"
+cd ../frontend
+npm install
+echo "--- Frontend pronto ---"
 
-[[ports]]
-localPort = 3000
-externalPort = 3000
+cd ..
+echo "--- Ambiente Full Stack configurado com sucesso! ---"
+"""
 
-[[ports]]
-localPort = 8000
+# Configuração do gerenciador de pacotes do Replit.
+# Estamos dizendo para ele não interferir, pois usaremos venv e npm manualmente.
+[packager]
+language = "python3"
 
-[[ports]]
-localPort = 8080
-externalPort = 80
+  [packager.features]
+  packageSearch = false
+  guessImports = false
 
-[workflows]
-runButton = "Backend Development"
-
-# ✅ Workflow para desenvolver o backend
-[[workflows.workflow]]
-name = "Backend Development"
-author = 39906757
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && python manage.py runserver 0.0.0.0:8000"
-
-# ✅ Workflow para desenvolver o frontend
-[[workflows.workflow]]
-name = "Frontend Development"
-author = 39906757
-mode = "sequential"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd frontend && npm start"
-
-# ✅ Workflow para rodar ambos
-[[workflows.workflow]]
-name = "Full Stack Development"
-author = 39906757
-mode = "parallel"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd backend && python manage.py runserver 0.0.0.0:8000"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd frontend && npm start"
+# Configuração para o servidor web do Replit (aba "Webview").
+[hosting]
+# Diz ao Replit que seu servidor de desenvolvimento do frontend roda na porta 3000.
+port = 3000
+# Ignora arquivos e pastas que não precisam ser servidos publicamente.
+ignoredFiles = ["node_modules", ".cache", "venv", ".venv", "backend", ".git"]
