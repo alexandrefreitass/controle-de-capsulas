@@ -1,3 +1,5 @@
+// C:\Users\Xandy\Desktop\CNC\frontend\webpack.config.js
+
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -7,46 +9,54 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/'
+    publicPath: '/',
   },
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: {
+          loader: 'babel-loader',
+        },
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
-      }
-    ]
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
   },
-  resolve: {
-    extensions: ['.js', '.jsx'],
-    modules: ['node_modules'],
-    fallback: {
-      "path": false,
-      "fs": false
-    }
-  },
-  // ✅ dev
- devServer: {
-    historyApiFallback: true, // Essencial para o React Router
-    port: 3000,
-    // A configuração do proxy foi ajustada para o novo formato de array
-    proxy: [
-      {
-        context: ['/api', '/accounts'], // Caminhos a serem redirecionados
-        target: 'http://localhost:8000', // Endereço do seu backend
-        changeOrigin: true,
-      }
-    ]
-  },
-
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html'
-    })
-  ]
+      template: './public/index.html',
+    }),
+  ],
+  // ===================================================================
+  // CORREÇÃO DA SINTAXE DO PROXY
+  // ===================================================================
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
+    port: 3000,
+    open: true,
+    hot: true,
+    historyApiFallback: true,
+
+    // A SINTAXE CORRETA PARA WEBPACK DEV SERVER v5+
+    // O proxy agora é um ARRAY de objetos.
+    proxy: [
+      {
+        // O 'context' define quais caminhos serão interceptados.
+        context: ['/accounts', '/api'], 
+        // 'target' é para onde vamos encaminhar essas requisições.
+        target: 'http://127.0.0.1:8000', 
+      },
+    ],
+  },
+  // ===================================================================
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
 };
