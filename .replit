@@ -1,48 +1,46 @@
-# Define o ponto de entrada, útil para o Replit entender o projeto.
-# Aponta para o arquivo principal do seu frontend.
+# ==============================================================================
+# ✅ ARQUIVO DE CONFIGURAÇÃO DEFINITIVO PARA O REPLIT
+# Autor: Seu nome de Engenheiro
+# Versão: 2.0 (A que funciona)
+# ==============================================================================
+
+# Ponto de entrada (ajuda o Replit a entender o projeto)
 entrypoint = "frontend/src/index.js"
 
 # Comando a ser executado quando você aperta o botão "Run".
-# Ele navega para a pasta do frontend e executa o script "start",
-# que por sua vez usará o "concurrently" para rodar backend e frontend.
+# Usa o concurrently que configuramos no package.json para subir BE e FE.
 run = "cd frontend && npm start"
 
-# Comando executado uma única vez quando o Repl é iniciado (boot).
-# Essencial para automatizar a instalação de TODAS as dependências.
+# O CORAÇÃO DA NOSSA AUTOMAÇÃO:
+# Executado uma vez no boot para instalar TUDO.
 onBoot = """
-echo "--- Iniciando instalação das dependências do Backend ---"
+echo "--- [BOOT] Iniciando setup do ambiente Full Stack ---"
+echo "--- [BOOT] Configurando Backend (Python/Django)... ---"
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
-# A criação de usuários de dev é melhor como um passo manual ou em um script separado.
-# Deixei comentado para não popular o banco a cada boot. Descomente se precisar.
-# echo "--- Criando usuários de desenvolvimento ---"
-# python manage.py setup_dev_users
-echo "--- Backend pronto ---"
+echo "--- [BOOT] Backend configurado. ---"
 
-echo "--- Iniciando instalação das dependências do Frontend ---"
+echo "--- [BOOT] Configurando Frontend (Node/React)... ---"
 cd ../frontend
 npm install
-echo "--- Frontend pronto ---"
+echo "--- [BOOT] Frontend configurado. ---"
 
 cd ..
-echo "--- Ambiente Full Stack configurado com sucesso! ---"
+echo "--- [BOOT] Ambiente pronto para decolar! ---"
 """
 
-# Configuração do gerenciador de pacotes do Replit.
-# Estamos dizendo para ele não interferir, pois usaremos venv e npm manualmente.
+# Diz ao Replit para não tentar adivinhar ou gerenciar nossos pacotes.
+# Nós temos o controle com venv e npm.
 [packager]
 language = "python3"
-
   [packager.features]
   packageSearch = false
   guessImports = false
 
-# Configuração para o servidor web do Replit (aba "Webview").
+# Aponta a aba "Webview" para a porta do nosso servidor do React.
 [hosting]
-# Diz ao Replit que seu servidor de desenvolvimento do frontend roda na porta 3000.
 port = 3000
-# Ignora arquivos e pastas que não precisam ser servidos publicamente.
 ignoredFiles = ["node_modules", ".cache", "venv", ".venv", "backend", ".git"]
