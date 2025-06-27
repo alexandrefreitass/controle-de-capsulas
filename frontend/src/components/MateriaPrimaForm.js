@@ -17,18 +17,19 @@ const unidadeDeMedidaOptions = [
 const customSelectStyles = {
   control: (provided, state) => ({
     ...provided,
-    backgroundColor: '#ffffff',
-    border: state.isFocused ? '1px solid #059669' : '1px solid #d1d5db',
-    borderRadius: '4px',
-    padding: '0.625rem 0.75rem',
-    minHeight: '40px',
+    backgroundColor: 'var(--background-primary)',
+    border: state.isFocused ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-md)',
+    padding: '0.75rem 1rem',
+    minHeight: 'auto',
     fontSize: '0.875rem',
     lineHeight: '1.25rem',
-    boxShadow: state.isFocused ? '0 0 0 2px rgba(5, 150, 105, 0.1)' : 'none',
+    boxShadow: state.isFocused ? '0 0 0 1px var(--primary-light)' : 'none',
     '&:hover': {
-      borderColor: state.isFocused ? '#059669' : '#9ca3af'
+      borderColor: state.isFocused ? 'var(--primary-color)' : '#9ca3af'
     },
-    cursor: 'pointer'
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out'
   }),
   valueContainer: (provided) => ({
     ...provided,
@@ -38,36 +39,36 @@ const customSelectStyles = {
     ...provided,
     margin: '0',
     padding: '0',
-    color: '#111827'
+    color: 'var(--text-primary)'
   }),
   indicatorSeparator: () => ({
     display: 'none'
   }),
   dropdownIndicator: (provided, state) => ({
     ...provided,
-    color: '#6b7280',
+    color: 'var(--text-muted)',
     padding: '0 8px',
     '&:hover': {
-      color: '#374151'
+      color: 'var(--text-secondary)'
     },
     transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
     transition: 'transform 0.2s'
   }),
   placeholder: (provided) => ({
     ...provided,
-    color: '#9ca3af',
+    color: 'var(--text-muted)',
     fontSize: '0.875rem'
   }),
   singleValue: (provided) => ({
     ...provided,
-    color: '#111827',
+    color: 'var(--text-primary)',
     fontSize: '0.875rem'
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: '4px',
-    border: '1px solid #d1d5db',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border-color)',
+    boxShadow: 'var(--shadow-md)',
     zIndex: 1000
   }),
   menuList: (provided) => ({
@@ -77,17 +78,17 @@ const customSelectStyles = {
   option: (provided, state) => ({
     ...provided,
     backgroundColor: state.isSelected 
-      ? '#059669' 
+      ? 'var(--primary-color)' 
       : state.isFocused 
-        ? '#f3f4f6' 
+        ? 'var(--background-accent)' 
         : 'transparent',
-    color: state.isSelected ? '#ffffff' : '#111827',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary)',
     padding: '8px 12px',
-    borderRadius: '4px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.875rem',
     cursor: 'pointer',
     '&:hover': {
-      backgroundColor: state.isSelected ? '#059669' : '#f3f4f6'
+      backgroundColor: state.isSelected ? 'var(--primary-hover)' : 'var(--background-accent)'
     }
   })
 };
