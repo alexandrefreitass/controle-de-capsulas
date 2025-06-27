@@ -49,6 +49,10 @@ function Success() {
             {/* =============================================================== */}
             <div className="dashboard-logo">
               <img src={LogoCNC} alt="Logo CNC" className="dashboard-logo-img" />
+              <div className="dashboard-brand">
+                <span className="dashboard-brand-name">KONNEKIT</span>
+                <span className="dashboard-brand-subtitle">Sistema de Gestão</span>
+              </div>
             </div>
             <div className="dashboard-user">
               <div>
