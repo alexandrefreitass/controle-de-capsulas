@@ -25,7 +25,7 @@ function MateriaPrimaForm() {
     localizacao: '',
     preco_unitario: 0
   });
-  
+
   const [fornecedores, setFornecedores] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -61,13 +61,13 @@ function MateriaPrimaForm() {
     try {
       setLoading(true);
       const response = await apiClient.get(apiEndpoints.materiaPrima(id));
-      
+
       // Se a resposta contiver 'lote', mapeie para 'numero_lote'
       if (response.data.lote && !response.data.numero_lote) {
         response.data.numero_lote = response.data.lote;
         delete response.data.lote;
       }
-      
+
       // Formatação de datas para o formato esperado pelo input type="date"
       const data = {
         ...response.data,
@@ -75,7 +75,7 @@ function MateriaPrimaForm() {
         data_validade: response.data.data_validade ? formatDateForInput(response.data.data_validade) : '',
         fornecedor_id: response.data.fornecedor ? response.data.fornecedor.id : ''
       };
-      
+
       setFormData(data);
       setLoading(false);
     } catch (error) {
@@ -90,14 +90,14 @@ function MateriaPrimaForm() {
     if (!dateString) return '';
     // Se já estiver no formato YYYY-MM-DD, retorna como está
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
-    
+
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
   };
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    
+
     // Converter valores numéricos inteiros
     if (['cod_interno', 'nota_fiscal', 'dias_validade_apos_aberto'].includes(name)) {
       setFormData({
@@ -138,7 +138,7 @@ function MateriaPrimaForm() {
         return "Data de fabricação inválida";
       }
     }
-    
+
     if (formData.data_validade) {
       try {
         new Date(formData.data_validade);
@@ -146,17 +146,17 @@ function MateriaPrimaForm() {
         return "Data de validade inválida";
       }
     }
-    
+
     // Verificar se a data de validade é posterior à de fabricação
     if (formData.data_fabricacao && formData.data_validade) {
       const fabDate = new Date(formData.data_fabricacao);
       const valDate = new Date(formData.data_validade);
-      
+
       if (valDate < fabDate) {
         return "A data de validade deve ser posterior à data de fabricação";
       }
     }
-    
+
     return null; // Sem erros
   };
 
@@ -166,13 +166,13 @@ function MateriaPrimaForm() {
       'nome', 'cod_interno', 'numero_lote', 'nota_fiscal', 
       'fornecedor_id', 'data_fabricacao', 'data_validade'
     ];
-    
+
     const missingFields = requiredFields.filter(field => {
       // Verificar se o valor existe e não é vazio
       const value = formData[field];
       return value === undefined || value === null || value === '';
     });
-    
+
     if (missingFields.length > 0) {
       const fieldNames = missingFields.map(field => {
         // Mapear nomes de campos para versões mais legíveis
@@ -187,40 +187,40 @@ function MateriaPrimaForm() {
         };
         return fieldMap[field] || field;
       });
-      
+
       setError(`Campos obrigatórios não preenchidos: ${fieldNames.join(', ')}`);
       return false;
     }
-    
+
     // Verificações adicionais
     if (formData.preco_unitario < 0) {
       setError('O preço unitário não pode ser negativo');
       return false;
     }
-    
+
     if (formData.quantidade_disponivel < 0) {
       setError('A quantidade disponível não pode ser negativa');
       return false;
     }
-    
+
     // Verificar se a data de validade é posterior à data de fabricação
     if (formData.data_fabricacao && formData.data_validade) {
       const fabricacao = new Date(formData.data_fabricacao);
       const validade = new Date(formData.data_validade);
-      
+
       if (validade <= fabricacao) {
         setError('A data de validade deve ser posterior à data de fabricação');
         return false;
       }
     }
-    
+
     // Adicionar validação de datas
     const dateError = validateDates(formData);
     if (dateError) {
       setError(dateError);
       return false;
     }
-    
+
     return true;
   };
 
@@ -235,23 +235,23 @@ function MateriaPrimaForm() {
     try {
       setLoading(true);
       setError('');
-      
+
       // Criar uma cópia dos dados e remover status explicitamente
       const dataToSend = { ...formData };
-      
+
       // Verificar se há status explicitamente
       if ('status' in dataToSend) {
         console.log('⚠️ Status encontrado nos dados do formulário:', dataToSend.status);
         delete dataToSend.status;
         console.log('✅ Status removido dos dados a serem enviados');
       }
-      
+
       // Garantir que não haja status serializado em outro lugar
       const stringifiedData = JSON.stringify(dataToSend);
       if (stringifiedData.includes('"status"')) {
         console.error('⚠️ O status ainda está presente nos dados serializados!');
       }
-      
+
       console.log('Dados enviados para o servidor:', dataToSend);
 
       if (isEditing) {
@@ -264,14 +264,14 @@ function MateriaPrimaForm() {
       navigate('/materias-primas');
     } catch (error) {
       console.error('Erro ao salvar matéria prima:', error);
-      
+
       if (error.response) {
         console.error('Detalhes do erro:', {
           status: error.response.status,
           data: error.response.data
         });
       }
-      
+
       if (error.response && error.response.data && error.response.data.error) {
         setError(`Erro: ${error.response.data.error}`);
       } else {
@@ -366,8 +366,7 @@ function MateriaPrimaForm() {
                         className="form-input"
                         value={formData.cod_interno}
                         onChange={handleChange}
-                        placeholder="Ex: 1001"
-                        required
+                        placeholder="Ex: 1001                        required
                         disabled={loading}
                       />
                     </div>
@@ -434,7 +433,7 @@ function MateriaPrimaForm() {
                       <select
                         id="fornecedor_id"
                         name="fornecedor_id"
-                        className="form-select"
+                        className="form-input form-select"
                         value={formData.fornecedor_id}
                         onChange={handleChange}
                         required
@@ -526,7 +525,7 @@ function MateriaPrimaForm() {
                       <select
                         id="unidade_medida"
                         name="unidade_medida"
-                        className="form-select"
+                        className="form-input form-select"
                         value={formData.unidade_medida}
                         onChange={handleChange}
                         disabled={loading}
