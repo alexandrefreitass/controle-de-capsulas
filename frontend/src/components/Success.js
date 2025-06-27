@@ -27,31 +27,24 @@ function Success() {
   }, []);
 
   useEffect(() => {
-    // Inicializar o gráfico após o componente ser montado
-    if (!loading && dashboardData.valorTotalEstoque > 0) {
-      initializeChart();
-    }
-    
     // Cleanup do gráfico quando o componente for desmontado
     return () => {
       if (chartInstance) {
         chartInstance.destroy();
       }
     };
-  }, [loading, dashboardData]);
+  }, [chartInstance]);
 
   const loadDashboardData = async () => {
     try {
-      // Carregar dados para o dashboard
-      const [fornecedoresRes, materiasRes, producaoRes] = await Promise.allSettled([
+      // Carregar dados para o dashboard - removendo endpoint de produção que não existe
+      const [fornecedoresRes, materiasRes] = await Promise.allSettled([
         apiClient.get(apiEndpoints.fornecedores.list),
-        apiClient.get(apiEndpoints.materiasPrimas.list),
-        apiClient.get('/api/producao/')
+        apiClient.get(apiEndpoints.materiasPrimas.list)
       ]);
 
       const fornecedores = fornecedoresRes.status === 'fulfilled' ? fornecedoresRes.value.data : [];
       const materias = materiasRes.status === 'fulfilled' ? materiasRes.value.data : [];
-      const producoes = producaoRes.status === 'fulfilled' ? producaoRes.value.data : [];
 
       // Calcular valor total do estoque
       const valorTotal = materias.reduce((total, materia) => {
@@ -60,12 +53,22 @@ function Success() {
         return total + (valor * quantidade);
       }, 0);
 
-      setDashboardData({
+      const newDashboardData = {
         totalFornecedores: fornecedores.length,
         totalMateriasPrimas: materias.length,
-        totalProducoes: producoes.length,
+        totalProducoes: 0, // Valor fixo até o endpoint estar disponível
         valorTotalEstoque: valorTotal
-      });
+      };
+
+      setDashboardData(newDashboardData);
+      
+      // Inicializar gráfico após carregar os dados
+      setTimeout(() => {
+        if (valorTotal > 0) {
+          initializeChart(valorTotal);
+        }
+      }, 100);
+      
     } catch (error) {
       console.error('Erro ao carregar dados do dashboard:', error);
     }
@@ -83,9 +86,18 @@ function Success() {
     }).format(value);
   };
 
-  const initializeChart = () => {
+  const initializeChart = (valorEstoque = null) => {
     const chartCanvas = document.getElementById('estoqueChart');
-    if (!chartCanvas) return;
+    if (!chartCanvas) {
+      console.log('Canvas do gráfico não encontrado');
+      return;
+    }
+
+    // Verificar se Chart.js está disponível
+    if (!window.Chart) {
+      console.error('Chart.js não carregado');
+      return;
+    }
 
     // Destruir gráfico existente se houver
     if (chartInstance) {
@@ -93,6 +105,7 @@ function Success() {
     }
 
     const ctx = chartCanvas.getContext('2d');
+    const valorBase = valorEstoque || dashboardData.valorTotalEstoque || 1000;
     
     // Dados simulados para demonstração - últimos 7 dias
     const hoje = new Date();
@@ -106,12 +119,11 @@ function Success() {
       
       // Simular variação no valor do estoque (±10% do valor atual)
       const variacao = (Math.random() - 0.5) * 0.2; // -10% a +10%
-      const valorBase = dashboardData.valorTotalEstoque;
-      dados.push(valorBase + (valorBase * variacao));
+      dados.push(Math.max(0, valorBase + (valorBase * variacao)));
     }
     
     // Garantir que o último valor seja o valor atual
-    dados[dados.length - 1] = dashboardData.valorTotalEstoque;
+    dados[dados.length - 1] = valorBase;
 
     const chartData = {
       labels: labels,
@@ -131,72 +143,78 @@ function Success() {
       }]
     };
 
-    const newChartInstance = new window.Chart(ctx, {
-      type: 'line',
-      data: chartData,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          },
-          tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            titleColor: '#ffffff',
-            bodyColor: '#ffffff',
-            borderColor: '#4A90E2',
-            borderWidth: 1,
-            callbacks: {
-              label: function(context) {
-                return `Valor: ${formatCurrency(context.parsed.y)}`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              color: 'rgba(0, 0, 0, 0.06)',
-              borderDash: [5, 5]
+    try {
+      const newChartInstance = new window.Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
             },
-            ticks: {
-              color: '#7f8c8d',
-              font: {
-                size: 12
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: '#4A90E2',
+              borderWidth: 1,
+              callbacks: {
+                label: function(context) {
+                  return `Valor: ${formatCurrency(context.parsed.y)}`;
+                }
               }
             }
           },
-          y: {
-            beginAtZero: false,
-            grid: {
-              color: 'rgba(0, 0, 0, 0.06)',
-              borderDash: [5, 5]
-            },
-            ticks: {
-              color: '#7f8c8d',
-              font: {
-                size: 12
+          scales: {
+            x: {
+              grid: {
+                color: 'rgba(0, 0, 0, 0.06)',
+                borderDash: [5, 5]
               },
-              callback: function(value) {
-                return formatCurrency(value);
+              ticks: {
+                color: '#7f8c8d',
+                font: {
+                  size: 12
+                }
+              }
+            },
+            y: {
+              beginAtZero: false,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.06)',
+                borderDash: [5, 5]
+              },
+              ticks: {
+                color: '#7f8c8d',
+                font: {
+                  size: 12
+                },
+                callback: function(value) {
+                  return formatCurrency(value);
+                }
               }
             }
-          }
-        },
-        hover: {
-          mode: 'index',
-          intersect: false
-        },
-        elements: {
-          point: {
-            hoverBackgroundColor: '#4A90E2'
+          },
+          hover: {
+            mode: 'index',
+            intersect: false
+          },
+          elements: {
+            point: {
+              hoverBackgroundColor: '#4A90E2'
+            }
           }
         }
-      }
-    });
+      });
 
-    setChartInstance(newChartInstance);
+      setChartInstance(newChartInstance);
+      console.log('Gráfico inicializado com sucesso');
+      
+    } catch (error) {
+      console.error('Erro ao criar gráfico:', error);
+    }
   };
 
   if (!loading && !username) {
