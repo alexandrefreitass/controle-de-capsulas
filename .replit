@@ -11,3 +11,9 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd frontend && npm start"
+
+[nix]
+
+[[ports]]
+localPort = 8000
+externalPort = 80
