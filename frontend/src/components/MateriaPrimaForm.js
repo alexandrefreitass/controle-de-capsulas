@@ -13,6 +13,85 @@ const unidadeDeMedidaOptions = [
   { value: 'unidade', label: 'Unidade' }
 ];
 
+// 3. Estilos customizados para o React Select
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: '#ffffff',
+    border: state.isFocused ? '2px solid #3b82f6' : '1px solid #d1d5db',
+    borderRadius: '8px',
+    padding: '0.5rem 0.75rem',
+    minHeight: '44px',
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+    boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? '#3b82f6' : '#9ca3af'
+    },
+    cursor: 'pointer'
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0'
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0',
+    padding: '0',
+    color: '#111827'
+  }),
+  indicatorSeparator: () => ({
+    display: 'none'
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: '#6b7280',
+    padding: '0 8px',
+    '&:hover': {
+      color: '#374151'
+    },
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    transition: 'transform 0.2s'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#9ca3af',
+    fontSize: '0.875rem'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#111827',
+    fontSize: '0.875rem'
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: '8px',
+    border: '1px solid #d1d5db',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    zIndex: 1000
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    padding: '4px'
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected 
+      ? '#3b82f6' 
+      : state.isFocused 
+        ? '#f3f4f6' 
+        : 'transparent',
+    color: state.isSelected ? '#ffffff' : '#111827',
+    padding: '8px 12px',
+    borderRadius: '4px',
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: state.isSelected ? '#3b82f6' : '#f3f4f6'
+    }
+  })
+};
+
 function MateriaPrimaForm() {
   const { id } = useParams();
   const isEditing = Boolean(id);
@@ -523,9 +602,10 @@ function MateriaPrimaForm() {
                         value={unidadeDeMedidaOptions.find(option => option.value === formData.unidade_medida)}
                         onChange={handleUnidadeMedidaChange}
                         isDisabled={loading}
-                        placeholder="Selecione..."
-                        // Você pode adicionar estilos customizados aqui se quiser
-                        // styles={customStyles}
+                        placeholder="Selecione uma unidade de medida..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        classNamePrefix="react-select"
                       />
                     </div>
 
