@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+import LogoCNC from '../assets/images/logo-02.png';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -55,7 +56,7 @@ function Register() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">CNC Sistema de controle de produção</div>
+          <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
           <div className="auth-subtitle">Criar nova conta</div>
         </div>
 
