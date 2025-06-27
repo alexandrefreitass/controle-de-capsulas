@@ -533,6 +533,8 @@ function MateriaPrimaForm() {
                         isSearchable={true}
                         isClearable={true}
                         classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
                       />
                     </div>
 
@@ -622,6 +624,8 @@ function MateriaPrimaForm() {
                         styles={customSelectStyles}
                         isSearchable={true}
                         classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
                       />
                     </div>
 
