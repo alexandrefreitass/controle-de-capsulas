@@ -366,7 +366,8 @@ function MateriaPrimaForm() {
                         className="form-input"
                         value={formData.cod_interno}
                         onChange={handleChange}
-                        placeholder="Ex: 1001                        required
+                        placeholder="Ex: 1001"
+                        required
                         disabled={loading}
                       />
                     </div>
@@ -433,7 +434,7 @@ function MateriaPrimaForm() {
                       <select
                         id="fornecedor_id"
                         name="fornecedor_id"
-                        className="form-input form-select"
+                        className="form-select"
                         value={formData.fornecedor_id}
                         onChange={handleChange}
                         required
@@ -525,7 +526,7 @@ function MateriaPrimaForm() {
                       <select
                         id="unidade_medida"
                         name="unidade_medida"
-                        className="form-input form-select"
+                        className="form-select"
                         value={formData.unidade_medida}
                         onChange={handleChange}
                         disabled={loading}
