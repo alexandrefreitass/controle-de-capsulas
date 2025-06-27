@@ -1,3 +1,4 @@
+
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import LoteProducao, LoteMateriaPrimaConsumida
@@ -22,7 +23,7 @@ def lote_producao_list(request):
                         "id": material.id,
                         "lote_materia_prima": {
                             "id": material.lote_materia_prima.id,
-                            "lote": material.lote_materia_prima.lote,
+                            "lote": material.lote_materia_prima.numero_lote,
                             "materia_prima": {
                                 "id": material.lote_materia_prima.materia_prima.id,
                                 "nome": material.lote_materia_prima.materia_prima.nome,
@@ -100,7 +101,7 @@ def lote_producao_list(request):
                     if lote_materia_prima.quant_disponivel_mg < quant_consumida_mg:
                         return JsonResponse(
                             {
-                                "error": f"Quantidade insuficiente para o lote de matéria-prima {lote_materia_prima.lote}. Disponível: {lote_materia_prima.quant_disponivel_mg}mg"
+                                "error": f"Quantidade insuficiente para o lote de matéria-prima {lote_materia_prima.numero_lote}. Disponível: {lote_materia_prima.quant_disponivel_mg}mg"
                             },
                             status=400,
                         )
@@ -121,7 +122,7 @@ def lote_producao_list(request):
                             "id": material_consumido.id,
                             "lote_materia_prima": {
                                 "id": lote_materia_prima.id,
-                                "lote": lote_materia_prima.lote,
+                                "lote": lote_materia_prima.numero_lote,
                                 "materia_prima": {
                                     "id": lote_materia_prima.materia_prima.id,
                                     "nome": lote_materia_prima.materia_prima.nome,
@@ -170,7 +171,7 @@ def lote_producao_detail(request, pk):
                     "id": material.id,
                     "lote_materia_prima": {
                         "id": material.lote_materia_prima.id,
-                        "lote": material.lote_materia_prima.lote,
+                        "lote": material.lote_materia_prima.numero_lote,
                         "materia_prima": {
                             "id": material.lote_materia_prima.materia_prima.id,
                             "nome": material.lote_materia_prima.materia_prima.nome,
@@ -235,7 +236,7 @@ def lote_producao_detail(request, pk):
                         "id": material.id,
                         "lote_materia_prima": {
                             "id": material.lote_materia_prima.id,
-                            "lote": material.lote_materia_prima.lote,
+                            "lote": material.lote_materia_prima.numero_lote,
                             "materia_prima": {
                                 "id": material.lote_materia_prima.materia_prima.id,
                                 "nome": material.lote_materia_prima.materia_prima.nome,
