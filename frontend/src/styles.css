@@ -110,7 +110,7 @@
 }
 
 .logo-collapsed {
-  width: 50px;
+  width: 60px;
   height: auto;
   opacity: 1;
 }
@@ -120,7 +120,7 @@
 }
 
 .logo-expanded {
-  width: 140px;
+  width: 120px;
   height: auto;
   opacity: 0;
 }
