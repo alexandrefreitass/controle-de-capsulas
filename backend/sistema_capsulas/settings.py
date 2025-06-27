@@ -22,32 +22,37 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 # ==============================================================================
 
 # Lista base de hosts permitidos
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0", # Essencial para o servidor de desenvolvimento em contêineres
-]
+ALLOWED_HOSTS = ['*']
 
 # Lista base de origens permitidas para CORS e CSRF
 TRUSTED_ORIGINS = []
 
 # --- Configuração para o ambiente Replit ---
 # Detecta se estamos rodando no Replit e se configura dinamicamente.
-IS_REPLIT = "REPL_ID" in os.environ
+IS_REPLIT = "REPL_ID" in os.environ or "REPLIT_DEV_DOMAIN" in os.environ
+
 if IS_REPLIT:
-    # O formato da URL do Replit é {slug}.{owner}.replit.dev
-    # Construir a URL dinamicamente é mais seguro e preciso que usar wildcards genéricos.
-    repl_slug = os.environ.get("REPL_SLUG")
+    # Adicionar o domínio do Replit se disponível
+    replit_domain = os.environ.get("REPLIT_DEV_DOMAIN")
+    if replit_domain:
+        ALLOWED_HOSTS.append(replit_domain)
+        TRUSTED_ORIGINS.append(f"https://{replit_domain}")
+    
+    # Fallback para o formato antigo
+    repl_slug = os.environ.get("REPL_SLUG") 
     repl_owner = os.environ.get("REPL_OWNER")
     
     if repl_slug and repl_owner:
-        # Adiciona o host principal do Replit
         replit_host = f"{repl_slug}.{repl_owner}.replit.dev"
         ALLOWED_HOSTS.append(replit_host)
-        
-        # Adiciona a origem para CORS e CSRF
-        replit_origin = f"https://{replit_host}"
-        TRUSTED_ORIGINS.append(replit_origin)
+        TRUSTED_ORIGINS.append(f"https://{replit_host}")
+    
+    # Adicionar wildcards para subdomínios do Replit
+    ALLOWED_HOSTS.extend([
+        "*.replit.dev",
+        "*.repl.co",
+        "*.replitusercontent.com"
+    ])
 
 # --- Configuração para o ambiente Local ---
 if not IS_REPLIT or DEBUG:

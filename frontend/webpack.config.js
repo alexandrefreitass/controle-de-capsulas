@@ -40,8 +40,10 @@ module.exports = {
     },
     compress: true,
     port: 3000,
-    open: true,
+    host: '0.0.0.0',
+    allowedHosts: 'all',
     hot: true,
+    open: false,
     historyApiFallback: true,
 
     // A SINTAXE CORRETA PARA WEBPACK DEV SERVER v5+
