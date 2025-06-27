@@ -41,29 +41,6 @@ function Success() {
 
   return (
     <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="container">
-          <nav className="dashboard-nav">
-            {/* =============================================================== */}
-            {/* ALTERADO: Substituindo o texto pela imagem da logo */}
-            {/* =============================================================== */}
-            <div className="dashboard-logo">
-              <img src={LogoCNC} alt="Logo CNC" className="dashboard-logo-img" />
-            </div>
-            <div className="dashboard-user">
-              <div>
-                <div className="dashboard-welcome">Bem-vindo,</div>
-                <div className="dashboard-username">{username}</div>
-              </div>
-              <button onClick={handleLogout} className="btn btn-danger btn-sm">
-                <Icon name="LogOut" size={16} />
-                Sair
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
       <main className="dashboard-main">
         <div className="container">
           <div className="dashboard-title">
