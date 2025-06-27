@@ -208,13 +208,27 @@ function MateriaPrimaForm() {
     }
   };
 
-  // 3. Handler específico para o React Select
+  // 3. Handler específico para o React Select - Unidade de Medida
   const handleUnidadeMedidaChange = (selectedOption) => {
     setFormData({
       ...formData,
       unidade_medida: selectedOption.value
     });
   };
+
+  // 4. Handler específico para o React Select - Fornecedor
+  const handleFornecedorChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      fornecedor_id: selectedOption ? selectedOption.value : ''
+    });
+  };
+
+  // 5. Criar opções para fornecedores
+  const fornecedorOptions = fornecedores.map(fornecedor => ({
+    value: fornecedor.id,
+    label: fornecedor.razao_social
+  }));
 
 
   const validateDates = (formData) => {
@@ -507,22 +521,19 @@ function MateriaPrimaForm() {
                       <label className="form-label" htmlFor="fornecedor_id">
                         Fornecedor *
                       </label>
-                      <select
+                      <Select
                         id="fornecedor_id"
                         name="fornecedor_id"
-                        className="form-input"
-                        value={formData.fornecedor_id}
-                        onChange={handleChange}
-                        required
-                        disabled={loading}
-                      >
-                        <option value="">Selecione um fornecedor</option>
-                        {fornecedores.map((fornecedor) => (
-                          <option key={fornecedor.id} value={fornecedor.id}>
-                            {fornecedor.razao_social}
-                          </option>
-                        ))}
-                      </select>
+                        options={fornecedorOptions}
+                        value={fornecedorOptions.find(option => option.value === formData.fornecedor_id) || null}
+                        onChange={handleFornecedorChange}
+                        isDisabled={loading}
+                        placeholder="Selecione um fornecedor..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        isClearable={true}
+                        classNamePrefix="react-select"
+                      />
                     </div>
 
                     <div className="form-group">
