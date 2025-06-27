@@ -71,7 +71,7 @@ export const apiEndpoints = {
   // Auth
   login: '/accounts/login/',
   register: '/accounts/register/',
-  
+
   // Fornecedores
   fornecedores: '/api/fornecedores/',
   fornecedor: (id) => `/api/fornecedores/${id}/`,
@@ -81,7 +81,7 @@ export const apiEndpoints = {
   materiaPrima: (id) => `/api/materias-primas/${id}/`,
   materiaPrimaEstoque: (id) => `/api/materias-primas/${id}/estoque/`,
   materiaPrimaAbrirEmbalagem: (id) => `/api/materias-primas/${id}/abrir-embalagem/`,
-  
+
   // Lotes
   lotes: '/api/lotes/',
   lote: (id) => `/api/lotes/${id}/`,
