@@ -629,6 +629,7 @@ a:hover {
   background: var(--background-accent);
   border-bottom: 1px solid var(--border-accent);
   gap: 2.5rem;
+  min-height: 140px;
 }
 
 .auth-logo-section {
@@ -636,6 +637,7 @@ a:hover {
   display: flex;
   align-items: center;
   order: 2;
+  min-height: 100px;
 }
 
 .auth-content-section {
@@ -658,7 +660,7 @@ a:hover {
 }
 
 .auth-logo-img {
-  height: 70px;
+  height: 90px;
   width: auto;
   transition: transform 0.3s ease-in-out;
 }
@@ -1437,7 +1439,7 @@ a:hover {
   }
   
   .auth-logo-img {
-    height: 55px;
+    height: 75px;
   }
   
   .auth-subtitle {
