@@ -989,7 +989,8 @@ select.form-input option {
 .validade-status.normal {
   background-color: rgba(40, 167, 69, 0.15);
   color: #28a745;
-```text
+}
+
 .validade-status.alerta {
   background-color: rgba(255, 193, 7, 0.15);
   color: #ffc107;
