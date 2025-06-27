@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Importando o apiClient e os endpoints centralizados
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+
+// ===================================================================
+// ADICIONADO: Importação da sua logo
+// ===================================================================
+// Lembre-se de criar a pasta 'assets/images' e colocar sua logo lá.
+// Pode ser .svg, .png, etc. O Webpack vai cuidar do resto.
+import LogoCNC from '../assets/images/logo-02.png'; 
+// ===================================================================
+
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -17,7 +25,6 @@ function Login() {
     setLoading(true);
 
     try {
-      // Usando a instância do apiClient que já tem a baseURL e o timeout
       const response = await apiClient.post(apiEndpoints.login, {
         username,
         password
@@ -27,7 +34,6 @@ function Login() {
         localStorage.setItem('username', username);
         navigate('/success');
       } else {
-        // A lógica de erro pode ser mais genérica se o backend padronizar as respostas
         setError(response.data.error || 'Credenciais inválidas. Tente novamente.');
       }
     } catch (error) {
@@ -47,12 +53,14 @@ function Login() {
     }
   };
 
-  // O restante do seu componente JSX continua aqui...
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">Sistema CNC</div>
+          {/* =============================================================== */}
+          {/* ALTERADO: Substituindo o texto pela imagem da logo */}
+          {/* =============================================================== */}
+          <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
           <div className="auth-subtitle">KONNEKIT - Sistema de Gestão</div>
         </div>
         <div className="auth-body">

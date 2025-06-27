@@ -1,7 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
+
+// ===================================================================
+// ADICIONADO: Importação da sua logo
+// ===================================================================
+import LogoCNC from '../assets/images/logo-02.png';
+// ===================================================================
 
 function Success() {
   const [username, setUsername] = useState('');
@@ -39,7 +44,12 @@ function Success() {
       <header className="dashboard-header">
         <div className="container">
           <nav className="dashboard-nav">
-            <div className="dashboard-logo">Sistema CNC</div>
+            {/* =============================================================== */}
+            {/* ALTERADO: Substituindo o texto pela imagem da logo */}
+            {/* =============================================================== */}
+            <div className="dashboard-logo">
+              <img src={LogoCNC} alt="Logo CNC" className="dashboard-logo-img" />
+            </div>
             <div className="dashboard-user">
               <div>
                 <div className="dashboard-welcome">Bem-vindo,</div>

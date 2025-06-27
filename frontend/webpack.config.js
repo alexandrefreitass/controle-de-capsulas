@@ -24,6 +24,16 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
       },
+      // ===================================================================
+      // ADICIONADO: REGRA PARA CARREGAR IMAGENS
+      // ===================================================================
+      // Isso permite que você importe imagens como se fossem componentes.
+      // Essencial para o que vamos fazer.
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+      },
+      // ===================================================================
     ],
   },
   plugins: [
@@ -31,9 +41,6 @@ module.exports = {
       template: './public/index.html',
     }),
   ],
-  // ===================================================================
-  // CORREÇÃO DA SINTAXE DO PROXY
-  // ===================================================================
   devServer: {
     static: {
       directory: path.join(__dirname, 'public'),
@@ -45,19 +52,13 @@ module.exports = {
     hot: true,
     open: false,
     historyApiFallback: true,
-
-    // A SINTAXE CORRETA PARA WEBPACK DEV SERVER v5+
-    // O proxy agora é um ARRAY de objetos.
     proxy: [
       {
-        // O 'context' define quais caminhos serão interceptados.
         context: ['/accounts', '/api'], 
-        // 'target' é para onde vamos encaminhar essas requisições.
         target: 'http://127.0.0.1:8000', 
       },
     ],
   },
-  // ===================================================================
   resolve: {
     extensions: ['.js', '.jsx'],
   },

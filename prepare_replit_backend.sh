@@ -17,3 +17,6 @@ else
     echo "⚠️  Arquivo requirements.txt não encontrado na pasta backend"
     exit 1
 fi
+
+echo "🔙 Retornando para a pasta raiz..."
+cd .. || { echo "❌ Erro ao voltar para a raiz do projeto"; exit 1; }
