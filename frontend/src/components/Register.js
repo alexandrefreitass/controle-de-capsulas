@@ -56,8 +56,15 @@ function Register() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
-          <div className="auth-subtitle">Criar nova conta</div>
+          <div className="auth-logo-section">
+            <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
+          </div>
+          <div className="auth-content-section">
+            <div className="auth-subtitle">Criar nova conta</div>
+            <div className="auth-description">
+              Cadastre-se para acessar o sistema
+            </div>
+          </div>
         </div>
 
         <div className="auth-body">

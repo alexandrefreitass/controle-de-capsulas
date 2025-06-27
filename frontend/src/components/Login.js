@@ -57,11 +57,15 @@ function Login() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          {/* =============================================================== */}
-          {/* ALTERADO: Substituindo o texto pela imagem da logo */}
-          {/* =============================================================== */}
-          <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
-          <div className="auth-subtitle">Entrar na conta</div>
+          <div className="auth-logo-section">
+            <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
+          </div>
+          <div className="auth-content-section">
+            <div className="auth-subtitle">Entrar na conta</div>
+            <div className="auth-description">
+              Acesse sua conta para continuar
+            </div>
+          </div>
         </div>
         <div className="auth-body">
           <form onSubmit={handleSubmit}>
