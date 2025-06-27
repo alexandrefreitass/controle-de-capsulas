@@ -1,12 +1,16 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Componentes de Layout
+import Layout from './components/Layout';
 
 // Componentes de Autenticação
 import Login from './components/Login';
 import Register from './components/Register';
 import Success from './components/Success';
 
-// Componentes de Fornecedores - Corrija estes imports
+// Componentes de Fornecedores
 import Fornecedores from './components/Fornecedores';
 import FornecedorForm from './components/FornecedorForm';
 
@@ -31,35 +35,37 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {/* Rotas de Autenticação */}
+          {/* Rotas de Autenticação - SEM Layout (sem sidebar) */}
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/success" element={<Success />} />
+          
+          {/* Rotas com Layout (COM sidebar) */}
+          <Route path="/success" element={<Layout><Success /></Layout>} />
           
           {/* Rotas de Fornecedores */}
-          <Route path="/fornecedores" element={<Fornecedores />} />
-          <Route path="/fornecedores/novo" element={<FornecedorForm />} />
-          <Route path="/fornecedores/editar/:id" element={<FornecedorForm />} />
+          <Route path="/fornecedores" element={<Layout><Fornecedores /></Layout>} />
+          <Route path="/fornecedores/novo" element={<Layout><FornecedorForm /></Layout>} />
+          <Route path="/fornecedores/editar/:id" element={<Layout><FornecedorForm /></Layout>} />
           
           {/* Rotas de Matérias Primas */}
-          <Route path="/materias-primas" element={<MateriasPrimas />} />
-          <Route path="/materias-primas/novo" element={<MateriaPrimaForm />} />
-          <Route path="/materias-primas/editar/:id" element={<MateriaPrimaForm />} />
-          <Route path="/materias-primas/:materiaPrimaId/lotes" element={<Lotes />} />
-          <Route path="/materias-primas/:materiaPrimaId/lotes/novo" element={<LoteForm />} />
-          <Route path="/materias-primas/:materiaPrimaId/lotes/editar/:id" element={<LoteForm />} />
+          <Route path="/materias-primas" element={<Layout><MateriasPrimas /></Layout>} />
+          <Route path="/materias-primas/novo" element={<Layout><MateriaPrimaForm /></Layout>} />
+          <Route path="/materias-primas/editar/:id" element={<Layout><MateriaPrimaForm /></Layout>} />
+          <Route path="/materias-primas/:materiaPrimaId/lotes" element={<Layout><Lotes /></Layout>} />
+          <Route path="/materias-primas/:materiaPrimaId/lotes/novo" element={<Layout><LoteForm /></Layout>} />
+          <Route path="/materias-primas/:materiaPrimaId/lotes/editar/:id" element={<Layout><LoteForm /></Layout>} />
           
           {/* Rotas de Produção */}
-          <Route path="/producao" element={<Producao />} />
-          <Route path="/producao/novo" element={<ProducaoForm />} />
-          <Route path="/producao/detalhar/:id" element={<ProducaoDetalhe />} />
+          <Route path="/producao" element={<Layout><Producao /></Layout>} />
+          <Route path="/producao/novo" element={<Layout><ProducaoForm /></Layout>} />
+          <Route path="/producao/detalhar/:id" element={<Layout><ProducaoDetalhe /></Layout>} />
           
           {/* Rotas de Produtos */}
-          <Route path="/produtos" element={<Produtos />} />
-          <Route path="/produtos/novo" element={<ProdutoForm />} />
-          <Route path="/produtos/editar/:id" element={<ProdutoForm />} />
-          <Route path="/produtos/detalhar/:id" element={<ProdutoDetalhe />} />
+          <Route path="/produtos" element={<Layout><Produtos /></Layout>} />
+          <Route path="/produtos/novo" element={<Layout><ProdutoForm /></Layout>} />
+          <Route path="/produtos/editar/:id" element={<Layout><ProdutoForm /></Layout>} />
+          <Route path="/produtos/detalhar/:id" element={<Layout><ProdutoDetalhe /></Layout>} />
           
           {/* Rota para página não encontrada */}
           <Route path="*" element={<Navigate to="/login" />} />
