@@ -428,21 +428,21 @@ function MateriaPrimaForm() {
 
                     <div className="form-group">
                       <label className="form-label" htmlFor="fornecedor_id">
-                        Fornecedor *
+                        Fornecedor
                       </label>
                       <select
                         id="fornecedor_id"
                         name="fornecedor_id"
-                        className="form-input form-select"
+                        className="form-input"
                         value={formData.fornecedor_id}
                         onChange={handleChange}
                         required
                         disabled={loading}
                       >
                         <option value="">Selecione um fornecedor</option>
-                        {fornecedores.map((fornecedor) => (
+                        {fornecedores.map(fornecedor => (
                           <option key={fornecedor.id} value={fornecedor.id}>
-                            {fornecedor.razao_social}
+                            {fornecedor.nome}
                           </option>
                         ))}
                       </select>
@@ -525,15 +525,18 @@ function MateriaPrimaForm() {
                       <select
                         id="unidade_medida"
                         name="unidade_medida"
-                        className="form-input form-select"
+                        className="form-input"
                         value={formData.unidade_medida}
                         onChange={handleChange}
+                        required
                         disabled={loading}
                       >
-                        <option value="kg">Quilograma (kg)</option>
-                        <option value="g">Grama (g)</option>
-                        <option value="l">Litro (l)</option>
-                        <option value="ml">Mililitro (ml)</option>
+                        <option value="">Selecione uma unidade</option>
+                        <option value="kg">Quilogramas (kg)</option>
+                        <option value="g">Gramas (g)</option>
+                        <option value="mg">Miligramas (mg)</option>
+                        <option value="l">Litros (l)</option>
+                        <option value="ml">Mililitros (ml)</option>
                         <option value="unidade">Unidade</option>
                       </select>
                     </div>
