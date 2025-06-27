@@ -164,14 +164,12 @@ function Success() {
           </section>
 
           {/* Seção original do Success - Apps Grid */}
-          <div className="dashboard-title">
-            <Icon name="LayoutDashboard" size={24} />
-            Módulos do Sistema
-          </div>
-          <div className="dashboard-subtitle">
-            Selecione um módulo abaixo para começar
-          </div>
-
+          <header className="db-dashboard-header">
+            <div className="db-dashboard-title">
+              <h1>Módulos do Sistema</h1>
+              <h2>Selecione um módulo abaixo para começar</h2>
+            </div>
+          </header>
           <div className="apps-grid">
             <div className="app-card" onClick={() => navigate('/fornecedores')}>
               <div className="app-card-icon">
