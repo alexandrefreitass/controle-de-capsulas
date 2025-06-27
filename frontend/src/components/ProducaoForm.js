@@ -9,21 +9,25 @@ import Icon from './Icon';
 const customSelectStyles = {
   control: (provided, state) => ({
     ...provided,
-    minHeight: '2.5rem',
-    height: '2.5rem',
-    border: state.isFocused ? '2px solid #4ade80' : '1px solid #d1d5db',
-    borderRadius: '0.375rem',
-    boxShadow: state.isFocused ? '0 0 0 0 rgba(74, 222, 128, 0.1)' : 'none',
-    '&:hover': {
-      borderColor: state.isFocused ? '#4ade80' : '#9ca3af'
-    },
+    backgroundColor: 'var(--background-primary)',
+    border: state.isFocused ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-md)',
+    padding: '0',
+    minHeight: '42px',
+    height: '42px',
     fontSize: '0.875rem',
-    backgroundColor: '#ffffff'
+    lineHeight: '1.25rem',
+    boxShadow: state.isFocused ? '0 0 0 1px var(--primary-light)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? 'var(--primary-color)' : '#9ca3af'
+    },
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out'
   }),
   valueContainer: (provided) => ({
     ...provided,
-    height: '2.5rem',
-    padding: '0 0.75rem',
+    padding: '0.625rem 0.75rem',
+    height: '40px',
     display: 'flex',
     alignItems: 'center'
   }),
@@ -31,46 +35,56 @@ const customSelectStyles = {
     ...provided,
     margin: '0',
     padding: '0',
-    color: '#111827'
+    color: 'var(--text-primary)'
   }),
   indicatorSeparator: () => ({
     display: 'none'
   }),
-  dropdownIndicator: (provided) => ({
+  dropdownIndicator: (provided, state) => ({
     ...provided,
-    color: '#6b7280',
-    padding: '0 0.5rem'
+    color: 'var(--text-muted)',
+    padding: '0 8px',
+    '&:hover': {
+      color: 'var(--text-secondary)'
+    },
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    transition: 'transform 0.2s'
   }),
   placeholder: (provided) => ({
     ...provided,
-    color: '#9ca3af',
+    color: 'var(--text-muted)',
     fontSize: '0.875rem'
   }),
   singleValue: (provided) => ({
     ...provided,
-    color: '#111827',
+    color: 'var(--text-primary)',
     fontSize: '0.875rem'
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: '0.375rem',
-    border: '1px solid #d1d5db',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-    zIndex: 9999
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border-color)',
+    boxShadow: 'var(--shadow-md)',
+    zIndex: 1000
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    padding: '4px'
   }),
   option: (provided, state) => ({
     ...provided,
     backgroundColor: state.isSelected 
-      ? '#4ade80' 
+      ? 'var(--primary-color)' 
       : state.isFocused 
-        ? '#f3f4f6' 
-        : '#ffffff',
-    color: state.isSelected ? '#ffffff' : '#111827',
+        ? 'var(--background-accent)' 
+        : 'transparent',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary)',
+    padding: '8px 12px',
+    borderRadius: 'var(--radius-sm)',
     fontSize: '0.875rem',
-    padding: '0.5rem 0.75rem',
     cursor: 'pointer',
     '&:hover': {
-      backgroundColor: state.isSelected ? '#4ade80' : '#f3f4f6'
+      backgroundColor: state.isSelected ? 'var(--primary-hover)' : 'var(--background-accent)'
     }
   })
 };
