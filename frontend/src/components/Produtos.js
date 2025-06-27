@@ -105,7 +105,7 @@ function Produtos() {
                 </div>
                 <h3>Nenhum produto cadastrado</h3>
                 <p>Comece adicionando seu primeiro produto.</p>
-                <button className="btn btn-primary" onClick={handleNovo}>
+                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
                   <Icon name="Plus" size={16} />
                   Adicionar Produto
                 </button>

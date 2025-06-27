@@ -100,7 +100,7 @@ function Fornecedores() {
                 </div>
                 <h3>Nenhum fornecedor cadastrado</h3>
                 <p>Comece adicionando seu primeiro fornecedor.</p>
-                <button className="btn btn-primary" onClick={handleNovo}>
+                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
                   <Icon name="Plus" size={16} />
                   Adicionar Fornecedor
                 </button>

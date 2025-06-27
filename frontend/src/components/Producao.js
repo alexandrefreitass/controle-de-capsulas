@@ -108,7 +108,7 @@ function Producao() {
                 </div>
                 <h3>Nenhum lote de produção cadastrado</h3>
                 <p>Comece adicionando seu primeiro lote de produção.</p>
-                <button className="btn btn-primary" onClick={handleNovo}>
+                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
                   <Icon name="Plus" size={16} />
                   Adicionar Lote de Produção
                 </button>

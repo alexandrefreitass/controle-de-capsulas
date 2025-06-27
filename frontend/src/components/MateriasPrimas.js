@@ -242,7 +242,7 @@ function MateriasPrimas() {
                 </div>
                 <h3>Nenhuma matéria prima cadastrada</h3>
                 <p>Comece adicionando sua primeira matéria prima.</p>
-                <button className="btn btn-primary" onClick={handleNovo}>
+                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
                   <Icon name="Plus" size={16} />
                   Adicionar Matéria Prima
                 </button>
