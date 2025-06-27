@@ -731,6 +731,176 @@ a:hover {
   flex-shrink: 0;
 }
 
+/* Dashboard Integrado - Cards de Estatísticas */
+.db-dashboard-container {
+  margin-bottom: 3rem;
+}
+
+.db-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+.db-dashboard-title h1 {
+  color: var(--text-primary);
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem 0;
+  font-weight: 700;
+}
+
+.db-dashboard-title h2 {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+  font-weight: 400;
+}
+
+.db-dashboard-cards {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.db-dashboard-card {
+  flex: 1;
+  width: calc(25% - 1rem);
+  background: var(--background-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.db-dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-light), var(--primary-color));
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.db-dashboard-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-light);
+}
+
+.db-dashboard-card:hover::before {
+  transform: scaleX(1);
+}
+
+.db-dashboard-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.db-dashboard-card-info h3 {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0 0 0.75rem 0;
+  font-weight: 500;
+}
+
+.db-dashboard-card-value {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
+}
+
+.db-dashboard-card-icon {
+  color: var(--primary-color);
+  background: var(--primary-light);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.db-dashboard-card-link {
+  color: var(--primary-color);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-top: auto;
+  padding: 0;
+  text-align: left;
+  transition: color 0.2s ease;
+}
+
+.db-dashboard-card-link:hover {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+.db-dashboard-card-description {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  margin: 0;
+  margin-top: auto;
+}
+
+/* Responsividade para cards do dashboard */
+@media (max-width: 1024px) {
+  .db-dashboard-cards {
+    flex-wrap: wrap;
+  }
+
+  .db-dashboard-card {
+    flex: 1 1 calc(50% - 0.625rem);
+    width: calc(50% - 0.625rem);
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .db-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+  }
+
+  .db-dashboard-title h1 {
+    font-size: 1.5rem;
+  }
+
+  .db-dashboard-cards {
+    flex-direction: column;
+  }
+
+  .db-dashboard-card {
+    flex: 1 1 100%;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
 /* Dashboard */
 .dashboard-container {
   min-height: 100vh;
