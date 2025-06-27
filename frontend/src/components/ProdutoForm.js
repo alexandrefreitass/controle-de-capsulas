@@ -1,8 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 // 1. ✅ Importar o apiClient e os endpoints
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+
+// Estilos customizados para o React Select
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'var(--background-primary)',
+    border: state.isFocused ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-md)',
+    padding: '0',
+    minHeight: '42px',
+    height: '42px',
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+    boxShadow: state.isFocused ? '0 0 0 1px var(--primary-light)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? 'var(--primary-color)' : '#9ca3af'
+    },
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out'
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0.625rem 0.75rem',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center'
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0',
+    padding: '0',
+    color: 'var(--text-primary)'
+  }),
+  indicatorSeparator: () => ({
+    display: 'none'
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: 'var(--text-muted)',
+    padding: '0 8px',
+    '&:hover': {
+      color: 'var(--text-secondary)'
+    },
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    transition: 'transform 0.2s'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: 'var(--text-muted)',
+    fontSize: '0.875rem'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'var(--text-primary)',
+    fontSize: '0.875rem'
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border-color)',
+    boxShadow: 'var(--shadow-md)',
+    zIndex: 1000
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    padding: '4px'
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected 
+      ? 'var(--primary-color)' 
+      : state.isFocused 
+        ? 'var(--background-accent)' 
+        : 'transparent',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary)',
+    padding: '8px 12px',
+    borderRadius: 'var(--radius-sm)',
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: state.isSelected ? 'var(--primary-hover)' : 'var(--background-accent)'
+    }
+  })
+};
 
 function ProdutoForm() {
   const { id } = useParams();
@@ -33,6 +118,31 @@ function ProdutoForm() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Opções formatadas para React Select
+  const apresentacaoOptions = apresentacoes.map(apresentacao => ({
+    value: apresentacao.value,
+    label: apresentacao.label
+  }));
+
+  const formasFarmaceuticasOptions = formasFarmaceuticas.map(forma => ({
+    value: forma.value,
+    label: forma.label
+  }));
+
+  const formulasOptions = [
+    { value: 'nova', label: 'Nova Fórmula' },
+    ...(formulas.length > 0 ? [{ value: 'existente', label: 'Fórmula Existente' }] : []),
+    ...formulas.map(formula => ({
+      value: formula.id,
+      label: `${formula.forma_farmaceutica} - ${formula.quant_unid_padrao} unidades`
+    }))
+  ];
+
+  const lotesMateriasPrimasOptions = lotesMateriasPrimas.map(lote => ({
+    value: lote.id,
+    label: `${lote.materia_prima.nome} - Lote: ${lote.lote} (${lote.quant_disponivel_mg}mg disponível)`
+  }));
 
   useEffect(() => {
     const username = localStorage.getItem('username');
@@ -238,6 +348,31 @@ function ProdutoForm() {
     });
   };
 
+  // Handlers para React Select
+  const handleApresentacaoChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      apresentacao: selectedOption ? selectedOption.value : ''
+    });
+  };
+
+  const handleFormaFarmaceuticaChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      formula: {
+        ...formData.formula,
+        forma_farmaceutica: selectedOption ? selectedOption.value : ''
+      }
+    });
+  };
+
+  const handleLoteMateriaChange = (selectedOption) => {
+    setNovoIngrediente({
+      ...novoIngrediente,
+      lote_materia_prima_id: selectedOption ? selectedOption.value : ''
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -367,22 +502,21 @@ function ProdutoForm() {
                       <label className="form-label" htmlFor="apresentacao">
                         Apresentação
                       </label>
-                      <select
+                      <Select
                         id="apresentacao"
                         name="apresentacao"
-                        className="form-input"
-                        value={formData.apresentacao}
-                        onChange={handleChange}
-                        required
-                        disabled={loading}
-                      >
-                        <option value="">Selecione uma apresentação</option>
-                        {apresentacoes.map(apresentacao => (
-                          <option key={apresentacao.value} value={apresentacao.value}>
-                            {apresentacao.label}
-                          </option>
-                        ))}
-                      </select>
+                        options={apresentacaoOptions}
+                        value={apresentacaoOptions.find(option => option.value === formData.apresentacao) || null}
+                        onChange={handleApresentacaoChange}
+                        isDisabled={loading}
+                        placeholder="Selecione uma apresentação..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        isClearable={true}
+                        classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
+                      />
                     </div>
 
                     <div className="form-group form-full-width">
@@ -411,23 +545,23 @@ function ProdutoForm() {
                       <label className="form-label" htmlFor="formula_tipo">
                         Tipo de Fórmula
                       </label>
-                      <select
+                      <Select
                         id="formula_tipo"
                         name="formula_tipo"
-                        className="form-input"
-                        value={formulaSelecionada}
-                        onChange={handleFormulaChange}
-                        required
-                        disabled={loading}
-                      >
-                        <option value="nova">Nova Fórmula</option>
-                        {formulas.length > 0 && <option value="existente">Fórmula Existente</option>}
-                        {formulas.map(formula => (
-                          <option key={formula.id} value={formula.id}>
-                            {formula.forma_farmaceutica} - {formula.quant_unid_padrao} unidades
-                          </option>
-                        ))}
-                      </select>
+                        options={formulasOptions}
+                        value={formulasOptions.find(option => option.value === formulaSelecionada) || null}
+                        onChange={(selectedOption) => {
+                          const e = { target: { value: selectedOption ? selectedOption.value : '' } };
+                          handleFormulaChange(e);
+                        }}
+                        isDisabled={loading}
+                        placeholder="Selecione o tipo de fórmula..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
+                      />
                     </div>
                   )}
 
@@ -436,22 +570,21 @@ function ProdutoForm() {
                       <label className="form-label" htmlFor="formula.forma_farmaceutica">
                         Forma Farmacêutica
                       </label>
-                      <select
+                      <Select
                         id="formula.forma_farmaceutica"
                         name="formula.forma_farmaceutica"
-                        className="form-input"
-                        value={formData.formula.forma_farmaceutica}
-                        onChange={handleChange}
-                        required
-                        disabled={(formulaSelecionada !== 'nova' && !isEditing) || loading}
-                      >
-                        <option value="">Selecione uma forma farmacêutica</option>
-                        {formasFarmaceuticas.map(forma => (
-                          <option key={forma.value} value={forma.value}>
-                            {forma.label}
-                          </option>
-                        ))}
-                      </select>
+                        options={formasFarmaceuticasOptions}
+                        value={formasFarmaceuticasOptions.find(option => option.value === formData.formula.forma_farmaceutica) || null}
+                        onChange={handleFormaFarmaceuticaChange}
+                        isDisabled={(formulaSelecionada !== 'nova' && !isEditing) || loading}
+                        placeholder="Selecione uma forma farmacêutica..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        isClearable={true}
+                        classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
+                      />
                     </div>
 
                     <div className="form-group">
@@ -500,21 +633,21 @@ function ProdutoForm() {
                         <label className="form-label" htmlFor="lote_materia_prima_id">
                           Matéria-prima (Lote)
                         </label>
-                        <select
+                        <Select
                           id="lote_materia_prima_id"
                           name="lote_materia_prima_id"
-                          className="form-input"
-                          value={novoIngrediente.lote_materia_prima_id}
-                          onChange={handleNovoIngredienteChange}
-                          disabled={loading}
-                        >
-                          <option value="">Selecione um lote de matéria-prima</option>
-                          {lotesMateriasPrimas.map(lote => (
-                            <option key={lote.id} value={lote.id}>
-                              {lote.materia_prima.nome} - Lote: {lote.lote} ({lote.quant_disponivel_mg}mg disponível)
-                            </option>
-                          ))}
-                        </select>
+                          options={lotesMateriasPrimasOptions}
+                          value={lotesMateriasPrimasOptions.find(option => option.value === parseInt(novoIngrediente.lote_materia_prima_id)) || null}
+                          onChange={handleLoteMateriaChange}
+                          isDisabled={loading}
+                          placeholder="Selecione um lote de matéria-prima..."
+                          styles={customSelectStyles}
+                          isSearchable={true}
+                          isClearable={true}
+                          classNamePrefix="react-select"
+                          noOptionsMessage={() => "Nenhuma opção"}
+                          loadingMessage={() => "Carregando..."}
+                        />
                       </div>
 
                       <div className="form-group">
