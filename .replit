@@ -16,5 +16,9 @@ args = "cd frontend && npm start"
 [nix]
 
 [[ports]]
+localPort = 3000
+externalPort = 3000
+
+[[ports]]
 localPort = 8000
 externalPort = 80
