@@ -251,6 +251,32 @@ a:hover {
   color: var(--text-primary);
 }
 
+.form-input select,
+select.form-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.form-input select:focus,
+select.form-input:focus {
+  outline: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a8a29e' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+.form-input select option,
+select.form-input option {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  padding: 0.5rem;
+}
+
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
@@ -963,8 +989,7 @@ a:hover {
 .validade-status.normal {
   background-color: rgba(40, 167, 69, 0.15);
   color: #28a745;
-}
-
+```text
 .validade-status.alerta {
   background-color: rgba(255, 193, 7, 0.15);
   color: #ffc107;
