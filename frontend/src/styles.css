@@ -49,6 +49,233 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
+
+  /* Sidebar Colors */
+  --sidebar-bg: #333333;
+  --sidebar-hover: #555555;
+  --sidebar-active: var(--primary-color);
+}
+
+/* Layout com Sidebar */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 70px;
+  transition: margin-left 0.5s ease;
+  min-height: 100vh;
+}
+
+/* Estilos do Sidebar */
+.sidebar {
+  height: 100vh;
+  width: 70px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: var(--sidebar-bg);
+  color: white;
+  transition: width 0.5s ease;
+  overflow: hidden;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sidebar expandida */
+.sidebar.expanded {
+  width: 200px;
+}
+
+/* Logo da Sidebar */
+.sidebar-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 80px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+.sidebar-logo img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease-in-out;
+}
+
+.logo-collapsed {
+  width: 40px;
+  height: auto;
+  opacity: 1;
+}
+
+.sidebar.expanded .logo-collapsed {
+  opacity: 0;
+}
+
+.logo-expanded {
+  width: 120px;
+  height: auto;
+  opacity: 0;
+}
+
+.sidebar.expanded .logo-expanded {
+  opacity: 1;
+}
+
+/* Itens do menu */
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 100%;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.menu-item svg {
+  flex-shrink: 0;
+  transition: none !important;
+  will-change: auto;
+}
+
+.menu-item span {
+  display: none;
+  margin-left: 10px;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Estilo expandido para os itens do menu */
+.sidebar.expanded .menu-item {
+  justify-content: flex-start;
+  padding-left: 15px;
+}
+
+.sidebar.expanded .menu-item span {
+  display: inline;
+}
+
+/* Efeitos de hover e item ativo */
+.menu-item:hover {
+  background-color: var(--sidebar-hover);
+  color: white;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+}
+
+.menu-item.active {
+  background-color: var(--sidebar-active);
+  color: white;
+}
+
+.menu-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--primary-light);
+}
+
+/* Informações do usuário na sidebar */
+.sidebar-user-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  text-decoration: none;
+  background: none;
+  border: none;
+  color: white;
+  margin-top: auto;
+}
+
+.sidebar-user-profile:hover {
+  background-color: var(--sidebar-hover);
+}
+
+.sidebar.expanded .sidebar-user-profile {
+  justify-content: flex-start;
+  padding-left: 15px;
+}
+
+.sidebar-user-profile .avatar-container {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+}
+
+.sidebar-user-profile .user-photo {
+  color: white;
+}
+
+.sidebar-user-profile .user-name {
+  display: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  margin-left: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar.expanded .sidebar-user-profile .user-name {
+  display: block;
+}
+
+/* Responsividade: Ajustes para telas menores */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+  
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Ajustes para páginas que já usam container */
+.main-content .container {
+  max-width: none;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
 }
 
 body {

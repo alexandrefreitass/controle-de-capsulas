@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+import Layout from './Layout';
 
 function Producao() {
   const [lotesProducao, setLotesProducao] = useState([]);
