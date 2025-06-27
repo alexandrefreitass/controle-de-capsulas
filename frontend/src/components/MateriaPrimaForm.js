@@ -20,8 +20,9 @@ const customSelectStyles = {
     backgroundColor: 'var(--background-primary)',
     border: state.isFocused ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
     borderRadius: 'var(--radius-md)',
-    padding: '0.75rem 1rem',
-    minHeight: 'auto',
+    padding: '0',
+    minHeight: '42px',
+    height: '42px',
     fontSize: '0.875rem',
     lineHeight: '1.25rem',
     boxShadow: state.isFocused ? '0 0 0 1px var(--primary-light)' : 'none',
@@ -33,7 +34,10 @@ const customSelectStyles = {
   }),
   valueContainer: (provided) => ({
     ...provided,
-    padding: '0'
+    padding: '0.625rem 0.75rem',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center'
   }),
   input: (provided) => ({
     ...provided,
