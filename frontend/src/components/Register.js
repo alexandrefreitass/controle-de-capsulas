@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
-import LogoCNC from '../assets/images/logo-02.png';
+import LogoCNC from '../assets/images/logo-preto.svg';
 
 function Register() {
   const [username, setUsername] = useState('');

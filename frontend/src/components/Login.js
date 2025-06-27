@@ -8,7 +8,7 @@ import Icon from './Icon';
 // ===================================================================
 // Lembre-se de criar a pasta 'assets/images' e colocar sua logo lá.
 // Pode ser .svg, .png, etc. O Webpack vai cuidar do resto.
-import LogoCNC from '../assets/images/logo-02.png'; 
+import LogoCNC from '../assets/images/logo-preto.svg'; 
 // ===================================================================
 
 
