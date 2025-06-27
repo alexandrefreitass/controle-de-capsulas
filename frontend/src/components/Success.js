@@ -13,6 +13,8 @@ function Success() {
     totalProducoes: 0,
     valorTotalEstoque: 0
   });
+  const [chartExpanded, setChartExpanded] = useState(false);
+  const [chartInstance, setChartInstance] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,6 +25,20 @@ function Success() {
     loadDashboardData();
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    // Inicializar o gráfico após o componente ser montado
+    if (!loading && dashboardData.valorTotalEstoque > 0) {
+      initializeChart();
+    }
+    
+    // Cleanup do gráfico quando o componente for desmontado
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+  }, [loading, dashboardData]);
 
   const loadDashboardData = async () => {
     try {
@@ -65,6 +81,122 @@ function Success() {
       style: 'currency',
       currency: 'BRL'
     }).format(value);
+  };
+
+  const initializeChart = () => {
+    const chartCanvas = document.getElementById('estoqueChart');
+    if (!chartCanvas) return;
+
+    // Destruir gráfico existente se houver
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    const ctx = chartCanvas.getContext('2d');
+    
+    // Dados simulados para demonstração - últimos 7 dias
+    const hoje = new Date();
+    const labels = [];
+    const dados = [];
+    
+    for (let i = 6; i >= 0; i--) {
+      const data = new Date(hoje);
+      data.setDate(data.getDate() - i);
+      labels.push(data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }));
+      
+      // Simular variação no valor do estoque (±10% do valor atual)
+      const variacao = (Math.random() - 0.5) * 0.2; // -10% a +10%
+      const valorBase = dashboardData.valorTotalEstoque;
+      dados.push(valorBase + (valorBase * variacao));
+    }
+    
+    // Garantir que o último valor seja o valor atual
+    dados[dados.length - 1] = dashboardData.valorTotalEstoque;
+
+    const chartData = {
+      labels: labels,
+      datasets: [{
+        label: 'Valor do Estoque (R$)',
+        data: dados,
+        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+        borderColor: '#4A90E2',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#4A90E2',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
+    };
+
+    const newChartInstance = new window.Chart(ctx, {
+      type: 'line',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: '#4A90E2',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                return `Valor: ${formatCurrency(context.parsed.y)}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: 'rgba(0, 0, 0, 0.06)',
+              borderDash: [5, 5]
+            },
+            ticks: {
+              color: '#7f8c8d',
+              font: {
+                size: 12
+              }
+            }
+          },
+          y: {
+            beginAtZero: false,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.06)',
+              borderDash: [5, 5]
+            },
+            ticks: {
+              color: '#7f8c8d',
+              font: {
+                size: 12
+              },
+              callback: function(value) {
+                return formatCurrency(value);
+              }
+            }
+          }
+        },
+        hover: {
+          mode: 'index',
+          intersect: false
+        },
+        elements: {
+          point: {
+            hoverBackgroundColor: '#4A90E2'
+          }
+        }
+      }
+    });
+
+    setChartInstance(newChartInstance);
   };
 
   if (!loading && !username) {
@@ -161,6 +293,19 @@ function Success() {
                 <p className="db-dashboard-card-description">Soma do valor em estoque</p>
               </div>
             </section>
+          </section>
+
+          {/* Seção do Gráfico */}
+          <section className="db-dashboard-chart-card">
+            <div className="db-dashboard-chart-header">
+              <h3 className="db-dashboard-chart-title">Evolução do Valor Total do Estoque</h3>
+              <button className="db-dashboard-chart-expand" onClick={() => setChartExpanded(!chartExpanded)}>
+                <Icon name={chartExpanded ? "Minimize2" : "Maximize2"} size={16} />
+              </button>
+            </div>
+            <div className={`db-dashboard-chart-container ${chartExpanded ? 'expanded' : ''}`}>
+              <canvas id="estoqueChart"></canvas>
+            </div>
           </section>
 
           {/* Seção original do Success - Apps Grid */}
