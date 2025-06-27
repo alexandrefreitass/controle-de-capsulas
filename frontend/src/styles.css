@@ -414,7 +414,7 @@ a:hover {
 }
 
 .auth-logo-img {
-  max-height: 45px;
+  max-height: 80px;
   width: auto;
   margin-bottom: 0.75rem;
   transition: transform 0.3s ease-in-out;
@@ -516,7 +516,7 @@ a:hover {
 }
 
 .dashboard-logo-img {
-  max-height: 40px;
+  max-height: 60px;
   width: auto;
   transition: opacity 0.3s ease;
 }
