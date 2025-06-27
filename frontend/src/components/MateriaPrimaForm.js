@@ -434,7 +434,7 @@ function MateriaPrimaForm() {
                       <select
                         id="fornecedor_id"
                         name="fornecedor_id"
-                        className="form-select"
+                        className="form-input"
                         value={formData.fornecedor_id}
                         onChange={handleChange}
                         required
