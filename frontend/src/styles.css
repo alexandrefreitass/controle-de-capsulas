@@ -107,12 +107,10 @@
   left: 50%;
   transform: translate(-50%, -50%);
   transition: opacity 0.5s ease-in-out;
-  height: 60px;
-  width: auto;
 }
 
 .logo-collapsed {
-  width: 40px;
+  width: 50px;
   height: auto;
   opacity: 1;
 }
@@ -122,7 +120,7 @@
 }
 
 .logo-expanded {
-  width: 120px;
+  width: 140px;
   height: auto;
   opacity: 0;
 }
