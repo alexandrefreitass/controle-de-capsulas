@@ -624,11 +624,11 @@ a:hover {
 .auth-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
+  justify-content: flex-start;
+  padding: 2.5rem 2rem 2rem;
   background: var(--background-accent);
   border-bottom: 1px solid var(--border-accent);
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .auth-logo-section {
@@ -640,6 +640,9 @@ a:hover {
 .auth-content-section {
   flex: 1;
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .auth-logo {
@@ -653,7 +656,7 @@ a:hover {
 }
 
 .auth-logo-img {
-  height: 60px;
+  height: 70px;
   width: auto;
   transition: transform 0.3s ease-in-out;
 }
@@ -663,23 +666,24 @@ a:hover {
 }
 
 .auth-subtitle {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--primary-color);
-  margin-bottom: 0.25rem;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.025rem;
+  line-height: 1.1;
 }
 
 .auth-description {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  font-weight: 400;
+  font-weight: 500;
   margin: 0;
+  line-height: 1.4;
 }
 
 .auth-body {
-  padding: 2rem;
+  padding: 2rem 2.5rem;
 }
 
 .auth-body .btn {
@@ -694,7 +698,7 @@ a:hover {
 
 .auth-footer {
   text-align: center;
-  padding: 1rem 2rem 2rem;
+  padding: 1rem 2.5rem 2.5rem;
   color: var(--text-secondary);
   font-size: 0.875rem;
   display: flex;
@@ -1422,22 +1426,32 @@ a:hover {
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
+    padding: 2rem 1.5rem 1.5rem;
   }
   
   .auth-content-section {
     text-align: center;
+    gap: 0.25rem;
   }
   
   .auth-logo-img {
-    height: 50px;
+    height: 55px;
   }
   
   .auth-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
+  }
+  
+  .auth-description {
+    font-size: 0.85rem;
   }
   
   .auth-card {
-    max-width: 360px;
+    max-width: 380px;
+  }
+  
+  .auth-body {
+    padding: 1.5rem 2rem;
   }
 }
 
