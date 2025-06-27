@@ -55,7 +55,7 @@ function Register() {
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <div className="auth-logo">Sistema CNC</div>
+          <div className="auth-logo">CNC Sistema de controle de produção</div>
           <div className="auth-subtitle">Criar nova conta</div>
         </div>
 

@@ -61,8 +61,8 @@ function Login() {
           {/* ALTERADO: Substituindo o texto pela imagem da logo */}
           {/* =============================================================== */}
           <img src={LogoCNC} alt="Logo CNC" className="auth-logo-img" />
-          <div className="auth-subtitle">KONNEKIT</div>
-          <div className="auth-description">Sistema de Gestão Empresarial</div>
+          <div className="auth-subtitle">CNC</div>
+          <div className="auth-description">Sistema de controle de produção</div>
         </div>
         <div className="auth-body">
           <form onSubmit={handleSubmit}>
