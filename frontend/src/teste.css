@@ -1,9 +1,9 @@
-
 /* Reset e variáveis CSS */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 :root {
@@ -62,6 +62,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Links modernos */
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
 /* Componentes base */
 .container {
   max-width: 1200px;
@@ -92,6 +103,12 @@ body {
   padding: 1.5rem;
 }
 
+.card-body h3,
+.card-body h4 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
 .card-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -120,6 +137,14 @@ body {
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn svg {
+  flex-shrink: 0;
 }
 
 .btn-primary {
@@ -251,6 +276,10 @@ body {
   padding-right: 2.5rem;
 }
 
+.form-select:focus {
+  outline: none;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -274,6 +303,25 @@ body {
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+/* Seções de Formulário */
+.form-section {
+  background: var(--background-accent);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-section h3,
+.form-section-title {
+  color: var(--primary-color);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 0.5rem;
 }
 
 /* Alertas */
@@ -365,13 +413,44 @@ body {
   margin-bottom: 0.5rem;
 }
 
+.auth-logo-img {
+  max-height: 80px;
+  width: auto;
+  margin-bottom: 0.75rem;
+  transition: transform 0.3s ease-in-out;
+}
+
+.auth-logo-img:hover {
+  transform: scale(1.05);
+}
+
 .auth-subtitle {
-  color: var(--text-secondary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.auth-description {
   font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  font-weight: 400;
 }
 
 .auth-body {
   padding: 2rem;
+}
+
+.auth-body .btn {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.auth-body .btn svg {
+  margin: 0;
 }
 
 .auth-footer {
@@ -383,14 +462,6 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-}
-
-@media (min-width: 400px) {
-  .auth-footer {
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.25rem;
-  }
 }
 
 .auth-link {
@@ -433,12 +504,48 @@ body {
 }
 
 .dashboard-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.dashboard-logo-img {
+  max-height: 80px;
+  width: auto;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: all 0.3s ease;
+}
+
+.dashboard-logo-img:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+}
+
+.dashboard-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.dashboard-brand-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  letter-spacing: 0.5px;
+  line-height: 1;
+}
+
+.dashboard-brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1;
 }
 
 .dashboard-user {
@@ -588,9 +695,24 @@ body {
 }
 
 .module-title {
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.module-title-icon {
+  color: var(--primary-color);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: all 0.2s ease;
+  vertical-align: middle;
+}
+
+.module-title:hover .module-title-icon {
+  transform: scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
 }
 
 .module-actions {
@@ -651,9 +773,17 @@ body {
 }
 
 .table-empty-icon {
-  font-size: 3rem;
+  display: flex;
+  justify-content: center;
   margin-bottom: 1rem;
+  color: var(--text-secondary);
+  font-size: 3rem;
   opacity: 0.5;
+}
+
+.table-empty-icon svg {
+  color: var(--text-secondary);
+  opacity: 0.6;
 }
 
 /* Badges */
@@ -688,6 +818,49 @@ body {
   background: var(--primary-lighter);
   color: var(--primary-dark);
   border: 1px solid var(--primary-light);
+}
+
+/* Status badges para matérias primas */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+  width: fit-content;
+}
+
+.status-available {
+  background-color: rgba(46, 204, 113, 0.15);
+  color: rgb(46, 204, 113);
+}
+
+.status-warning {
+  background-color: rgba(241, 196, 15, 0.15);
+  color: rgb(196, 161, 15);
+}
+
+.status-expired {
+  background-color: rgba(231, 76, 60, 0.15);
+  color: rgb(231, 76, 60);
+}
+
+.status-depleted {
+  background-color: rgba(52, 73, 94, 0.15);
+  color: rgb(52, 73, 94);
+}
+
+.status-quarantine {
+  background-color: rgba(155, 89, 182, 0.15);
+  color: rgb(155, 89, 182);
+}
+
+.status-unknown {
+  background-color: rgba(189, 195, 199, 0.15);
+  color: rgb(127, 140, 141);
 }
 
 /* Loading */
@@ -734,340 +907,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Seções de Formulário */
-.form-section {
-  background: var(--background-accent);
-  border: 1px solid var(--border-accent);
-  border-radius: var(--radius-lg);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.form-section h3 {
-  color: var(--primary-color);
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid var(--primary-light);
-  padding-bottom: 0.5rem;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .container {
-    padding: 0 0.75rem;
-  }
-
-  .form-grid-2 {
-    grid-template-columns: 1fr;
-  }
-
-  .apps-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .module-nav {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .module-actions {
-    justify-content: stretch;
-  }
-
-  .module-actions .btn {
-    flex: 1;
-  }
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .dashboard-nav {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.75rem;
-    gap: 0.5rem;
-  }
-
-  .dashboard-user {
-    justify-content: center;
-    text-align: center;
-  }
-
-  .dashboard-user > div {
-    text-align: center;
-  }
-
-  .app-card {
-    padding: 1.5rem;
-  }
-
-  .app-card-icon {
-    width: 3rem;
-    height: 3rem;
-    margin-bottom: 1rem;
-  }
-}
-
-/* Estados de foco elegantes */
-.btn:focus,
-.form-input:focus,
-.form-select:focus {
-  outline: none;
-}
-
-/* Estilos para ícones Lucide */
-.module-title-icon {
-  vertical-align: middle;
-}
-
-.btn svg {
-  margin-right: 6px;
-  vertical-align: middle;
-}
-
-.btn-sm svg {
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.alert svg {
-  margin-right: 8px;
-  vertical-align: middle;
-  flex-shrink: 0;
-}
-
-.table-empty-icon svg {
-  color: var(--text-secondary);
-  opacity: 0.6;
-}
-
-/* Animações suaves */
-* {
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-
-/* Links modernos */
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-  transition: all 0.2s ease;
-}
-
-a:hover {
-  color: var(--primary-hover);
-}
-
-/* Melhorias visuais extras */
-.card-body h3,
-.card-body h4 {
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.module-title {
-  color: var(--primary-color);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 1.75rem;
-  font-weight: 600;
-}
-
-.module-title-icon {
-  color: var(--primary-color);
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  transition: all 0.2s ease;
-}
-
-.module-title:hover .module-title-icon {
-  transform: scale(1.05);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
-}
-
-/* Estilos para ícones em botões */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.btn svg {
-  flex-shrink: 0;
-}
-
-/* Logo da autenticação - Design moderno e maior */
-.auth-logo-img {
-  width: 120px;
-  height: auto;
-  margin-bottom: 1.5rem;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
-  transition: all 0.3s ease;
-}
-
-.auth-logo-img:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
-}
-
-.auth-subtitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem;
-  letter-spacing: 0.5px;
-}
-
-.auth-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: 2rem;
-  font-weight: 400;
-}
-
-/* Logo do dashboard - Design moderno e maior */
-.dashboard-logo {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.dashboard-logo-img {
-  width: 50px;
-  height: auto;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.1));
-  transition: all 0.3s ease;
-}
-
-.dashboard-logo-img:hover {
-  transform: scale(1.1);
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
-}
-
-.dashboard-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-}
-
-.dashboard-brand-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  letter-spacing: 0.5px;
-  line-height: 1;
-}
-
-.dashboard-brand-subtitle {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  line-height: 1;
-}
-
-/* Melhorias específicas para botões de autenticação */
-.auth-body .btn {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.025em;
-}
-
-.auth-body .btn svg {
-  margin: 0;
-}
-
-/* Estilos para alertas com ícones */
-.alert {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.alert svg {
-  flex-shrink: 0;
-}
-
-/* Estilos para estado vazio */
-.table-empty-icon {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-  color: var(--text-secondary);
-}
-
-
-/* Atualização das materias primas */
-
-.status-badge {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-  width: fit-content;
-}
-
-.status-available {
-  background-color: rgba(46, 204, 113, 0.15);
-  color: rgb(46, 204, 113);
-}
-
-.status-warning {
-  background-color: rgba(241, 196, 15, 0.15);
-  color: rgb(196, 161, 15);
-}
-
-.status-expired {
-  background-color: rgba(231, 76, 60, 0.15);
-  color: rgb(231, 76, 60);
-}
-
-.status-depleted {
-  background-color: rgba(52, 73, 94, 0.15);
-  color: rgb(52, 73, 94);
-}
-
-.status-quarantine {
-  background-color: rgba(155, 89, 182, 0.15);
-  color: rgb(155, 89, 182);
-}
-
-.status-unknown {
-  background-color: rgba(189, 195, 199, 0.15);
-  color: rgb(127, 140, 141);
-}
-
-.form-section {
-  margin-bottom: 2rem;
-}
-
-.form-section-title {
-  border-bottom: 1px solid #eee;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
-  color: #2c3e50;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.form-full-width {
-  grid-column: 1 / -1;
-}
-
-/* Adicione esses estilos ao seu arquivo CSS */
-
+/* Componentes de validade */
 .validade-info {
   display: flex;
   flex-direction: column;
@@ -1080,8 +920,13 @@ a:hover {
   text-decoration: line-through;
 }
 
-.validade-atual {
+.validade-atual,
+.nova-validade {
   font-weight: 600;
+}
+
+.nova-validade {
+  color: #dc3545;
 }
 
 .abertura-info {
@@ -1089,21 +934,6 @@ a:hover {
   color: #6c757d;
 }
 
-.text-muted {
-  color: #6c757d;
-}
-
-.small {
-  font-size: 0.875em;
-}
-
-.font-weight-bold {
-  font-weight: 700;
-}
-
-/*validade form*/
-
-/* Estilos para o componente de detalhes */
 .validade-section {
   margin-top: 2rem;
   border-top: 1px solid #e9ecef;
@@ -1250,26 +1080,18 @@ a:hover {
 .info-value {
   color: #212529;
 }
-.validade-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
 
-.validade-original {
-  font-size: 0.8rem;
+/* Classes utilitárias */
+.text-muted {
   color: #6c757d;
-  text-decoration: line-through;
 }
 
-.nova-validade {
-  font-weight: 600;
-  color: #dc3545; /* Cor de alerta para destacar a nova validade */
+.small {
+  font-size: 0.875em;
 }
 
-.abertura-info {
-  font-size: 0.8rem;
-  color: #6c757d;
+.font-weight-bold {
+  font-weight: 700;
 }
 
 .riscado {
@@ -1283,36 +1105,77 @@ a:hover {
   border-radius: 4px;
 }
 
-/* ... (todo o seu css existente) ... */
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.75rem;
+  }
 
-/* =================================================================== */
-/* ESTILOS MODERNOS E SUTIS PARA A LOGO                                */
-/* =================================================================== */
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
 
-/* Estilo para a logo na tela de Login */
-.auth-logo-img {
-  max-height: 60px; /* Define uma altura máxima */
-  width: auto;      /* Largura se ajusta automaticamente */
-  margin-bottom: 0.75rem; /* Espaçamento inferior */
-  transition: transform 0.3s ease-in-out; /* Animação suave */
+  .apps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .module-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .module-actions {
+    justify-content: stretch;
+  }
+
+  .module-actions .btn {
+    flex: 1;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .dashboard-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    font-size: 1.75rem;
+    gap: 0.5rem;
+  }
+
+  .dashboard-user {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .dashboard-user > div {
+    text-align: center;
+  }
+
+  .app-card {
+    padding: 1.5rem;
+  }
+
+  .app-card-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .auth-footer {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.25rem;
+  }
 }
 
-.auth-logo-img:hover {
-  transform: scale(1.05); /* Efeito de zoom sutil ao passar o mouse */
-}
-
-/* Estilo para a logo no Header do Dashboard */
-.dashboard-logo {
-  display: flex; /* Para alinhar a imagem facilmente */
-  align-items: center;
-}
-
-.dashboard-logo-img {
-  max-height: 40px; /* Logo um pouco menor no header */
-  width: auto;
-  transition: opacity 0.3s ease; /* Animação de opacidade */
-}
-
-.dashboard-logo-img:hover {
-  opacity: 0.85; /* Leve transparência ao passar o mouse */
+@media (min-width: 400px) {
+  .auth-footer {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.25rem;
+  }
 }
