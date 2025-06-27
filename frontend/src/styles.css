@@ -1105,6 +1105,11 @@ a:hover {
   border-radius: 4px;
 }
 
+/* Botão específico para aparecer após mensagens de lista vazia */
+.btn-add-first {
+  margin-top: 1rem;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .container {
