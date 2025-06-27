@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Select from 'react-select'; // 1. Importando o React Select
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
-
-// 2. Opções para o nosso novo select estilizado
-const unidadeDeMedidaOptions = [
-  { value: 'kg', label: 'Quilograma (kg)' },
-  { value: 'g', label: 'Grama (g)' },
-  { value: 'l', label: 'Litro (l)' },
-  { value: 'ml', label: 'Mililitro (ml)' },
-  { value: 'unidade', label: 'Unidade' }
-];
 
 function MateriaPrimaForm() {
   const { id } = useParams();
@@ -41,14 +31,17 @@ function MateriaPrimaForm() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Verificar se o usuário está autenticado
     const username = localStorage.getItem('username');
     if (!username) {
       navigate('/login');
       return;
     }
 
+    // Carregar fornecedores para o select
     fetchFornecedores();
 
+    // Se estiver editando, carregar os dados da matéria prima
     if (isEditing) {
       fetchMateriaPrima();
     }
@@ -69,11 +62,13 @@ function MateriaPrimaForm() {
       setLoading(true);
       const response = await apiClient.get(apiEndpoints.materiaPrima(id));
 
+      // Se a resposta contiver 'lote', mapeie para 'numero_lote'
       if (response.data.lote && !response.data.numero_lote) {
         response.data.numero_lote = response.data.lote;
         delete response.data.lote;
       }
 
+      // Formatação de datas para o formato esperado pelo input type="date"
       const data = {
         ...response.data,
         data_fabricacao: response.data.data_fabricacao ? formatDateForInput(response.data.data_fabricacao) : '',
@@ -90,8 +85,10 @@ function MateriaPrimaForm() {
     }
   };
 
+  // Função para formatar datas do formato 'YYYY-MM-DD' para o formato do input HTML
   const formatDateForInput = (dateString) => {
     if (!dateString) return '';
+    // Se já estiver no formato YYYY-MM-DD, retorna como está
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) return dateString;
 
     const date = new Date(dateString);
@@ -99,24 +96,31 @@ function MateriaPrimaForm() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
 
+    // Converter valores numéricos inteiros
     if (['cod_interno', 'nota_fiscal', 'dias_validade_apos_aberto'].includes(name)) {
       setFormData({
         ...formData,
         [name]: value === '' ? null : parseInt(value, 10)
       });
-    } else if (['quantidade_disponivel', 'preco_unitario'].includes(name)) {
+    } 
+    // Converter valores decimais
+    else if (['quantidade_disponivel', 'preco_unitario'].includes(name)) {
       setFormData({
         ...formData,
         [name]: value === '' ? 0 : parseFloat(value)
       });
-    } else if (name === 'fornecedor_id') {
+    }
+    // Fornecedor ID é um número que deve ser convertido corretamente
+    else if (name === 'fornecedor_id') {
       setFormData({
         ...formData,
         [name]: value === '' ? null : parseInt(value, 10)
       });
-    } else {
+    }
+    // Valores normais (strings)
+    else {
       setFormData({
         ...formData,
         [name]: value
@@ -124,16 +128,9 @@ function MateriaPrimaForm() {
     }
   };
 
-  // 3. Handler específico para o React Select
-  const handleUnidadeMedidaChange = (selectedOption) => {
-    setFormData({
-      ...formData,
-      unidade_medida: selectedOption.value
-    });
-  };
-
-
+  // Função para validar datas
   const validateDates = (formData) => {
+    // Verificar se as datas são válidas
     if (formData.data_fabricacao) {
       try {
         new Date(formData.data_fabricacao);
@@ -150,6 +147,7 @@ function MateriaPrimaForm() {
       }
     }
 
+    // Verificar se a data de validade é posterior à de fabricação
     if (formData.data_fabricacao && formData.data_validade) {
       const fabDate = new Date(formData.data_fabricacao);
       const valDate = new Date(formData.data_validade);
@@ -159,22 +157,25 @@ function MateriaPrimaForm() {
       }
     }
 
-    return null;
+    return null; // Sem erros
   };
 
   const validateForm = () => {
+    // Lista de campos obrigatórios conforme o backend
     const requiredFields = [
       'nome', 'cod_interno', 'numero_lote', 'nota_fiscal', 
       'fornecedor_id', 'data_fabricacao', 'data_validade'
     ];
 
     const missingFields = requiredFields.filter(field => {
+      // Verificar se o valor existe e não é vazio
       const value = formData[field];
       return value === undefined || value === null || value === '';
     });
 
     if (missingFields.length > 0) {
       const fieldNames = missingFields.map(field => {
+        // Mapear nomes de campos para versões mais legíveis
         const fieldMap = {
           'nome': 'Nome',
           'cod_interno': 'Código Interno',
@@ -191,6 +192,7 @@ function MateriaPrimaForm() {
       return false;
     }
 
+    // Verificações adicionais
     if (formData.preco_unitario < 0) {
       setError('O preço unitário não pode ser negativo');
       return false;
@@ -201,6 +203,7 @@ function MateriaPrimaForm() {
       return false;
     }
 
+    // Verificar se a data de validade é posterior à data de fabricação
     if (formData.data_fabricacao && formData.data_validade) {
       const fabricacao = new Date(formData.data_fabricacao);
       const validade = new Date(formData.data_validade);
@@ -211,6 +214,7 @@ function MateriaPrimaForm() {
       }
     }
 
+    // Adicionar validação de datas
     const dateError = validateDates(formData);
     if (dateError) {
       setError(dateError);
@@ -220,6 +224,7 @@ function MateriaPrimaForm() {
     return true;
   };
 
+  // Antes de enviar os dados para o backend, vamos remover campos obsoletos
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -231,14 +236,17 @@ function MateriaPrimaForm() {
       setLoading(true);
       setError('');
 
+      // Criar uma cópia dos dados e remover status explicitamente
       const dataToSend = { ...formData };
 
+      // Verificar se há status explicitamente
       if ('status' in dataToSend) {
         console.log('⚠️ Status encontrado nos dados do formulário:', dataToSend.status);
         delete dataToSend.status;
         console.log('✅ Status removido dos dados a serem enviados');
       }
 
+      // Garantir que não haja status serializado em outro lugar
       const stringifiedData = JSON.stringify(dataToSend);
       if (stringifiedData.includes('"status"')) {
         console.error('⚠️ O status ainda está presente nos dados serializados!');
@@ -511,22 +519,24 @@ function MateriaPrimaForm() {
                       />
                     </div>
 
-                    {/* 4. Substituindo o select antigo pelo componente React Select */}
                     <div className="form-group">
                       <label className="form-label" htmlFor="unidade_medida">
                         Unidade de Medida
                       </label>
-                      <Select
+                      <select
                         id="unidade_medida"
                         name="unidade_medida"
-                        options={unidadeDeMedidaOptions}
-                        value={unidadeDeMedidaOptions.find(option => option.value === formData.unidade_medida)}
-                        onChange={handleUnidadeMedidaChange}
-                        isDisabled={loading}
-                        placeholder="Selecione..."
-                        // Você pode adicionar estilos customizados aqui se quiser
-                        // styles={customStyles}
-                      />
+                        className="form-input"
+                        value={formData.unidade_medida}
+                        onChange={handleChange}
+                        disabled={loading}
+                      >
+                        <option value="kg">Quilograma (kg)</option>
+                        <option value="g">Grama (g)</option>
+                        <option value="l">Litro (l)</option>
+                        <option value="ml">Mililitro (ml)</option>
+                        <option value="unidade">Unidade</option>
+                      </select>
                     </div>
 
                     <div className="form-group">
