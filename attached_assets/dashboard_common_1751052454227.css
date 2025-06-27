@@ -1,0 +1,79 @@
+/* Estilos gerais usados em múltiplas páginas do dashboard */
+
+.db-dashboard-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: transparent;
+}
+
+.db-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 0;
+}
+
+.db-dashboard-title h1 {
+    color: #2c3e50;
+    font-size: 26px;
+    margin: 0 0 5px 0;
+    font-weight: 700;
+}
+
+.db-dashboard-title h2 {
+    color: #7f8c8d;
+    font-size: 14px;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Container para botões de ação no cabeçalho */
+.db-dashboard-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.mt-5 {
+    margin-top: 0 !important;
+}
+
+.container { /* Anula .container do Bootstrap em contextos onde este CSS é carregado */
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Responsividade dos elementos gerais */
+@media (max-width: 768px) {
+    .db-dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .db-dashboard-actions {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 16px;
+    }
+
+    /* Garante que botões dentro de .db-dashboard-actions ocupem 100% da largura em mobile */
+    .db-dashboard-actions .db-dashboard-btn-create,
+    .db-dashboard-actions .db-dashboard-btn-secondary {
+        width: 100%;
+        justify-content: center;
+        margin: 0; /* Remove margens individuais se houver, o gap do flex container cuida do espaçamento */
+    }
+}
+
+@media (max-width: 576px) {
+    .db-dashboard-title h1 {
+        font-size: 16px; /* Tamanho de título menor para mobile */
+    }
+
+    .db-dashboard-title h2 {
+        font-size: 11px; /* Tamanho de subtítulo menor para mobile */
+    }
+}

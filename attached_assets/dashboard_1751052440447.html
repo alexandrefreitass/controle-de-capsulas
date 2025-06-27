@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Konnekit{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="db-dashboard-container" role="main">
+    <header class="db-dashboard-header">
+        <div class="db-dashboard-title">
+            <h1>Konnekit Gestão de TI</h1>
+            <h2>Sistema de Orçamento de Equipamentos de Rede</h2>
+        </div>
+        <a href="{% url 'orcamentos:listar_orcamentos' %}" class="db-dashboard-btn-create">Criar Novo Orçamento</a>
+    </header>
+
+    <section class="db-dashboard-cards">
+        <div class="db-dashboard-card">
+            <div class="db-dashboard-card-content">
+                <div class="db-dashboard-card-info">
+                    <h3>Total de Clientes</h3>
+                    <p class="db-dashboard-card-value">{{ total_clientes|default:"0" }}</p>
+                </div>
+                <div class="db-dashboard-card-icon">
+                    <i data-lucide="users"></i>
+                </div>
+            </div>
+            <a href="{% url 'orcamentos:listar_clientes' %}" class="db-dashboard-card-link">Ver clientes</a>
+        </div>
+
+        <div class="db-dashboard-card">
+            <div class="db-dashboard-card-content">
+                <div class="db-dashboard-card-info">
+                    <h3>Total de Produtos</h3>
+                    <p class="db-dashboard-card-value">{{ total_produtos|default:"0" }}</p>
+                </div>
+                <div class="db-dashboard-card-icon">
+                    <i data-lucide="package"></i>
+                </div>
+            </div>
+            <a href="{% url 'orcamentos:listar_produtos' %}" class="db-dashboard-card-link">Ver produtos</a>
+        </div>
+
+        <div class="db-dashboard-card">
+            <div class="db-dashboard-card-content">
+                <div class="db-dashboard-card-info">
+                    <h3>Orçamentos Gerados</h3>
+                    <p class="db-dashboard-card-value">{{ total_orcamentos|default:"0" }}</p>
+                </div>
+                <div class="db-dashboard-card-icon">
+                    <i data-lucide="file-text"></i>
+                </div>
+            </div>
+            <a href="{% url 'orcamentos:listar_orcamentos' %}" class="db-dashboard-card-link">Ver orçamentos</a>
+        </div>
+
+        <div class="db-dashboard-card">
+            <div class="db-dashboard-card-content">
+                <div class="db-dashboard-card-info">
+                    <h3>Valor Total</h3>
+                    <p class="db-dashboard-card-value">R$ {{ valor_total|default:"0,00" }}</p>
+                </div>
+                <div class="db-dashboard-card-icon">
+                    <i data-lucide="dollar-sign"></i>
+                </div>
+            </div>
+            <p class="db-dashboard-card-description">Soma de todos os orçamentos</p>
+        </div>
+    </section>
+
+    <section class="db-dashboard-chart-card">
+        <div class="db-dashboard-chart-header">
+            <h3 class="db-dashboard-chart-title">Valor de Orçamentos por Dia</h3>
+            <a href="#" class="db-dashboard-chart-expand">
+                <i data-lucide="maximize-2"></i>
+            </a>
+        </div>
+        <div class="db-dashboard-chart-container">
+            <canvas id="orcamentosChart"></canvas>
+        </div>
+    </section>
+</main>
+
+{{ chart_labels|json_script:"chart-labels-data" }}
+{{ chart_data|json_script:"chart-data-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
