@@ -526,7 +526,7 @@ function MateriaPrimaForm() {
                       <select
                         id="unidade_medida"
                         name="unidade_medida"
-                        className="form-select"
+                        className="form-input"
                         value={formData.unidade_medida}
                         onChange={handleChange}
                         disabled={loading}
