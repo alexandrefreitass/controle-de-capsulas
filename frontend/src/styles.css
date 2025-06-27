@@ -625,7 +625,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2.5rem 2rem 2rem;
+  padding: 2rem 2rem 2rem;
   background: var(--background-accent);
   border-bottom: 1px solid var(--border-accent);
   gap: 2.5rem;
