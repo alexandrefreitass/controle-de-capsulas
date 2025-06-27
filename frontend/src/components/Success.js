@@ -2,12 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 
-// ===================================================================
-// ADICIONADO: Importação da sua logo
-// ===================================================================
-import LogoCNC from '../assets/images/logo-02.png';
-// ===================================================================
-
 function Success() {
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);

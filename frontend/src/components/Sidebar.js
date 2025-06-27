@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Icon from './Icon';
-import LogoCNC from '../assets/images/logo-02.png';
+import LogoCNC from '../assets/images/logo-01.png';
 
 function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
