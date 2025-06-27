@@ -18,15 +18,15 @@ const customSelectStyles = {
   control: (provided, state) => ({
     ...provided,
     backgroundColor: '#ffffff',
-    border: state.isFocused ? '2px solid #3b82f6' : '1px solid #d1d5db',
-    borderRadius: '8px',
-    padding: '0.5rem 0.75rem',
-    minHeight: '44px',
+    border: state.isFocused ? '1px solid #059669' : '1px solid #d1d5db',
+    borderRadius: '4px',
+    padding: '0.625rem 0.75rem',
+    minHeight: '40px',
     fontSize: '0.875rem',
     lineHeight: '1.25rem',
-    boxShadow: state.isFocused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(5, 150, 105, 0.1)' : 'none',
     '&:hover': {
-      borderColor: state.isFocused ? '#3b82f6' : '#9ca3af'
+      borderColor: state.isFocused ? '#059669' : '#9ca3af'
     },
     cursor: 'pointer'
   }),
@@ -65,9 +65,9 @@ const customSelectStyles = {
   }),
   menu: (provided) => ({
     ...provided,
-    borderRadius: '8px',
+    borderRadius: '4px',
     border: '1px solid #d1d5db',
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
     zIndex: 1000
   }),
   menuList: (provided) => ({
@@ -77,7 +77,7 @@ const customSelectStyles = {
   option: (provided, state) => ({
     ...provided,
     backgroundColor: state.isSelected 
-      ? '#3b82f6' 
+      ? '#059669' 
       : state.isFocused 
         ? '#f3f4f6' 
         : 'transparent',
@@ -87,7 +87,7 @@ const customSelectStyles = {
     fontSize: '0.875rem',
     cursor: 'pointer',
     '&:hover': {
-      backgroundColor: state.isSelected ? '#3b82f6' : '#f3f4f6'
+      backgroundColor: state.isSelected ? '#059669' : '#f3f4f6'
     }
   })
 };
