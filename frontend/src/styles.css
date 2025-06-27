@@ -107,6 +107,8 @@
   left: 50%;
   transform: translate(-50%, -50%);
   transition: opacity 0.5s ease-in-out;
+  height: 60px;
+  width: auto;
 }
 
 .logo-collapsed {
@@ -260,11 +262,11 @@
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .sidebar.mobile-open {
     transform: translateX(0);
   }
-  
+
   .main-content {
     margin-left: 0;
   }
@@ -1432,28 +1434,28 @@ a:hover {
     gap: 1.5rem;
     padding: 2rem 1.5rem 1.5rem;
   }
-  
+
   .auth-content-section {
     text-align: center;
     gap: 0.25rem;
   }
-  
+
   .auth-logo-img {
     height: 75px;
   }
-  
+
   .auth-subtitle {
     font-size: 1.5rem;
   }
-  
+
   .auth-description {
     font-size: 0.85rem;
   }
-  
+
   .auth-card {
     max-width: 380px;
   }
-  
+
   .auth-body {
     padding: 1.5rem 2rem;
   }
