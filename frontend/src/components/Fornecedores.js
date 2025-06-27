@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
-import Layout from './Layout'; // Assuming Layout is in the same directory
+import Layout from './Layout';
 
 function Fornecedores() {
   const [fornecedores, setFornecedores] = useState([]);
@@ -155,7 +156,3 @@ function Fornecedores() {
 }
 
 export default Fornecedores;
-```
-
-```
-</replit_final_file>
