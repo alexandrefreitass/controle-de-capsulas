@@ -1,8 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 // 1. ✅ Importar o apiClient e os endpoints
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+
+// Estilos customizados para o React Select
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    minHeight: '2.5rem',
+    height: '2.5rem',
+    border: state.isFocused ? '2px solid #4ade80' : '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    boxShadow: state.isFocused ? '0 0 0 0 rgba(74, 222, 128, 0.1)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? '#4ade80' : '#9ca3af'
+    },
+    fontSize: '0.875rem',
+    backgroundColor: '#ffffff'
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    height: '2.5rem',
+    padding: '0 0.75rem',
+    display: 'flex',
+    alignItems: 'center'
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0',
+    padding: '0',
+    color: '#111827'
+  }),
+  indicatorSeparator: () => ({
+    display: 'none'
+  }),
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    color: '#6b7280',
+    padding: '0 0.5rem'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: '#9ca3af',
+    fontSize: '0.875rem'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: '#111827',
+    fontSize: '0.875rem'
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: '0.375rem',
+    border: '1px solid #d1d5db',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    zIndex: 9999
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected 
+      ? '#4ade80' 
+      : state.isFocused 
+        ? '#f3f4f6' 
+        : '#ffffff',
+    color: state.isSelected ? '#ffffff' : '#111827',
+    fontSize: '0.875rem',
+    padding: '0.5rem 0.75rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: state.isSelected ? '#4ade80' : '#f3f4f6'
+    }
+  })
+};
 
 function ProducaoForm() {
   const navigate = useNavigate();
@@ -80,6 +151,20 @@ function ProducaoForm() {
       [name]: value
     });
   };
+
+  // Handler específico para o React Select de matéria-prima
+  const handleMateriaPrimaSelectChange = (selectedOption) => {
+    setNovoMaterial({
+      ...novoMaterial,
+      lote_materia_prima_id: selectedOption ? selectedOption.value : ''
+    });
+  };
+
+  // Criar opções para o React Select
+  const materiaPrimaOptions = lotesMateriasPrimas.map(lote => ({
+    value: lote.id,
+    label: `${lote.materia_prima.nome} - Lote: ${lote.lote} (${lote.quant_disponivel_mg}mg disponível)`
+  }));
 
   const handleAdicionarMaterial = () => {
     if (!novoMaterial.lote_materia_prima_id || !novoMaterial.quant_consumida_mg) {
@@ -334,21 +419,21 @@ function ProducaoForm() {
                       <label className="form-label" htmlFor="lote_materia_prima_id">
                         Matéria-prima (Lote)
                       </label>
-                      <select
+                      <Select
                         id="lote_materia_prima_id"
                         name="lote_materia_prima_id"
-                        className="form-input"
-                        value={novoMaterial.lote_materia_prima_id}
-                        onChange={handleNovoMaterialChange}
-                        disabled={loading}
-                      >
-                        <option value="">Selecione um lote de matéria-prima</option>
-                        {lotesMateriasPrimas.map(lote => (
-                          <option key={lote.id} value={lote.id}>
-                            {lote.materia_prima.nome} - Lote: {lote.lote} ({lote.quant_disponivel_mg}mg disponível)
-                          </option>
-                        ))}
-                      </select>
+                        options={materiaPrimaOptions}
+                        value={materiaPrimaOptions.find(option => option.value === parseInt(novoMaterial.lote_materia_prima_id)) || null}
+                        onChange={handleMateriaPrimaSelectChange}
+                        isDisabled={loading}
+                        placeholder="Selecione um lote de matéria-prima..."
+                        styles={customSelectStyles}
+                        isSearchable={true}
+                        isClearable={true}
+                        classNamePrefix="react-select"
+                        noOptionsMessage={() => "Nenhuma opção"}
+                        loadingMessage={() => "Carregando..."}
+                      />
                     </div>
 
                     <div className="form-group">
