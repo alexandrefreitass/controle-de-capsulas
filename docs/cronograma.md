@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Cronograma"
+description: "Cronograma de implementação do projeto"
+---
+
 # Cronograma de Implementação do Sistema
 
 ## Semana 1: Planejamento e Configuração Inicial

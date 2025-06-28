@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Casos de Uso"
+description: "Casos de uso detalhados do sistema"
+---
+
 # Casos de Uso do Sistema de Controle de Produção de Cápsulas de Suplementos CNC
 
 Este documento descreve os casos de uso para o Sistema de Controle de Produção de Cápsulas de Suplementos CNC, detalhando as interações entre os usuários e o sistema em diversos cenários.

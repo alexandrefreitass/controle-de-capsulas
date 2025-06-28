@@ -1,0 +1,31 @@
+title: "Sistema CNC - Documentação"
+description: "Documentação do Sistema de Controle de Produção de Cápsulas"
+baseurl: "/CNC"  # substitua pelo nome do seu repositório
+url: "https://seunome.github.io"  # substitua pelo seu username
+
+theme: minima
+# ou use: remote_theme: pages-themes/cayman@v0.2.0
+
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+
+relative_links:
+  enabled: true
+  collections: true
+
+include:
+  - README.md
+
+markdown: kramdown
+highlighter: rouge
+
+navigation:
+  - title: "Início"
+    url: /
+  - title: "Requisitos"
+    url: /requisitos
+  - title: "Casos de Uso"
+    url: /use_cases
+  - title: "Cronograma"
+    url: /cronograma

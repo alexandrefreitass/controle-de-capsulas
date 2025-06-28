@@ -1,3 +1,9 @@
+---
+layout: default
+title: "Requisitos do Sistema"
+description: "Documento de requisitos funcionais e não funcionais"
+---
+
 # Sistema de Controle de Produção de Cápsulas de Suplementos CNC
 
 ## Documento de Requisitos
