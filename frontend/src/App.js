@@ -32,7 +32,10 @@ import ProdutoDetalhe from './components/ProdutoDetalhe';
 
 function App() {
   return (
-    <Router>
+    <Router future={{ 
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}>
       <div className="App">
         <Routes>
           {/* Rotas de Autenticação - SEM Layout (sem sidebar) */}
