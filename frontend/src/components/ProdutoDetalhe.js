@@ -131,7 +131,7 @@ function ProdutoDetalhe() {
                 {produto.formula.ingredientes.map((ingrediente) => (
                   <tr key={ingrediente.id}>
                     <td>{ingrediente.lote_materia_prima.materia_prima.nome}</td>
-                    <td>{ingrediente.lote_materia_prima.lote}</td>
+                    <td>{ingrediente.lote_materia_prima.numero_lote}</td>
                     <td>{ingrediente.quant_mg} mg</td>
                   </tr>
                 ))}

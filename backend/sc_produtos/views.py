@@ -115,7 +115,7 @@ def produto_list(request):
                             "id": ingrediente.id,
                             "lote_materia_prima": {
                                 "id": ingrediente.lote_materia_prima.id,
-                                "lote": ingrediente.lote_materia_prima.lote,
+                                "lote": ingrediente.lote_materia_prima.numero_lote,
                                 "materia_prima": {
                                     "id": ingrediente.lote_materia_prima.materia_prima.id,
                                     "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -169,7 +169,7 @@ def produto_detail(request, pk):
                     "id": ingrediente.id,
                     "lote_materia_prima": {
                         "id": ingrediente.lote_materia_prima.id,
-                        "lote": ingrediente.lote_materia_prima.lote,
+                        "lote": ingrediente.lote_materia_prima.numero_lote,
                         "materia_prima": {
                             "id": ingrediente.lote_materia_prima.materia_prima.id,
                             "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -228,7 +228,7 @@ def produto_detail(request, pk):
                         "id": ingrediente.id,
                         "lote_materia_prima": {
                             "id": ingrediente.lote_materia_prima.id,
-                            "lote": ingrediente.lote_materia_prima.lote,
+                            "lote": ingrediente.lote_materia_prima.numero_lote,
                             "materia_prima": {
                                 "id": ingrediente.lote_materia_prima.materia_prima.id,
                                 "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -285,7 +285,7 @@ def formula_list(request):
                         "id": ingrediente.id,
                         "lote_materia_prima": {
                             "id": ingrediente.lote_materia_prima.id,
-                            "lote": ingrediente.lote_materia_prima.lote,
+                            "lote": ingrediente.lote_materia_prima.numero_lote,
                             "materia_prima": {
                                 "id": ingrediente.lote_materia_prima.materia_prima.id,
                                 "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -324,7 +324,7 @@ def ingrediente_list(request, formula_id):
                     "id": ingrediente.id,
                     "lote_materia_prima": {
                         "id": ingrediente.lote_materia_prima.id,
-                        "lote": ingrediente.lote_materia_prima.lote,
+                        "lote": ingrediente.lote_materia_prima.numero_lote,
                         "materia_prima": {
                             "id": ingrediente.lote_materia_prima.materia_prima.id,
                             "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -363,7 +363,7 @@ def ingrediente_list(request, formula_id):
                     "id": ingrediente.id,
                     "lote_materia_prima": {
                         "id": ingrediente.lote_materia_prima.id,
-                        "lote": ingrediente.lote_materia_prima.lote,
+                        "lote": ingrediente.lote_materia_prima.numero_lote,
                         "materia_prima": {
                             "id": ingrediente.lote_materia_prima.materia_prima.id,
                             "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -395,7 +395,7 @@ def ingrediente_detail(request, pk):
                 "formula_id": ingrediente.formula.id,
                 "lote_materia_prima": {
                     "id": ingrediente.lote_materia_prima.id,
-                    "lote": ingrediente.lote_materia_prima.lote,
+                    "lote": ingrediente.lote_materia_prima.numero_lote,
                     "materia_prima": {
                         "id": ingrediente.lote_materia_prima.materia_prima.id,
                         "nome": ingrediente.lote_materia_prima.materia_prima.nome,
@@ -418,7 +418,7 @@ def ingrediente_detail(request, pk):
                     "formula_id": ingrediente.formula.id,
                     "lote_materia_prima": {
                         "id": ingrediente.lote_materia_prima.id,
-                        "lote": ingrediente.lote_materia_prima.lote,
+                        "lote": ingrediente.lote_materia_prima.numero_lote,
                         "materia_prima": {
                             "id": ingrediente.lote_materia_prima.materia_prima.id,
                             "nome": ingrediente.lote_materia_prima.materia_prima.nome,
