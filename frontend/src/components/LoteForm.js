@@ -43,7 +43,7 @@ function LoteForm() {
 
   const fetchMateriaPrima = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.materiaPrima(materiaPrimaId));
+      const response = await apiClient.get(apiEndpoints.materiasPrimas.detail(materiaPrimaId));
       setMateriaPrima(response.data);
     } catch (error) {
       console.error('Erro ao carregar matéria prima:', error);
@@ -53,7 +53,7 @@ function LoteForm() {
 
   const fetchFornecedores = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.fornecedores);
+      const response = await apiClient.get(apiEndpoints.fornecedores.list);
       setFornecedores(response.data);
     } catch (error) {
       console.error('Erro ao carregar fornecedores:', error);
@@ -64,7 +64,7 @@ function LoteForm() {
   const fetchLote = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.lote(id));
+      const response = await apiClient.get(apiEndpoints.lotes.detail(id));
       setFormData({
         materia_prima_id: response.data.materia_prima.id,
         lote: response.data.lote,
@@ -107,10 +107,10 @@ function LoteForm() {
       console.log('Enviando dados:', dataToSend);
 
       if (isEditing) {
-        const response = await apiClient.put(apiEndpoints.lote(id), dataToSend);
+        const response = await apiClient.put(apiEndpoints.lotes.detail(id), dataToSend);
         console.log('Resposta da edição:', response.data);
       } else {
-        const response = await apiClient.post(apiEndpoints.lotes, dataToSend);
+        const response = await apiClient.post(apiEndpoints.lotes.list, dataToSend);
         console.log('Resposta da criação:', response.data);
       }
 

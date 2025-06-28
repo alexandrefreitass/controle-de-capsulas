@@ -37,7 +37,7 @@ function FornecedorForm() {
   const buscarFornecedor = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.fornecedor(id));
+      const response = await apiClient.get(apiEndpoints.fornecedores.detail(id));
       setFormData(response.data);
     } catch (error) {
       setError('Erro ao carregar fornecedor');
@@ -63,9 +63,9 @@ function FornecedorForm() {
       setError('');
 
       if (isEditing) {
-        await apiClient.put(apiEndpoints.fornecedor(id), formData);
+        await apiClient.put(apiEndpoints.fornecedores.detail(id), formData);
       } else {
-        await apiClient.post(apiEndpoints.fornecedores, formData);
+        await apiClient.post(apiEndpoints.fornecedores.list, formData);
       }
 
       navigate('/fornecedores');
