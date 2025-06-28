@@ -30,7 +30,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post(apiEndpoints.register, {
+      const response = await apiClient.post(apiEndpoints.auth.register, {
         username,
         password,
       });

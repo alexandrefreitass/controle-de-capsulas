@@ -25,7 +25,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post(apiEndpoints.login, {
+      const response = await apiClient.post(apiEndpoints.auth.login, {
         username,
         password
       });
