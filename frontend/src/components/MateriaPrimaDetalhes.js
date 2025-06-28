@@ -17,7 +17,7 @@ function MateriaPrimaDetalhes() {
   const fetchMateriaPrima = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.materiaPrima(id));
+      const response = await apiClient.get(apiEndpoints.materiasPrimas.detail(id));
       setMateriaPrima(response.data);
       setLoading(false);
     } catch (error) {

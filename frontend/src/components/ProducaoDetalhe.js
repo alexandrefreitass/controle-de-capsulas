@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { apiClient, apiEndpoints } from '../config/api';
 
 function ProducaoDetalhe() {
   const { id } = useParams();
@@ -23,7 +23,7 @@ function ProducaoDetalhe() {
   const fetchLoteProducao = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:8000/api/producao/${id}/`);
+      const response = await apiClient.get(apiEndpoints.producao.detail(id));
       setLoteProducao(response.data);
       setLoading(false);
     } catch (error) {

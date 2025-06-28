@@ -140,7 +140,7 @@ function MateriaPrimaForm() {
 
   const fetchFornecedores = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.fornecedores);
+      const response = await apiClient.get(apiEndpoints.fornecedores.list);
       setFornecedores(response.data);
     } catch (error) {
       console.error('Erro ao carregar fornecedores:', error);
@@ -151,7 +151,7 @@ function MateriaPrimaForm() {
   const fetchMateriaPrima = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.materiaPrima(id));
+      const response = await apiClient.get(apiEndpoints.materiasPrimas.detail(id));
 
       if (response.data.lote && !response.data.numero_lote) {
         response.data.numero_lote = response.data.lote;
@@ -345,9 +345,9 @@ function MateriaPrimaForm() {
       console.log('Dados enviados para o servidor:', dataToSend);
 
       if (isEditing) {
-        await apiClient.put(apiEndpoints.materiaPrima(id), dataToSend);
+        await apiClient.put(apiEndpoints.materiasPrimas.detail(id), dataToSend);
       } else {
-        const response = await apiClient.post(apiEndpoints.materiasPrimas, dataToSend);
+        const response = await apiClient.post(apiEndpoints.materiasPrimas.list, dataToSend);
         console.log('Resposta do servidor:', response.data);
       }
 

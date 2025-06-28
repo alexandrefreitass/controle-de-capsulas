@@ -27,7 +27,7 @@ function Lotes() {
 
   const fetchMateriaPrima = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.materiaPrima(materiaPrimaId));
+      const response = await apiClient.get(apiEndpoints.materiasPrimas.detail(materiaPrimaId));
       setMateriaPrima(response.data);
     } catch (error) {
       console.error('Erro ao carregar matéria prima:', error);
@@ -38,7 +38,7 @@ function Lotes() {
   const fetchLotes = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.lotes);
+      const response = await apiClient.get(apiEndpoints.lotes.list);
       // Filtrar apenas os lotes da matéria prima selecionada
       const lotesFiltrados = response.data.filter(
         lote => lote.materia_prima.id === parseInt(materiaPrimaId)
@@ -67,7 +67,7 @@ function Lotes() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este lote?')) {
       try {
-        await apiClient.delete(apiEndpoints.lote(id));
+        await apiClient.delete(apiEndpoints.lotes.detail(id));
         fetchLotes();
       } catch (error) {
         console.error('Erro ao excluir lote:', error);

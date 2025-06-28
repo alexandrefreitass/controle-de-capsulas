@@ -164,7 +164,7 @@ function ProdutoForm() {
   // 2. ✅ Todas as funções de fetch foram corrigidas
   const fetchApresentacoes = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.apresentacoes);
+      const response = await apiClient.get(apiEndpoints.meta.apresentacoes);
       setApresentacoes(response.data);
     } catch (error) {
       console.error('Erro ao carregar apresentações:', error);
