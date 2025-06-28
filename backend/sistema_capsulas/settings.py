@@ -17,28 +17,24 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 
 # ==============================================================================
-# ✅ CONFIGURAÇÃO DINÂMICA DE HOSTS, CORS E CSRF
-# Esta abordagem é mais limpa, segura e à prova de futuro.
+# ✅ CONFIGURAÇÃO DINÂMICA DE HOSTS, CORS E CSRF (VERSÃO MELHORADA)
 # ==============================================================================
 
 # Lista base de hosts permitidos
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*'] # Manter '*' em dev é aceitável, mas para prod, restrinja!
 
 # Lista base de origens permitidas para CORS e CSRF
 TRUSTED_ORIGINS = []
 
 # --- Configuração para o ambiente Replit ---
-# Detecta se estamos rodando no Replit e se configura dinamicamente.
 IS_REPLIT = "REPL_ID" in os.environ or "REPLIT_DEV_DOMAIN" in os.environ
 
 if IS_REPLIT:
-    # Adicionar o domínio do Replit se disponível
     replit_domain = os.environ.get("REPLIT_DEV_DOMAIN")
     if replit_domain:
         ALLOWED_HOSTS.append(replit_domain)
         TRUSTED_ORIGINS.append(f"https://{replit_domain}")
     
-    # Fallback para o formato antigo
     repl_slug = os.environ.get("REPL_SLUG") 
     repl_owner = os.environ.get("REPL_OWNER")
     
@@ -47,7 +43,6 @@ if IS_REPLIT:
         ALLOWED_HOSTS.append(replit_host)
         TRUSTED_ORIGINS.append(f"https://{replit_host}")
     
-    # Adicionar wildcards para subdomínios do Replit
     ALLOWED_HOSTS.extend([
         "*.replit.dev",
         "*.repl.co",
@@ -56,22 +51,23 @@ if IS_REPLIT:
 
 # --- Configuração para o ambiente Local ---
 if not IS_REPLIT or DEBUG:
-    # Permite o frontend rodando localmente em modo de desenvolvimento.
-    # É explícito e seguro, ao contrário de `CORS_ALLOW_ALL_ORIGINS = True`.
-    TRUSTED_ORIGINS.append("http://localhost:3000")
-    TRUSTED_ORIGINS.append("http://127.0.0.1:3000")
+    # Adicionando explicitamente as origens de desenvolvimento local
+    TRUSTED_ORIGINS.extend([
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://192.168.3.9:3000", # <--- A GRANDE MUDANÇA ESTÁ AQUI!
+    ])
 
 # --- Atribuição final das configurações ---
 CORS_ALLOWED_ORIGINS = TRUSTED_ORIGINS
 CSRF_TRUSTED_ORIGINS = TRUSTED_ORIGINS
 
-# Essencial para o Django confiar nos cabeçalhos de proxy do Replit
+# Essencial para o Django confiar nos cabeçalhos de proxy
 if IS_REPLIT:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     USE_X_FORWARDED_HOST = True
     USE_X_FORWARDED_PORT = True
 
-# Permite o envio de cookies entre origens (essencial para autenticação)
 CORS_ALLOW_CREDENTIALS = True
 
 # ==============================================================================
