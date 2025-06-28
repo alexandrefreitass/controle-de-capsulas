@@ -179,7 +179,7 @@ function Success() {
             </header>
 
             <section className="db-dashboard-cards">
-              <div className="db-dashboard-card" onClick={() => navigate(apiEndpoints.fornecedores.list)}>
+              <div className="db-dashboard-card" onClick={() => navigate('/fornecedores')}>
                   <div className="db-dashboard-card-content">
                     <div className="db-dashboard-card-info">
                       <h3>Total de Fornecedores</h3>
@@ -192,7 +192,7 @@ function Success() {
                   <span className="db-dashboard-card-link">Ver fornecedores</span>
               </div>
 
-              <div className="db-dashboard-card" onClick={() => navigate(apiEndpoints.materiasPrimas.list)}>
+              <div className="db-dashboard-card" onClick={() => navigate('/materias-primas')}>
                   <div className="db-dashboard-card-content">
                     <div className="db-dashboard-card-info">
                       <h3>Matérias Primas</h3>
@@ -205,7 +205,7 @@ function Success() {
                   <span className="db-dashboard-card-link">Ver matérias primas</span>
               </div>
               
-              <div className="db-dashboard-card" onClick={() => navigate(apiEndpoints.producao.list)}>
+              <div className="db-dashboard-card" onClick={() => navigate('/producao')}>
                   <div className="db-dashboard-card-content">
                     <div className="db-dashboard-card-info">
                       <h3>Ordens de Produção</h3>
