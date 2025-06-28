@@ -24,7 +24,7 @@ function MateriasPrimas() {
   const fetchMateriasPrimas = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.materiasPrimas);
+      const response = await apiClient.get(apiEndpoints.materiasPrimas.list);
       
       // Processar datas para garantir formato consistente
       const materiasProcessadas = response.data.map(mp => ({
@@ -145,7 +145,7 @@ function MateriasPrimas() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir esta matéria prima?')) {
       try {
-        await apiClient.delete(apiEndpoints.materiaPrima(id));
+        await apiClient.delete(apiEndpoints.materiasPrimas.detail(id));
         fetchMateriasPrimas();
       } catch (error) {
         console.error('Erro ao excluir matéria prima:', error);
@@ -159,7 +159,7 @@ function MateriasPrimas() {
     if (window.confirm('Deseja marcar esta embalagem como aberta? Isso afetará o cálculo da data de validade.')) {
       try {
         setLoading(true);
-        const response = await apiClient.post(apiEndpoints.materiaPrimaAbrirEmbalagem(id), {});
+        const response = await apiClient.post(apiEndpoints.materiasPrimas.abrirEmbalagem(id), {});
         
         // Mostrar mensagem de feedback se disponível
         if (response.data.mensagem) {

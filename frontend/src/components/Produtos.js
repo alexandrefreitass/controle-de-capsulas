@@ -23,7 +23,7 @@ function Produtos() {
   const fetchProdutos = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.produtos);
+      const response = await apiClient.get(apiEndpoints.produtos.list);
       setProdutos(response.data);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -52,7 +52,7 @@ function Produtos() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
       try {
-        await apiClient.delete(apiEndpoints.produto(id));
+        await apiClient.delete(apiEndpoints.produtos.detail(id));
         fetchProdutos();
       } catch (error) {
         console.error('Erro ao excluir produto:', error);

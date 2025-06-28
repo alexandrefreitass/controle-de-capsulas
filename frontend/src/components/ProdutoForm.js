@@ -174,7 +174,7 @@ function ProdutoForm() {
 
   const fetchFormasFarmaceuticas = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.formasFarmaceuticas);
+      const response = await apiClient.get(apiEndpoints.meta.formasFarmaceuticas);
       setFormasFarmaceuticas(response.data);
     } catch (error) {
       console.error('Erro ao carregar formas farmacêuticas:', error);
@@ -184,7 +184,7 @@ function ProdutoForm() {
 
   const fetchFormulas = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.formulas);
+      const response = await apiClient.get(apiEndpoints.formulas.list);
       setFormulas(response.data);
     } catch (error) {
       console.error('Erro ao carregar fórmulas:', error);
@@ -194,7 +194,7 @@ function ProdutoForm() {
 
   const fetchLotesMateriasPrimas = async () => {
     try {
-      const response = await apiClient.get(apiEndpoints.lotes);
+      const response = await apiClient.get(apiEndpoints.lotes.list);
       setLotesMateriasPrimas(response.data);
     } catch (error) {
       console.error('Erro ao carregar lotes de matérias-primas:', error);
@@ -205,7 +205,7 @@ function ProdutoForm() {
   const fetchProduto = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.produto(id));
+      const response = await apiClient.get(apiEndpoints.produtos.detail(id));
       const produtoData = response.data;
 
       setFormData({
@@ -403,9 +403,9 @@ function ProdutoForm() {
 
       // 3. ✅ Correção no envio (POST/PUT)
       if (isEditing) {
-        await apiClient.put(apiEndpoints.produto(id), dataToSend);
+        await apiClient.put(apiEndpoints.produtos.detail(id), dataToSend);
       } else {
-        await apiClient.post(apiEndpoints.produtos, dataToSend);
+        await apiClient.post(apiEndpoints.produtos.list, dataToSend);
       }
 
       navigate('/produtos');

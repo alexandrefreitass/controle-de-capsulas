@@ -129,7 +129,7 @@ function ProducaoForm() {
   const fetchProdutos = async () => {
     try {
       // 2. ✅ Usar o apiClient e os endpoints
-      const response = await apiClient.get(apiEndpoints.produtos);
+      const response = await apiClient.get(apiEndpoints.produtos.list);
       setProdutos(response.data);
     } catch (error) {
       console.error('Erro ao carregar produtos:', error);
@@ -140,7 +140,7 @@ function ProducaoForm() {
   const fetchLotesMateriasPrimas = async () => {
     try {
       // 3. ✅ Usar o apiClient e os endpoints
-      const response = await apiClient.get(apiEndpoints.lotes);
+      const response = await apiClient.get(apiEndpoints.lotes.list);
       // Filtrar apenas lotes com quantidade disponível
       const lotesDisponiveis = response.data.filter(lote => lote.quant_disponivel_mg > 0);
       setLotesMateriasPrimas(lotesDisponiveis);
@@ -281,7 +281,7 @@ function ProducaoForm() {
       console.log('Enviando dados:', dataToSend);
 
       // 4. ✅ Usar o apiClient e os endpoints para o POST
-      const response = await apiClient.post(apiEndpoints.producao, dataToSend);
+      const response = await apiClient.post(apiEndpoints.producao.list, dataToSend);
       console.log('Resposta da criação:', response.data);
 
       navigate('/producao');

@@ -24,7 +24,7 @@ function Producao() {
   const fetchLotesProducao = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.producao);
+      const response = await apiClient.get(apiEndpoints.producao.list);
       setLotesProducao(response.data);
       setLoading(false);
     } catch (error) {
@@ -49,7 +49,7 @@ function Producao() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este lote de produção? A quantidade das matérias-primas consumidas será devolvida ao estoque.')) {
       try {
-        await apiClient.delete(apiEndpoints.producaoDetalhe(id));
+        await apiClient.delete(apiEndpoints.producao.detail(id));
         fetchLotesProducao();
       } catch (error) {
         console.error('Erro ao excluir lote de produção:', error);

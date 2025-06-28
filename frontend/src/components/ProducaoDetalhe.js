@@ -115,7 +115,7 @@ function ProducaoDetalhe() {
                 {loteProducao.materiais_consumidos.map((material) => (
                   <tr key={material.id}>
                     <td>{material.lote_materia_prima.materia_prima.nome}</td>
-                    <td>{material.lote_materia_prima.lote}</td>
+                    <td>{material.lote_materia_prima.numero_lote}</td>
                     <td>{material.quant_consumida_mg} mg</td>
                   </tr>
                 ))}

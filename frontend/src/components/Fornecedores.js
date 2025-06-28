@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -11,20 +10,19 @@ function Fornecedores() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Verificar se o usuário está autenticado
     const username = localStorage.getItem('username');
     if (!username) {
       navigate('/login');
       return;
     }
-
     buscarFornecedores();
   }, [navigate]);
 
   const buscarFornecedores = async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get(apiEndpoints.fornecedores);
+      // CORREÇÃO AQUI: Usar a propriedade .list
+      const response = await apiClient.get(apiEndpoints.fornecedores.list);
       setFornecedores(response.data);
     } catch (error) {
       setError('Erro ao carregar fornecedores');
@@ -49,7 +47,8 @@ function Fornecedores() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este fornecedor?')) {
       try {
-        await apiClient.delete(apiEndpoints.fornecedor(id));
+        // CORREÇÃO AQUI: Usar a função .detail()
+        await apiClient.delete(apiEndpoints.fornecedores.detail(id));
         buscarFornecedores();
       } catch (error) {
         setError('Erro ao excluir fornecedor');
