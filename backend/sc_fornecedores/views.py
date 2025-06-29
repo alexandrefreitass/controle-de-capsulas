@@ -66,5 +66,18 @@ def fornecedor_detail(request, pk):
         )
 
     elif request.method == "DELETE":
+    # ✅ ADICIONADO: Bloco try...except para tratar o erro de proteção
+    try:
         fornecedor.delete()
         return JsonResponse({"message": "Fornecedor excluído com sucesso"}, status=204)
+    except ProtectedError:
+        # Retorna uma mensagem de erro clara para o frontend
+        return JsonResponse(
+            {
+                "error": "Este fornecedor não pode ser excluído, pois está vinculado a uma ou mais matérias-primas."
+            },
+            status=409,  # 409 Conflict é o status ideal para esta situação
+        )
+    except Exception as e:
+        # Captura outros erros inesperados
+        return JsonResponse({"error": f"Ocorreu um erro inesperado: {str(e)}"}, status=500)
