@@ -1,3 +1,4 @@
+
 // frontend/src/components/Fornecedores.js
 
 import React, { useState, useEffect } from 'react';
@@ -7,8 +8,14 @@ import Icon from './Icon';
 
 function Fornecedores() {
   const [fornecedores, setFornecedores] = useState([]);
+  const [fornecedoresFiltrados, setFornecedoresFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [termoBusca, setTermoBusca] = useState('');
+  const [ordenacao, setOrdenacao] = useState({
+    campo: '',
+    direcao: 'asc' // 'asc' ou 'desc'
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,6 +26,18 @@ function Fornecedores() {
     }
     buscarFornecedores();
   }, [navigate]);
+
+  // Filtrar fornecedores quando o termo de busca ou a lista mudar
+  useEffect(() => {
+    filtrarFornecedores();
+  }, [fornecedores, termoBusca]);
+
+  // Ordenar fornecedores quando a ordenação mudar
+  useEffect(() => {
+    if (ordenacao.campo) {
+      ordenarFornecedores();
+    }
+  }, [ordenacao]);
 
   const buscarFornecedores = async () => {
     try {
@@ -31,6 +50,54 @@ function Fornecedores() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const filtrarFornecedores = () => {
+    if (!termoBusca.trim()) {
+      setFornecedoresFiltrados(fornecedores);
+      return;
+    }
+
+    const termoLower = termoBusca.toLowerCase();
+    const filtrados = fornecedores.filter(fornecedor => 
+      fornecedor.cnpj.toLowerCase().includes(termoLower) ||
+      fornecedor.razao_social.toLowerCase().includes(termoLower) ||
+      fornecedor.fantasia.toLowerCase().includes(termoLower)
+    );
+    
+    setFornecedoresFiltrados(filtrados);
+  };
+
+  const ordenarFornecedores = () => {
+    const fornecedoresOrdenados = [...fornecedoresFiltrados].sort((a, b) => {
+      const valorA = a[ordenacao.campo]?.toString().toLowerCase() || '';
+      const valorB = b[ordenacao.campo]?.toString().toLowerCase() || '';
+
+      if (ordenacao.direcao === 'asc') {
+        return valorA.localeCompare(valorB);
+      } else {
+        return valorB.localeCompare(valorA);
+      }
+    });
+
+    setFornecedoresFiltrados(fornecedoresOrdenados);
+  };
+
+  const handleOrdenacao = (campo) => {
+    setOrdenacao(prevOrdenacao => ({
+      campo,
+      direcao: prevOrdenacao.campo === campo && prevOrdenacao.direcao === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const renderIconeOrdenacao = (campo) => {
+    if (ordenacao.campo !== campo) {
+      return <Icon name="ArrowUpDown" size={14} className="sort-icon" />;
+    }
+    
+    return ordenacao.direcao === 'asc' 
+      ? <Icon name="ArrowUp" size={14} className="sort-icon active" />
+      : <Icon name="ArrowDown" size={14} className="sort-icon active" />;
   };
 
   const handleVoltar = () => {
@@ -50,19 +117,20 @@ function Fornecedores() {
       try {
         await apiClient.delete(apiEndpoints.fornecedores.detail(id));
         buscarFornecedores(); // Re-fetch na lista para atualizar a UI
-      } catch (err) { // Renomeado para 'err' para evitar sombreamento
+      } catch (err) {
         console.error('Erro ao excluir fornecedor:', err);
 
-        // ✅ MELHORADO: Lógica para extrair a mensagem de erro específica da API
         if (err.response && err.response.data && err.response.data.error) {
-          // Usa a mensagem de erro vinda do nosso backend (Ex: "Este fornecedor não pode ser excluído...")
           setError(err.response.data.error);
         } else {
-          // Fallback para uma mensagem genérica se a API não retornar um erro formatado
           setError('Erro ao excluir fornecedor. Verifique o console para mais detalhes.');
         }
       }
     }
+  };
+
+  const limparBusca = () => {
+    setTermoBusca('');
   };
 
   return (
@@ -97,35 +165,92 @@ function Fornecedores() {
             </div>
           )}
 
+          {/* Campo de busca */}
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <Icon name="Search" size={16} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Buscar por CNPJ, Razão Social ou Nome Fantasia..."
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
+                className="search-input"
+              />
+              {termoBusca && (
+                <button
+                  onClick={limparBusca}
+                  className="search-clear-btn"
+                  title="Limpar busca"
+                >
+                  <Icon name="X" size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="table-container">
             {loading ? (
               <div className="loading">
                 <div className="spinner"></div>
               </div>
-            ) : fornecedores.length === 0 ? (
+            ) : fornecedoresFiltrados.length === 0 ? (
               <div className="table-empty">
                 <div className="table-empty-icon">
                   <Icon name="Building2" size={48} />
                 </div>
-                <h3>Nenhum fornecedor cadastrado</h3>
-                <p>Comece adicionando seu primeiro fornecedor.</p>
-                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
-                  <Icon name="Plus" size={16} />
-                  Adicionar Fornecedor
-                </button>
+                {termoBusca ? (
+                  <>
+                    <h3>Nenhum fornecedor encontrado</h3>
+                    <p>Não foram encontrados fornecedores que correspondam à sua busca "{termoBusca}".</p>
+                    <button className="btn btn-secondary" onClick={limparBusca}>
+                      <Icon name="X" size={16} />
+                      Limpar busca
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h3>Nenhum fornecedor cadastrado</h3>
+                    <p>Comece adicionando seu primeiro fornecedor.</p>
+                    <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
+                      <Icon name="Plus" size={16} />
+                      Adicionar Fornecedor
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <table className="table">
                 <thead>
                   <tr>
-                    <th>CNPJ</th>
-                    <th>Razão Social</th>
-                    <th>Nome Fantasia</th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('cnpj')}
+                      title="Clique para ordenar por CNPJ"
+                    >
+                      <span>CNPJ</span>
+                      {renderIconeOrdenacao('cnpj')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('razao_social')}
+                      title="Clique para ordenar por Razão Social"
+                    >
+                      <span>Razão Social</span>
+                      {renderIconeOrdenacao('razao_social')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('fantasia')}
+                      title="Clique para ordenar por Nome Fantasia"
+                    >
+                      <span>Nome Fantasia</span>
+                      {renderIconeOrdenacao('fantasia')}
+                    </th>
                     <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {fornecedores.map((fornecedor) => (
+                  {fornecedoresFiltrados.map((fornecedor) => (
                     <tr key={fornecedor.id}>
                       <td>{fornecedor.cnpj}</td>
                       <td>{fornecedor.razao_social}</td>
