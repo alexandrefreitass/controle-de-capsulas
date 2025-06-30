@@ -132,28 +132,28 @@ function ProducaoDetalhe() {
             <div className="card-body">
               <div className="info-grid">
                 <div className="info-item">
-                  <div className="info-label">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Package" size={16} />
                     Produto
                   </div>
                   <div className="info-value">{loteProducao.produto.nome}</div>
                 </div>
                 <div className="info-item">
-                  <div className="info-label">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Hash" size={16} />
                     Lote
                   </div>
                   <div className="info-value">{loteProducao.lote}</div>
                 </div>
                 <div className="info-item">
-                  <div className="info-label">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Scale" size={16} />
                     Tamanho do Lote
                   </div>
                   <div className="info-value">{loteProducao.lote_tamanho}</div>
                 </div>
                 <div className="info-item">
-                  <div className="info-label">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Calendar" size={16} />
                     Data de Produção
                   </div>
