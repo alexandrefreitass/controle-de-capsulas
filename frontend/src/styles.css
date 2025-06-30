@@ -1338,30 +1338,18 @@ a:hover {
   user-select: none;
   transition: background-color 0.2s;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
   white-space: nowrap;
-  min-width: 0;
 }
 
 .sortable-header:hover {
   background-color: var(--border-light);
 }
 
-.sortable-header span {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .sort-icon {
   color: var(--text-muted);
   transition: color 0.2s;
-  flex-shrink: 0;
-  margin-left: auto;
+  margin-left: 0.5rem;
+  vertical-align: middle;
 }
 
 .sort-icon.active {
