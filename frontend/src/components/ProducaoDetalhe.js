@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
-import Layout from './Layout';
 import Icon from './Icon';
 
 function ProducaoDetalhe() {
@@ -49,17 +48,17 @@ function ProducaoDetalhe() {
 
   if (loading) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="loading">
           <div className="spinner"></div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="container">
           <div className="alert alert-error">
             <Icon name="AlertTriangle" size={16} />
@@ -70,13 +69,13 @@ function ProducaoDetalhe() {
             Voltar
           </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (!loteProducao) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="container">
           <div className="alert alert-error">
             <Icon name="AlertTriangle" size={16} />
@@ -87,30 +86,30 @@ function ProducaoDetalhe() {
             Voltar
           </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="module-container">
-        <div className="module-header">
-          <div className="container">
-            <div className="module-nav">
-              <h1 className="module-title">
-                <Icon name="Package" size={24} className="module-title-icon" />
-                Detalhes do Lote de Produção
-              </h1>
-              <div className="module-actions">
-                <button className="btn btn-secondary" onClick={handleVoltar}>
-                  <Icon name="ArrowLeft" size={16} />
-                  Voltar
-                </button>
-              </div>
+    <div className="module-container">
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              <Icon name="Factory" size={24} className="module-title-icon" />
+              Detalhes da Produção
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar
+              </button>
             </div>
-          </div>
+          </nav>
         </div>
+      </header>
 
+      <main>
         <div className="container">
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -118,7 +117,7 @@ function ProducaoDetalhe() {
             <span className="breadcrumb-separator">
               <Icon name="ChevronRight" size={16} />
             </span>
-            <span className="breadcrumb-item">Lote #{loteProducao.lote}</span>
+            <span className="breadcrumb-item">Lote {loteProducao.numero_lote}</span>
           </div>
 
           {/* Informações Gerais */}
@@ -133,6 +132,15 @@ function ProducaoDetalhe() {
               <div className="info-grid">
                 <div className="info-item">
                   <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Hash" size={16} />
+                    Número do Lote
+                  </div>
+                  <div className="info-value">
+                    <span className="badge badge-primary">{loteProducao.numero_lote}</span>
+                  </div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Package" size={16} />
                     Produto
                   </div>
@@ -140,24 +148,35 @@ function ProducaoDetalhe() {
                 </div>
                 <div className="info-item">
                   <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Icon name="Hash" size={16} />
-                    Lote
-                  </div>
-                  <div className="info-value">{loteProducao.lote}</div>
-                </div>
-                <div className="info-item">
-                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <Icon name="Scale" size={16} />
-                    Tamanho do Lote
-                  </div>
-                  <div className="info-value">{loteProducao.lote_tamanho}</div>
-                </div>
-                <div className="info-item">
-                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <Icon name="Calendar" size={16} />
                     Data de Produção
                   </div>
                   <div className="info-value">{formatarData(loteProducao.data_producao)}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Calendar" size={16} />
+                    Data de Validade
+                  </div>
+                  <div className="info-value">{formatarData(loteProducao.data_validade)}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Hash" size={16} />
+                    Quantidade Produzida
+                  </div>
+                  <div className="info-value">{loteProducao.quant_produzida} unidades</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="AlertCircle" size={16} />
+                    Status
+                  </div>
+                  <div className="info-value">
+                    <span className={`badge ${loteProducao.status === 'finalizado' ? 'badge-success' : 'badge-warning'}`}>
+                      {loteProducao.status}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -172,12 +191,12 @@ function ProducaoDetalhe() {
               </h3>
             </div>
             <div className="card-body">
-              {loteProducao.materiais_consumidos.length === 0 ? (
+              {!loteProducao.materiais_consumidos || loteProducao.materiais_consumidos.length === 0 ? (
                 <div className="table-empty">
                   <div className="table-empty-icon">
-                    <Icon name="Package" size={48} />
+                    <Icon name="Layers" size={48} />
                   </div>
-                  <p>Nenhuma matéria-prima registrada para este lote.</p>
+                  <p>Nenhuma matéria-prima utilizada neste lote de produção.</p>
                 </div>
               ) : (
                 <div className="table-container">
@@ -223,8 +242,8 @@ function ProducaoDetalhe() {
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </main>
+    </div>
   );
 }
 

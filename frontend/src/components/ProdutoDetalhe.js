@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
-import Layout from './Layout';
 import Icon from './Icon';
 
 function ProdutoDetalhe() {
@@ -46,17 +45,17 @@ function ProdutoDetalhe() {
 
   if (loading) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="loading">
           <div className="spinner"></div>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="container">
           <div className="alert alert-error">
             <Icon name="AlertTriangle" size={16} />
@@ -67,13 +66,13 @@ function ProdutoDetalhe() {
             Voltar
           </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   if (!produto) {
     return (
-      <Layout>
+      <div className="module-container">
         <div className="container">
           <div className="alert alert-error">
             <Icon name="AlertTriangle" size={16} />
@@ -84,34 +83,34 @@ function ProdutoDetalhe() {
             Voltar
           </button>
         </div>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="module-container">
-        <div className="module-header">
-          <div className="container">
-            <div className="module-nav">
-              <h1 className="module-title">
-                <Icon name="Package" size={24} className="module-title-icon" />
-                Detalhes do Produto
-              </h1>
-              <div className="module-actions">
-                <button className="btn btn-secondary" onClick={handleVoltar}>
-                  <Icon name="ArrowLeft" size={16} />
-                  Voltar
-                </button>
-                <button className="btn btn-primary" onClick={handleEditar}>
-                  <Icon name="Edit" size={16} />
-                  Editar
-                </button>
-              </div>
+    <div className="module-container">
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              <Icon name="Package" size={24} className="module-title-icon" />
+              Detalhes do Produto
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar
+              </button>
+              <button className="btn btn-primary" onClick={handleEditar}>
+                <Icon name="Edit" size={16} />
+                Editar
+              </button>
             </div>
-          </div>
+          </nav>
         </div>
+      </header>
 
+      <main>
         <div className="container">
           {/* Breadcrumb */}
           <div className="breadcrumb">
@@ -252,8 +251,8 @@ function ProdutoDetalhe() {
             </div>
           </div>
         </div>
-      </div>
-    </Layout>
+      </main>
+    </div>
   );
 }
 
