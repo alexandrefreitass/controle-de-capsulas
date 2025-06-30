@@ -1,3 +1,5 @@
+// frontend/src/components/Fornecedores.js
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -21,7 +23,6 @@ function Fornecedores() {
   const buscarFornecedores = async () => {
     try {
       setLoading(true);
-      // CORREÇÃO AQUI: Usar a propriedade .list
       const response = await apiClient.get(apiEndpoints.fornecedores.list);
       setFornecedores(response.data);
     } catch (error) {
@@ -47,11 +48,19 @@ function Fornecedores() {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este fornecedor?')) {
       try {
-        // CORREÇÃO AQUI: Usar a função .detail()
         await apiClient.delete(apiEndpoints.fornecedores.detail(id));
-        buscarFornecedores();
-      } catch (error) {
-        setError('Erro ao excluir fornecedor');
+        buscarFornecedores(); // Re-fetch na lista para atualizar a UI
+      } catch (err) { // Renomeado para 'err' para evitar sombreamento
+        console.error('Erro ao excluir fornecedor:', err);
+
+        // ✅ MELHORADO: Lógica para extrair a mensagem de erro específica da API
+        if (err.response && err.response.data && err.response.data.error) {
+          // Usa a mensagem de erro vinda do nosso backend (Ex: "Este fornecedor não pode ser excluído...")
+          setError(err.response.data.error);
+        } else {
+          // Fallback para uma mensagem genérica se a API não retornar um erro formatado
+          setError('Erro ao excluir fornecedor. Verifique o console para mais detalhes.');
+        }
       }
     }
   };
