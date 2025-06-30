@@ -1,8 +1,93 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
 import { apiClient, apiEndpoints } from '../config/api';
 import Icon from './Icon';
+
+// Estilos customizados para o React Select
+const customSelectStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    backgroundColor: 'var(--background-primary)',
+    border: state.isFocused ? '1px solid var(--primary-color)' : '1px solid var(--border-color)',
+    borderRadius: 'var(--radius-md)',
+    padding: '0',
+    minHeight: '42px',
+    height: '42px',
+    fontSize: '0.875rem',
+    lineHeight: '1.25rem',
+    boxShadow: state.isFocused ? '0 0 0 1px var(--primary-light)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? 'var(--primary-color)' : '#9ca3af'
+    },
+    cursor: 'pointer',
+    transition: 'all 0.2s ease-in-out'
+  }),
+  valueContainer: (provided) => ({
+    ...provided,
+    padding: '0.625rem 0.75rem',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center'
+  }),
+  input: (provided) => ({
+    ...provided,
+    margin: '0',
+    padding: '0',
+    color: 'var(--text-primary)'
+  }),
+  indicatorSeparator: () => ({
+    display: 'none'
+  }),
+  dropdownIndicator: (provided, state) => ({
+    ...provided,
+    color: 'var(--text-muted)',
+    padding: '0 8px',
+    '&:hover': {
+      color: 'var(--text-secondary)'
+    },
+    transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    transition: 'transform 0.2s'
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: 'var(--text-muted)',
+    fontSize: '0.875rem'
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    color: 'var(--text-primary)',
+    fontSize: '0.875rem'
+  }),
+  menu: (provided) => ({
+    ...provided,
+    borderRadius: 'var(--radius-md)',
+    border: '1px solid var(--border-color)',
+    boxShadow: 'var(--shadow-md)',
+    zIndex: 1000
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    padding: '4px'
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected 
+      ? 'var(--primary-color)' 
+      : state.isFocused 
+        ? 'var(--background-accent)' 
+        : 'transparent',
+    color: state.isSelected ? '#ffffff' : 'var(--text-primary)',
+    padding: '8px 12px',
+    borderRadius: 'var(--radius-sm)',
+    fontSize: '0.875rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: state.isSelected ? 'var(--primary-hover)' : 'var(--background-accent)'
+    }
+  })
+};
 
 function LoteForm() {
   const { materiaPrimaId, id } = useParams();
@@ -91,6 +176,13 @@ function LoteForm() {
     });
   };
 
+  const handleFornecedorChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      fornecedor_id: selectedOption ? selectedOption.value : ''
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -140,6 +232,11 @@ function LoteForm() {
       setLoading(false);
     }
   };
+
+  const fornecedorOptions = fornecedores.map(fornecedor => ({
+    value: fornecedor.id,
+    label: fornecedor.razao_social
+  }));
 
   const handleVoltar = () => {
     navigate(`/materias-primas/${materiaPrimaId}/lotes`);
@@ -267,22 +364,21 @@ function LoteForm() {
                     <label className="form-label" htmlFor="fornecedor_id">
                       Fornecedor *
                     </label>
-                    <select
+                    <Select
                       id="fornecedor_id"
                       name="fornecedor_id"
-                      className="form-select"
-                      value={formData.fornecedor_id}
-                      onChange={handleChange}
-                      required
-                      disabled={loading}
-                    >
-                      <option value="">Selecione um fornecedor</option>
-                      {fornecedores.map(fornecedor => (
-                        <option key={fornecedor.id} value={fornecedor.id}>
-                          {fornecedor.razao_social}
-                        </option>
-                      ))}
-                    </select>
+                      options={fornecedorOptions}
+                      value={fornecedorOptions.find(option => option.value === formData.fornecedor_id) || null}
+                      onChange={handleFornecedorChange}
+                      isDisabled={loading || !fornecedores.length}
+                      placeholder={fornecedores.length ? "Selecione um fornecedor..." : "Carregando..."}
+                      styles={customSelectStyles}
+                      isSearchable={true}
+                      isClearable={true}
+                      classNamePrefix="react-select"
+                      noOptionsMessage={() => "Nenhuma opção"}
+                      loadingMessage={() => "Carregando..."}
+                    />
                   </div>
                 </div>
               </div>
