@@ -122,7 +122,7 @@ function ProducaoDetalhe() {
           </div>
 
           {/* Informações Gerais */}
-          <div className="card">
+          <div className="card" style={{ marginBottom: '2rem' }}>
             <div className="card-header">
               <h3 className="card-title">
                 <Icon name="Info" size={20} />
