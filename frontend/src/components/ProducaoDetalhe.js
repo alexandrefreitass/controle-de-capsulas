@@ -1,6 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Layout from './Layout';
+import Icon from './Icon';
 
 function ProducaoDetalhe() {
   const { id } = useParams();
@@ -45,86 +48,177 @@ function ProducaoDetalhe() {
   };
 
   if (loading) {
-    return <p>Carregando detalhes do lote de produção...</p>;
+    return (
+      <Layout>
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </Layout>
+    );
   }
 
   if (error) {
     return (
-      <div className="module-container">
-        <div className="error">{error}</div>
-        <button onClick={handleVoltar}>Voltar</button>
-      </div>
+      <Layout>
+        <div className="container">
+          <div className="alert alert-error">
+            <Icon name="AlertTriangle" size={16} />
+            {error}
+          </div>
+          <button className="btn btn-secondary" onClick={handleVoltar}>
+            <Icon name="ArrowLeft" size={16} />
+            Voltar
+          </button>
+        </div>
+      </Layout>
     );
   }
 
   if (!loteProducao) {
     return (
-      <div className="module-container">
-        <div className="error">Lote de produção não encontrado.</div>
-        <button onClick={handleVoltar}>Voltar</button>
-      </div>
+      <Layout>
+        <div className="container">
+          <div className="alert alert-error">
+            <Icon name="AlertTriangle" size={16} />
+            Lote de produção não encontrado.
+          </div>
+          <button className="btn btn-secondary" onClick={handleVoltar}>
+            <Icon name="ArrowLeft" size={16} />
+            Voltar
+          </button>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="module-container">
-      <div className="module-header">
-        <h2>Detalhes do Lote de Produção</h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
-
-      <div className="detail-container">
-        <div className="detail-section">
-          <h3>Informações Gerais</h3>
-          <table className="detail-table">
-            <tbody>
-              <tr>
-                <th>Produto:</th>
-                <td>{loteProducao.produto.nome}</td>
-              </tr>
-              <tr>
-                <th>Lote:</th>
-                <td>{loteProducao.lote}</td>
-              </tr>
-              <tr>
-                <th>Tamanho do Lote:</th>
-                <td>{loteProducao.lote_tamanho}</td>
-              </tr>
-              <tr>
-                <th>Data de Produção:</th>
-                <td>{formatarData(loteProducao.data_producao)}</td>
-              </tr>
-            </tbody>
-          </table>
+    <Layout>
+      <div className="module-container">
+        <div className="module-header">
+          <div className="container">
+            <div className="module-nav">
+              <h1 className="module-title">
+                <Icon name="Package" size={24} className="module-title-icon" />
+                Detalhes do Lote de Produção
+              </h1>
+              <div className="module-actions">
+                <button className="btn btn-secondary" onClick={handleVoltar}>
+                  <Icon name="ArrowLeft" size={16} />
+                  Voltar
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="detail-section">
-          <h3>Matérias-primas Utilizadas</h3>
-          {loteProducao.materiais_consumidos.length === 0 ? (
-            <p>Nenhuma matéria-prima registrada para este lote.</p>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Matéria-prima</th>
-                  <th>Lote</th>
-                  <th>Quantidade Consumida (mg)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loteProducao.materiais_consumidos.map((material) => (
-                  <tr key={material.id}>
-                    <td>{material.lote_materia_prima.materia_prima.nome}</td>
-                    <td>{material.lote_materia_prima.numero_lote}</td>
-                    <td>{material.quant_consumida_mg} mg</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="container">
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <span className="breadcrumb-item">Produção</span>
+            <span className="breadcrumb-separator">
+              <Icon name="ChevronRight" size={16} />
+            </span>
+            <span className="breadcrumb-item">Lote #{loteProducao.lote}</span>
+          </div>
+
+          {/* Informações Gerais */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">
+                <Icon name="Info" size={20} />
+                Informações Gerais
+              </h3>
+            </div>
+            <div className="card-body">
+              <div className="info-grid">
+                <div className="info-item">
+                  <div className="info-label">
+                    <Icon name="Package" size={16} />
+                    Produto
+                  </div>
+                  <div className="info-value">{loteProducao.produto.nome}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label">
+                    <Icon name="Hash" size={16} />
+                    Lote
+                  </div>
+                  <div className="info-value">{loteProducao.lote}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label">
+                    <Icon name="Scale" size={16} />
+                    Tamanho do Lote
+                  </div>
+                  <div className="info-value">{loteProducao.lote_tamanho}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label">
+                    <Icon name="Calendar" size={16} />
+                    Data de Produção
+                  </div>
+                  <div className="info-value">{formatarData(loteProducao.data_producao)}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Matérias-primas Utilizadas */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">
+                <Icon name="Layers" size={20} />
+                Matérias-primas Utilizadas
+              </h3>
+            </div>
+            <div className="card-body">
+              {loteProducao.materiais_consumidos.length === 0 ? (
+                <div className="table-empty">
+                  <div className="table-empty-icon">
+                    <Icon name="Package" size={48} />
+                  </div>
+                  <p>Nenhuma matéria-prima registrada para este lote.</p>
+                </div>
+              ) : (
+                <div className="table-container">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>
+                          <Icon name="Package" size={16} />
+                          Matéria-prima
+                        </th>
+                        <th>
+                          <Icon name="Hash" size={16} />
+                          Lote
+                        </th>
+                        <th>
+                          <Icon name="Scale" size={16} />
+                          Quantidade Consumida
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loteProducao.materiais_consumidos.map((material) => (
+                        <tr key={material.id}>
+                          <td>{material.lote_materia_prima.materia_prima.nome}</td>
+                          <td>
+                            <span className="badge badge-info">
+                              {material.lote_materia_prima.numero_lote}
+                            </span>
+                          </td>
+                          <td>{material.quant_consumida_mg} mg</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 
