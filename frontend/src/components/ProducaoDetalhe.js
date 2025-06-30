@@ -124,7 +124,7 @@ function ProducaoDetalhe() {
           {/* Informações Gerais */}
           <div className="card" style={{ marginBottom: '2rem' }}>
             <div className="card-header">
-              <h3 className="card-title">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Icon name="Info" size={20} />
                 Informações Gerais
               </h3>
@@ -166,7 +166,7 @@ function ProducaoDetalhe() {
           {/* Matérias-primas Utilizadas */}
           <div className="card">
             <div className="card-header">
-              <h3 className="card-title">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Icon name="Layers" size={20} />
                 Matérias-primas Utilizadas
               </h3>
