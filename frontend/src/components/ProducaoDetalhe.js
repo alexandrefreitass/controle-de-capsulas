@@ -185,16 +185,22 @@ function ProducaoDetalhe() {
                     <thead>
                       <tr>
                         <th>
-                          <Icon name="Package" size={16} />
-                          Matéria-prima
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Package" size={16} />
+                            Matéria-prima
+                          </div>
                         </th>
                         <th>
-                          <Icon name="Hash" size={16} />
-                          Lote
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Hash" size={16} />
+                            Lote
+                          </div>
                         </th>
                         <th>
-                          <Icon name="Scale" size={16} />
-                          Quantidade Consumida
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Scale" size={16} />
+                            Quantidade Consumida
+                          </div>
                         </th>
                       </tr>
                     </thead>
