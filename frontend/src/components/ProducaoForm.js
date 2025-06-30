@@ -174,10 +174,24 @@ function ProducaoForm() {
     });
   };
 
+  // Handler específico para o React Select de produto
+  const handleProdutoSelectChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      produto_id: selectedOption ? selectedOption.value : ''
+    });
+  };
+
   // Criar opções para o React Select
   const materiaPrimaOptions = lotesMateriasPrimas.map(lote => ({
     value: lote.id,
     label: `${lote.materia_prima.nome} - Lote: ${lote.lote} (${lote.quant_disponivel_mg}mg disponível)`
+  }));
+
+  // Criar opções para o select de produtos
+  const produtoOptions = produtos.map(produto => ({
+    value: produto.id,
+    label: produto.nome
   }));
 
   const handleAdicionarMaterial = () => {
@@ -352,24 +366,25 @@ function ProducaoForm() {
                 <div className="form-grid">
                   <div className="form-group">
                     <label className="form-label" htmlFor="produto_id">
-                      Produto
+                      Produto *
                     </label>
-                    <select
+                    <Select
                       id="produto_id"
                       name="produto_id"
-                      className="form-input"
-                      value={formData.produto_id}
-                      onChange={handleChange}
-                      required
-                      disabled={loading}
-                    >
-                      <option value="">Selecione um produto</option>
-                      {produtos.map(produto => (
-                        <option key={produto.id} value={produto.id}>
-                          {produto.nome}
-                        </option>
-                      ))}
-                    </select>
+                      options={produtoOptions}
+                      value={produtoOptions.find(option => option.value === parseInt(formData.produto_id)) || null}
+                      onChange={handleProdutoSelectChange}
+                      isDisabled={loading}
+                      placeholder="Selecione um produto..."
+                      styles={customSelectStyles}
+                      isSearchable={true}
+                      isClearable={true}
+                      classNamePrefix="react-select"
+                      noOptionsMessage={() => "Nenhuma opção"}
+                      loadingMessage={() => "Carregando..."}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                    />
                   </div>
 
                   <div className="form-group">
