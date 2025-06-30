@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Icon from './Icon';
 
 function LoteForm() {
   const { materiaPrimaId, id } = useParams();
@@ -144,101 +146,178 @@ function LoteForm() {
   };
 
   if (loading && isEditing) {
-    return <p>Carregando dados do lote...</p>;
+    return (
+      <div className="module-container">
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="module-container">
-      <div className="module-header">
-        <h2>
-          {isEditing ? 'Editar Lote' : 'Novo Lote'} 
-          {materiaPrima ? ` - ${materiaPrima.nome}` : ''}
-        </h2>
-        <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-      </div>
+      <header className="module-header">
+        <div className="container">
+          <nav className="module-nav">
+            <h1 className="module-title">
+              <Icon name="Package" size={32} className="module-title-icon" />
+              {isEditing ? 'Editar Lote' : 'Novo Lote'}
+              {materiaPrima ? ` - ${materiaPrima.nome}` : ''}
+            </h1>
+            <div className="module-actions">
+              <button className="btn btn-secondary" onClick={handleVoltar}>
+                <Icon name="ArrowLeft" size={16} />
+                Voltar
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-      {error && <div className="error">{error}</div>}
+      <main>
+        <div className="container">
+          {error && (
+            <div className="alert alert-error">
+              <Icon name="AlertCircle" size={16} />
+              {error}
+            </div>
+          )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-grid">
-          <div className="form-group">
-            <label htmlFor="lote">Número do Lote:</label>
-            <input
-              type="text"
-              id="lote"
-              name="lote"
-              value={formData.lote}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          <div className="form-container">
+            <form onSubmit={handleSubmit} className="form">
+              <div className="form-section">
+                <h3 className="form-section-title">Informações do Lote</h3>
+                
+                <div className="form-grid">
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="lote">
+                      Número do Lote *
+                    </label>
+                    <input
+                      type="text"
+                      id="lote"
+                      name="lote"
+                      className="form-input"
+                      value={formData.lote}
+                      onChange={handleChange}
+                      placeholder="Ex: LOT2024001"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group">
-            <label htmlFor="nota_fiscal">Nota Fiscal:</label>
-            <input
-              type="text"
-              id="nota_fiscal"
-              name="nota_fiscal"
-              value={formData.nota_fiscal}
-              onChange={handleChange}
-              required
-            />
-          </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="nota_fiscal">
+                      Nota Fiscal *
+                    </label>
+                    <input
+                      type="text"
+                      id="nota_fiscal"
+                      name="nota_fiscal"
+                      className="form-input"
+                      value={formData.nota_fiscal}
+                      onChange={handleChange}
+                      placeholder="Ex: 123456"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group">
-            <label htmlFor="quant_total_mg">Quantidade Total (mg):</label>
-            <input
-              type="number"
-              id="quant_total_mg"
-              name="quant_total_mg"
-              value={formData.quant_total_mg}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="quant_total_mg">
+                      Quantidade Total (mg) *
+                    </label>
+                    <input
+                      type="number"
+                      id="quant_total_mg"
+                      name="quant_total_mg"
+                      className="form-input"
+                      value={formData.quant_total_mg}
+                      onChange={handleChange}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group">
-            <label htmlFor="quant_disponivel_mg">Quantidade Disponível (mg):</label>
-            <input
-              type="number"
-              id="quant_disponivel_mg"
-              name="quant_disponivel_mg"
-              value={formData.quant_disponivel_mg}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="quant_disponivel_mg">
+                      Quantidade Disponível (mg) *
+                    </label>
+                    <input
+                      type="number"
+                      id="quant_disponivel_mg"
+                      name="quant_disponivel_mg"
+                      className="form-input"
+                      value={formData.quant_disponivel_mg}
+                      onChange={handleChange}
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-          <div className="form-group form-full-width">
-            <label htmlFor="fornecedor_id">Fornecedor:</label>
-            <select
-              id="fornecedor_id"
-              name="fornecedor_id"
-              value={formData.fornecedor_id}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Selecione um fornecedor</option>
-              {fornecedores.map(fornecedor => (
-                <option key={fornecedor.id} value={fornecedor.id}>
-                  {fornecedor.razao_social}
-                </option>
-              ))}
-            </select>
+                  <div className="form-group form-group-full">
+                    <label className="form-label" htmlFor="fornecedor_id">
+                      Fornecedor *
+                    </label>
+                    <select
+                      id="fornecedor_id"
+                      name="fornecedor_id"
+                      className="form-select"
+                      value={formData.fornecedor_id}
+                      onChange={handleChange}
+                      required
+                      disabled={loading}
+                    >
+                      <option value="">Selecione um fornecedor</option>
+                      {fornecedores.map(fornecedor => (
+                        <option key={fornecedor.id} value={fornecedor.id}>
+                          {fornecedor.razao_social}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  onClick={handleVoltar}
+                  disabled={loading}
+                >
+                  <Icon name="X" size={16} />
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <div className="spinner spinner-sm"></div>
+                      Salvando...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="Save" size={16} />
+                      Salvar
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button type="button" onClick={handleVoltar} style={{ marginRight: '10px' }}>Cancelar</button>
-          <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : 'Salvar'}
-          </button>
-        </div>
-      </form>
+      </main>
     </div>
   );
 }
