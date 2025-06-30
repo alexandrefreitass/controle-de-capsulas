@@ -184,8 +184,9 @@ function LoteForm() {
             </div>
           )}
 
-          <div className="form-container">
-            <form onSubmit={handleSubmit} className="form">
+          <div className="card">
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
               <div className="form-section">
                 <h3 className="form-section-title">Informações do Lote</h3>
                 
@@ -262,7 +263,7 @@ function LoteForm() {
                     />
                   </div>
 
-                  <div className="form-group form-group-full">
+                  <div className="form-group form-full-width">
                     <label className="form-label" htmlFor="fornecedor_id">
                       Fornecedor *
                     </label>
@@ -286,35 +287,35 @@ function LoteForm() {
                 </div>
               </div>
 
-              <div className="form-actions">
+              <div className="module-actions" style={{ marginTop: '2rem', justifyContent: 'flex-end' }}>
                 <button 
                   type="button" 
                   className="btn btn-secondary" 
                   onClick={handleVoltar}
                   disabled={loading}
                 >
-                  <Icon name="X" size={16} />
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
-                  className="btn btn-primary" 
+                  className="btn btn-success" 
                   disabled={loading}
                 >
                   {loading ? (
                     <>
-                      <div className="spinner spinner-sm"></div>
+                      <div className="spinner" style={{ width: '1rem', height: '1rem', marginRight: '0.5rem' }}></div>
                       Salvando...
                     </>
                   ) : (
                     <>
                       <Icon name="Save" size={16} />
-                      Salvar
+                      {isEditing ? 'Atualizar' : 'Salvar'}
                     </>
                   )}
                 </button>
               </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </main>
