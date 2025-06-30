@@ -113,7 +113,7 @@ def materia_prima_list(request):
             materia_prima = MateriaPrima.objects.create(
                 cod_interno=data.get("cod_interno"),
                 nome=data.get("nome"),
-                desc=data.get("desc", ""),
+                desc=data.get("desc") or None,
                 numero_lote=data.get("numero_lote"),
                 nota_fiscal=data.get("nota_fiscal"),
                 fornecedor=fornecedor,
@@ -123,9 +123,9 @@ def materia_prima_list(request):
                 embalagem_aberta=data.get("embalagem_aberta", False),
                 quantidade_disponivel=data.get("quantidade_disponivel", 0),
                 unidade_medida=data.get("unidade_medida", "kg"),
-                categoria=data.get("categoria", ""),
-                condicao_armazenamento=data.get("condicao_armazenamento", ""),
-                localizacao=data.get("localizacao", ""),
+                categoria=data.get("categoria") or None,
+                condicao_armazenamento=data.get("condicao_armazenamento") or None,
+                localizacao=data.get("localizacao") or None,
                 preco_unitario=data.get("preco_unitario", 0),
                 # Não incluir status aqui
             )

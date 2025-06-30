@@ -27,9 +27,9 @@ class MateriaPrima(models.Model):
     # Campos adicionados para o MVP
     quantidade_disponivel = models.FloatField(default=0)
     unidade_medida = models.CharField(max_length=20, default="kg")
-    categoria = models.CharField(max_length=50, blank=True)
-    condicao_armazenamento = models.CharField(max_length=255, blank=True)
-    localizacao = models.CharField(max_length=100, blank=True)
+    categoria = models.CharField(max_length=50, blank=True, null=True)
+    condicao_armazenamento = models.CharField(max_length=255, blank=True, null=True)
+    localizacao = models.CharField(max_length=100, blank=True, null=True)
     # status = models.CharField(max_length=50, default="disponível")
     preco_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     data_entrada = models.DateField(default=timezone.now)

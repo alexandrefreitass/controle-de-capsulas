@@ -285,8 +285,12 @@ function MateriaPrimaForm() {
 
       // Prepara os dados para envio, convertendo strings vazias para null onde o backend espera
       const dataToSend = { ...formData };
+      
+      // Campos que podem ser null quando vazios
+      const nullableFields = ['desc', 'categoria', 'condicao_armazenamento', 'localizacao'];
+      
       for (const key in dataToSend) {
-        if (dataToSend[key] === '') {
+        if (dataToSend[key] === '' && nullableFields.includes(key)) {
           dataToSend[key] = null;
         }
       }
