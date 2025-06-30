@@ -65,7 +65,7 @@ const customSelectStyles = {
     borderRadius: 'var(--radius-md)',
     border: '1px solid var(--border-color)',
     boxShadow: 'var(--shadow-md)',
-    zIndex: 1000
+    zIndex: 9999
   }),
   menuList: (provided) => ({
     ...provided,
@@ -447,6 +447,8 @@ function ProducaoForm() {
                         classNamePrefix="react-select"
                         noOptionsMessage={() => "Nenhuma opção"}
                         loadingMessage={() => "Carregando..."}
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
                       />
                     </div>
 
