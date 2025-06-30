@@ -1,6 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
+import Layout from './Layout';
+import Icon from './Icon';
 
 function ProdutoDetalhe() {
   const { id } = useParams();
@@ -42,105 +45,215 @@ function ProdutoDetalhe() {
   };
 
   if (loading) {
-    return <p>Carregando detalhes do produto...</p>;
+    return (
+      <Layout>
+        <div className="loading">
+          <div className="spinner"></div>
+        </div>
+      </Layout>
+    );
   }
 
   if (error) {
     return (
-      <div className="module-container">
-        <div className="error">{error}</div>
-        <button onClick={handleVoltar}>Voltar</button>
-      </div>
+      <Layout>
+        <div className="container">
+          <div className="alert alert-error">
+            <Icon name="AlertTriangle" size={16} />
+            {error}
+          </div>
+          <button className="btn btn-secondary" onClick={handleVoltar}>
+            <Icon name="ArrowLeft" size={16} />
+            Voltar
+          </button>
+        </div>
+      </Layout>
     );
   }
 
   if (!produto) {
     return (
-      <div className="module-container">
-        <div className="error">Produto não encontrado.</div>
-        <button onClick={handleVoltar}>Voltar</button>
-      </div>
+      <Layout>
+        <div className="container">
+          <div className="alert alert-error">
+            <Icon name="AlertTriangle" size={16} />
+            Produto não encontrado.
+          </div>
+          <button className="btn btn-secondary" onClick={handleVoltar}>
+            <Icon name="ArrowLeft" size={16} />
+            Voltar
+          </button>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="module-container">
-      <div className="module-header">
-        <h2>Detalhes do Produto</h2>
-        <div>
-          <button className="back-btn" onClick={handleVoltar}>Voltar</button>
-          <button onClick={handleEditar}>Editar</button>
+    <Layout>
+      <div className="module-container">
+        <div className="module-header">
+          <div className="container">
+            <div className="module-nav">
+              <h1 className="module-title">
+                <Icon name="Package" size={24} className="module-title-icon" />
+                Detalhes do Produto
+              </h1>
+              <div className="module-actions">
+                <button className="btn btn-secondary" onClick={handleVoltar}>
+                  <Icon name="ArrowLeft" size={16} />
+                  Voltar
+                </button>
+                <button className="btn btn-primary" onClick={handleEditar}>
+                  <Icon name="Edit" size={16} />
+                  Editar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="container">
+          {/* Breadcrumb */}
+          <div className="breadcrumb">
+            <span className="breadcrumb-item">Produtos</span>
+            <span className="breadcrumb-separator">
+              <Icon name="ChevronRight" size={16} />
+            </span>
+            <span className="breadcrumb-item">{produto.nome}</span>
+          </div>
+
+          {/* Informações Gerais */}
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div className="card-header">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Icon name="Info" size={20} />
+                Informações Gerais
+              </h3>
+            </div>
+            <div className="card-body">
+              <div className="info-grid">
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Package" size={16} />
+                    Nome
+                  </div>
+                  <div className="info-value">{produto.nome}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="FileText" size={16} />
+                    Descrição
+                  </div>
+                  <div className="info-value">{produto.descricao}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Box" size={16} />
+                    Apresentação
+                  </div>
+                  <div className="info-value">{produto.apresentacao}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fórmula */}
+          <div className="card" style={{ marginBottom: '2rem' }}>
+            <div className="card-header">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Icon name="Beaker" size={20} />
+                Fórmula
+              </h3>
+            </div>
+            <div className="card-body">
+              <div className="info-grid">
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Pill" size={16} />
+                    Forma Farmacêutica
+                  </div>
+                  <div className="info-value">{produto.formula.forma_farmaceutica}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Hash" size={16} />
+                    Unidades Padrão
+                  </div>
+                  <div className="info-value">{produto.formula.quant_unid_padrao}</div>
+                </div>
+                <div className="info-item">
+                  <div className="info-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <Icon name="Scale" size={16} />
+                    Peso Padrão (kg)
+                  </div>
+                  <div className="info-value">{produto.formula.quant_kg_padrao}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Ingredientes */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Icon name="Layers" size={20} />
+                Ingredientes
+              </h3>
+            </div>
+            <div className="card-body">
+              {!produto.formula.ingredientes || produto.formula.ingredientes.length === 0 ? (
+                <div className="table-empty">
+                  <div className="table-empty-icon">
+                    <Icon name="Layers" size={48} />
+                  </div>
+                  <p>Nenhum ingrediente cadastrado para este produto.</p>
+                </div>
+              ) : (
+                <div className="table-container">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Package" size={16} />
+                            Matéria-prima
+                          </div>
+                        </th>
+                        <th>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Hash" size={16} />
+                            Lote
+                          </div>
+                        </th>
+                        <th>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Icon name="Scale" size={16} />
+                            Quantidade (mg)
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {produto.formula.ingredientes.map((ingrediente) => (
+                        <tr key={ingrediente.id}>
+                          <td>{ingrediente.lote_materia_prima.materia_prima.nome}</td>
+                          <td>
+                            <span className="badge badge-info">
+                              {ingrediente.lote_materia_prima.numero_lote}
+                            </span>
+                          </td>
+                          <td>{ingrediente.quant_mg} mg</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-
-      <div className="detail-container">
-        <div className="detail-section">
-          <h3>Informações Gerais</h3>
-          <table className="detail-table">
-            <tbody>
-              <tr>
-                <th>Nome:</th>
-                <td>{produto.nome}</td>
-              </tr>
-              <tr>
-                <th>Descrição:</th>
-                <td>{produto.descricao}</td>
-              </tr>
-              <tr>
-                <th>Apresentação:</th>
-                <td>{produto.apresentacao}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="detail-section">
-          <h3>Fórmula</h3>
-          <table className="detail-table">
-            <tbody>
-              <tr>
-                <th>Forma Farmacêutica:</th>
-                <td>{produto.formula.forma_farmaceutica}</td>
-              </tr>
-              <tr>
-                <th>Unidades Padrão:</th>
-                <td>{produto.formula.quant_unid_padrao}</td>
-              </tr>
-              <tr>
-                <th>Peso Padrão (kg):</th>
-                <td>{produto.formula.quant_kg_padrao}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="detail-section">
-          <h3>Ingredientes</h3>
-          {!produto.formula.ingredientes || produto.formula.ingredientes.length === 0 ? (
-            <p>Nenhum ingrediente cadastrado para este produto.</p>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Matéria-prima</th>
-                  <th>Lote</th>
-                  <th>Quantidade (mg)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {produto.formula.ingredientes.map((ingrediente) => (
-                  <tr key={ingrediente.id}>
-                    <td>{ingrediente.lote_materia_prima.materia_prima.nome}</td>
-                    <td>{ingrediente.lote_materia_prima.numero_lote}</td>
-                    <td>{ingrediente.quant_mg} mg</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 
