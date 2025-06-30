@@ -1342,20 +1342,30 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .sortable-header:hover {
   background-color: var(--border-light);
 }
 
+.sortable-header span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .sort-icon {
   color: var(--text-muted);
   transition: color 0.2s;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .sort-icon.active {
-  color: var(--primary);
+  color: var(--primary-color);
 }
 
 .sortable-header:hover .sort-icon {
@@ -1363,7 +1373,7 @@ a:hover {
 }
 
 .sortable-header:hover .sort-icon.active {
-  color: var(--primary);
+  color: var(--primary-color);
 }
 
 /* Badges */
