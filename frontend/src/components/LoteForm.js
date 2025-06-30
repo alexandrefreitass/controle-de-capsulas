@@ -65,7 +65,7 @@ const customSelectStyles = {
     borderRadius: 'var(--radius-md)',
     border: '1px solid var(--border-color)',
     boxShadow: 'var(--shadow-md)',
-    zIndex: 1000
+    zIndex: 9999
   }),
   menuList: (provided) => ({
     ...provided,
@@ -360,7 +360,7 @@ function LoteForm() {
                     />
                   </div>
 
-                  <div className="form-group form-full-width">
+                  <div className="form-group">
                     <label className="form-label" htmlFor="fornecedor_id">
                       Fornecedor *
                     </label>
@@ -378,6 +378,8 @@ function LoteForm() {
                       classNamePrefix="react-select"
                       noOptionsMessage={() => "Nenhuma opção"}
                       loadingMessage={() => "Carregando..."}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
                     />
                   </div>
                 </div>
