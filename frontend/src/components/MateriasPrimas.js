@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient, apiEndpoints } from '../config/api';
@@ -5,9 +6,15 @@ import Icon from './Icon';
 
 function MateriasPrimas() {
   const [materiasPrimas, setMateriasPrimas] = useState([]);
+  const [materiasPrimasFiltradas, setMateriasPrimasFiltradas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [termoBusca, setTermoBusca] = useState('');
+  const [ordenacao, setOrdenacao] = useState({
+    campo: '',
+    direcao: 'asc' // 'asc' ou 'desc'
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +27,18 @@ function MateriasPrimas() {
 
     fetchMateriasPrimas();
   }, [navigate]);
+
+  // Filtrar matérias primas quando o termo de busca ou a lista mudar
+  useEffect(() => {
+    filtrarMateriasPrimas();
+  }, [materiasPrimas, termoBusca]);
+
+  // Ordenar matérias primas quando a ordenação mudar
+  useEffect(() => {
+    if (ordenacao.campo) {
+      ordenarMateriasPrimas();
+    }
+  }, [ordenacao]);
 
   const fetchMateriasPrimas = async () => {
     try {
@@ -42,6 +61,64 @@ function MateriasPrimas() {
       setError('Erro ao carregar matérias primas. Tente novamente mais tarde.');
       setLoading(false);
     }
+  };
+
+  const filtrarMateriasPrimas = () => {
+    if (!termoBusca.trim()) {
+      setMateriasPrimasFiltradas(materiasPrimas);
+      return;
+    }
+
+    const termoLower = termoBusca.toLowerCase();
+    const filtradas = materiasPrimas.filter(materiaPrima => 
+      materiaPrima.cod_interno?.toLowerCase().includes(termoLower) ||
+      materiaPrima.nome?.toLowerCase().includes(termoLower) ||
+      materiaPrima.numero_lote?.toLowerCase().includes(termoLower) ||
+      materiaPrima.fornecedor?.razao_social?.toLowerCase().includes(termoLower) ||
+      materiaPrima.status?.toLowerCase().includes(termoLower)
+    );
+    
+    setMateriasPrimasFiltradas(filtradas);
+  };
+
+  const ordenarMateriasPrimas = () => {
+    const materiasOrdenadas = [...materiasPrimasFiltradas].sort((a, b) => {
+      let valorA, valorB;
+
+      // Tratamento especial para campos aninhados
+      if (ordenacao.campo === 'fornecedor') {
+        valorA = a.fornecedor?.razao_social?.toString().toLowerCase() || '';
+        valorB = b.fornecedor?.razao_social?.toString().toLowerCase() || '';
+      } else {
+        valorA = a[ordenacao.campo]?.toString().toLowerCase() || '';
+        valorB = b[ordenacao.campo]?.toString().toLowerCase() || '';
+      }
+
+      if (ordenacao.direcao === 'asc') {
+        return valorA.localeCompare(valorB);
+      } else {
+        return valorB.localeCompare(valorA);
+      }
+    });
+
+    setMateriasPrimasFiltradas(materiasOrdenadas);
+  };
+
+  const handleOrdenacao = (campo) => {
+    setOrdenacao(prevOrdenacao => ({
+      campo,
+      direcao: prevOrdenacao.campo === campo && prevOrdenacao.direcao === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const renderIconeOrdenacao = (campo) => {
+    if (ordenacao.campo !== campo) {
+      return <Icon name="ArrowUpDown" size={14} className="sort-icon" />;
+    }
+    
+    return ordenacao.direcao === 'asc' 
+      ? <Icon name="ArrowUp" size={14} className="sort-icon active" />
+      : <Icon name="ArrowDown" size={14} className="sort-icon active" />;
   };
 
   // Função para formatar datas de maneira segura
@@ -192,6 +269,10 @@ function MateriasPrimas() {
     }
   };
 
+  const limparBusca = () => {
+    setTermoBusca('');
+  };
+
   return (
     <div className="module-container">
       <header className="module-header">
@@ -230,39 +311,117 @@ function MateriasPrimas() {
             </div>
           )}
 
+          {/* Campo de busca */}
+          <div className="search-container">
+            <div className="search-input-wrapper">
+              <Icon name="Search" size={16} className="search-icon" />
+              <input
+                type="text"
+                placeholder="Buscar por Código, Nome, Lote, Fornecedor ou Status..."
+                value={termoBusca}
+                onChange={(e) => setTermoBusca(e.target.value)}
+                className="search-input"
+              />
+              {termoBusca && (
+                <button
+                  onClick={limparBusca}
+                  className="search-clear-btn"
+                  title="Limpar busca"
+                >
+                  <Icon name="X" size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+
           <div className="table-container">
             {loading ? (
               <div className="loading">
                 <div className="spinner"></div>
               </div>
-            ) : materiasPrimas.length === 0 ? (
+            ) : materiasPrimasFiltradas.length === 0 ? (
               <div className="table-empty">
                 <div className="table-empty-icon">
                   <Icon name="FlaskConical" size={48} />
                 </div>
-                <h3>Nenhuma matéria prima cadastrada</h3>
-                <p>Comece adicionando sua primeira matéria prima.</p>
-                <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
-                  <Icon name="Plus" size={16} />
-                  Adicionar Matéria Prima
-                </button>
+                {termoBusca ? (
+                  <>
+                    <h3>Nenhuma matéria prima encontrada</h3>
+                    <p>Não foram encontradas matérias primas que correspondam à sua busca "{termoBusca}".</p>
+                    <button className="btn btn-secondary" onClick={limparBusca}>
+                      <Icon name="X" size={16} />
+                      Limpar busca
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h3>Nenhuma matéria prima cadastrada</h3>
+                    <p>Comece adicionando sua primeira matéria prima.</p>
+                    <button className="btn btn-primary btn-add-first" onClick={handleNovo}>
+                      <Icon name="Plus" size={16} />
+                      Adicionar Matéria Prima
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <table className="table">
                 <thead>
                   <tr>
-                    <th>Cód.</th>
-                    <th>Nome</th>
-                    <th>Lote</th>
-                    <th>Fornecedor</th>
-                    <th>Quantidade</th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('cod_interno')}
+                      title="Clique para ordenar por Código"
+                    >
+                      <span>Cód.</span>
+                      {renderIconeOrdenacao('cod_interno')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('nome')}
+                      title="Clique para ordenar por Nome"
+                    >
+                      <span>Nome</span>
+                      {renderIconeOrdenacao('nome')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('numero_lote')}
+                      title="Clique para ordenar por Lote"
+                    >
+                      <span>Lote</span>
+                      {renderIconeOrdenacao('numero_lote')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('fornecedor')}
+                      title="Clique para ordenar por Fornecedor"
+                    >
+                      <span>Fornecedor</span>
+                      {renderIconeOrdenacao('fornecedor')}
+                    </th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('quantidade_disponivel')}
+                      title="Clique para ordenar por Quantidade"
+                    >
+                      <span>Quantidade</span>
+                      {renderIconeOrdenacao('quantidade_disponivel')}
+                    </th>
                     <th>Validade</th>
-                    <th>Status</th>
+                    <th 
+                      className="sortable-header"
+                      onClick={() => handleOrdenacao('status')}
+                      title="Clique para ordenar por Status"
+                    >
+                      <span>Status</span>
+                      {renderIconeOrdenacao('status')}
+                    </th>
                     <th>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {materiasPrimas.map((materiaPrima) => (
+                  {materiasPrimasFiltradas.map((materiaPrima) => (
                     <tr key={materiaPrima.id}>
                       <td>{materiaPrima.cod_interno}</td>
                       <td>{materiaPrima.nome}</td>
